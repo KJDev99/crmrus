@@ -1,10 +1,12 @@
-import Login from '@/components/auth/Enter'
+import HomeRestriction from '@/components/home/HomeRestriction'
 import React from 'react'
 
 export default function Home() {
   return (
     <div>
-      <Login/>
+      {/* <Enter/> */}
+      {/* <Parol/> */}
+      <HomeRestriction/>
     </div>
   )
 }
