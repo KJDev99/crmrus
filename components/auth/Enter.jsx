@@ -3,8 +3,8 @@ import PhoneInput from '../ui/input'
 import { IoIosArrowBack } from "react-icons/io";
 export default function Login() {
     return (
-        <div className='max-w-7xl m-auto'>
-<div className="relative flex flex-col  items-center min-h-screen  text-white px-8">
+        <div className='max-w-7xl m-auto '>
+<div className="relative flex flex-col  items-center    text-white px-8">
       <div className="absolute top-8 left-8 text-3xl cursor-pointer"><IoIosArrowBack /></div>
 
       {/* Logo va sarlavha */}
