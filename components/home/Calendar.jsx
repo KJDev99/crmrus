@@ -12,7 +12,7 @@ import { addMonths,subMonths,
 } from "date-fns";
 import { IoIosArrowBack } from "react-icons/io";
 import { ru } from "date-fns/locale";
-
+    
 const holidays = [
   "2025-05-03",
   "2025-05-08",
