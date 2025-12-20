@@ -1,10 +1,16 @@
-import Login from '@/components/auth/Enter'
+import Calendar from '@/components/home/Calendar'
+import HomeRestriction from '@/components/home/HomeRestriction'
+import UpcomingEventsSection1 from '@/components/home/UpcomingEventsSection1'
 import React from 'react'
 
 export default function Home() {
   return (
     <div>
-      <Login/>
+      {/* <Enter/> */}
+      {/* <Parol/> */}
+      {/* <HomeRestriction/> */}
+      {/* <UpcomingEventsSection1/> */}
+      <Calendar/>
     </div>
   )
 }
