@@ -1,6 +1,6 @@
 import React from 'react'
 
-export default function Enter() {
+export default function page() {
   return (
     <div>Enter</div>
   )
