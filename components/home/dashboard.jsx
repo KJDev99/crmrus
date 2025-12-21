@@ -1,3 +1,4 @@
+'use client'
 import React, { useState } from 'react'
 import LeftPanel from './left-panel'
 import RightPanel from './right-panel'
@@ -8,7 +9,7 @@ export default function Dashboard() {
 
 
     return (
-        <div className='grid grid-cols-4'>
+        <div className='grid grid-cols-4 gap-x-[30px]'>
             <div className="">
                 <LeftPanel step={step} setStep={setStep} />
             </div>
