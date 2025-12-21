@@ -1,7 +1,8 @@
 "use client";
-
 import { useState } from "react";
-import { addMonths,subMonths,
+import {
+  addMonths,
+  subMonths,
   format,
   startOfMonth,
   endOfMonth,
@@ -12,12 +13,12 @@ import { addMonths,subMonths,
 } from "date-fns";
 import { IoIosArrowBack } from "react-icons/io";
 import { ru } from "date-fns/locale";
-    
+
 const holidays = [
-  "2025-05-03",
-  "2025-05-08",
-  "2025-05-18",
-  "2025-05-31",
+  "2025-05-03", // 3-may
+  "2025-05-08", // 8-may
+  "2025-05-18", // 18-may
+  "2025-05-31", // 31-may
 ];
 
 export default function Calendar() {
@@ -31,13 +32,10 @@ export default function Calendar() {
       <div className="cursor-pointer">
         <IoIosArrowBack size={40} />
       </div>
-
-      <img src="/icons/logo.svg" alt="logo"  />
-
-      <img src="/icons/support.svg" alt="support"  />
+      <img src="/icons/logo.svg" alt="logo" />
+      <img src="/icons/support.svg" alt="support" />
     </div>
   );
-
 
   const renderDays = () => {
     const days = ["ПН", "ВТ", "СР", "ЧТ", "ПТ", "СБ", "ВС"];
@@ -55,7 +53,7 @@ export default function Calendar() {
   const renderCells = () => {
     const monthStart = startOfMonth(currentMonth);
     const monthEnd = endOfMonth(monthStart);
-    const startDate = startOfWeek(monthStart, { weekStartsOn: 1 });
+    const startDate = startOfWeek(monthStart, { weekStartsOn: 1 }); // Dushanbadan boshlash
     const endDate = endOfWeek(monthEnd, { weekStartsOn: 1 });
 
     const rows = [];
@@ -72,24 +70,36 @@ export default function Calendar() {
         days.push(
           <div
             key={day.toString()}
-            className="flex items-center justify-center h-14"
+            className="flex items-center justify-center h-[65px]"
           >
             <div
               className={`
+                relative
                 flex items-center justify-center
-                ${isCurrentMonth ? "w-14 h-14" : "w-0 h-0"}
-                rounded-full
-                ${isHoliday 
-                  ? "bg-yellow-400 text-gray-900 shadow-[0_8px_25px_rgba(250,204,21,0.5)]" 
-                  : "bg-white/10 backdrop-blur-sm"
-                }
+                ${isCurrentMonth ? "w-[75px] h-[65px]" : "w-0 h-0"}
+                rounded-[18px]
+                backdrop-blur-[70px]
+                bg-white/10
                 ${isCurrentMonth ? "opacity-100" : "opacity-0"}
                 transition-all duration-200
                 hover:scale-110
+                before:absolute
+                before:inset-0
+                before:rounded-[18px]
+                before:border
+                before:border-transparent
+                before:bg-[radial-gradient(120.73%_120.73%_at_-10.62%_0%,rgba(255,250,250,0.4)_0%,rgba(255,255,255,0.1)_100%),radial-gradient(116.46%_116.46%_at_0%_9.52%,rgba(255,255,255,0.12)_0%,rgba(255,255,255,0)_50%,rgba(255,255,255,0.6)_100%)]
+                before:[-webkit-mask:linear-gradient(#fff_0_0)_content-box,linear-gradient(#fff_0_0)]
+                before:[-webkit-mask-composite:xor]
+                before:[mask-composite:exclude]
+                shadow-[inset_0px_0px_30px_-9px_rgba(255,255,255,0.4)]
               `}
             >
+              {isHoliday && (
+                <div className="absolute inset-0 rounded-[18px] bg-yellow-400/80 shadow-[0_8px_25px_rgba(250,204,21,0.5)]" />
+              )}
               {isCurrentMonth && (
-                <span className="text-xl font-medium">
+                <span className="relative z-10 text-xl font-medium text-white">
                   {dayNumber}
                 </span>
               )}
@@ -99,8 +109,8 @@ export default function Calendar() {
         day = addDays(day, 1);
       }
       rows.push(
-        <div 
-          className="grid grid-cols-7 max-w-md mx-auto w-full" 
+        <div
+          className="grid grid-cols-7 max-w-md mx-auto w-full"
           key={rows.length}
         >
           {days}
@@ -108,14 +118,13 @@ export default function Calendar() {
       );
       days = [];
     }
-
     return <div className="space-y-2">{rows}</div>;
   };
 
   const renderMonthNavigation = () => {
     const monthName = format(currentMonth, "LLLL", { locale: ru });
     const year = format(currentMonth, "yyyy");
-    
+
     return (
       <div className="flex items-center justify-center mt-16 mb-20">
         <button
@@ -138,7 +147,7 @@ export default function Calendar() {
   };
 
   return (
-    <div className="min-h-screen   flex flex-col items-center">
+    <div className="min-h-screen flex flex-col items-center">
       {renderHeader()}
       <div className="w-full max-w-md px-4">
         {renderDays()}
