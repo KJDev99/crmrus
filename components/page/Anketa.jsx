@@ -8,12 +8,13 @@ const data = [
 export default function Anketa() {
   return (
     <div className=" text-white">
+      <div className='max-w-7xl m-auto'>
 
        <div className="  ml-[90px] mb-[63px] py-8">
         <h1 className="font-normal not-italic text-[37px] leading-[100%] tracking-normal text-[white]">АНКЕТЫ</h1>
       </div>
       <div className="px-6 overflow-x-auto">
-        <table className=" ml-[30px] w-[1036.023193359375px]">
+        <table className=" ml-[30px] ">
           <thead>
             <tr className="text-left text-[white] text-sm">
               <th className="pb-4 text-[20px] font-normal leading-[100%] border-b border-white tracking-normal">ID</th>
@@ -46,6 +47,7 @@ export default function Anketa() {
       <div className='ml-[39px] mt-[265px]'>
         <button className='w-[166px] h-[44px] rounded-[25px] bg-[#D7B7068A] font-normal not-italic text-[25px] leading-[100%] tracking-normal'>АРХИВ</button>
       </div>
+    </div>
     </div>
   );
 }
