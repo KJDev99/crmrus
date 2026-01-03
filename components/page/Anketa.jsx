@@ -6,6 +6,7 @@ import { FaSearch } from "react-icons/fa";
 import { BiSortAlt2 } from "react-icons/bi";
 import { BsChevronLeft } from "react-icons/bs";
 import debounce from "lodash/debounce";
+import { useRouter } from "next/navigation";
 
 export default function Anketa() {
   const [data, setData] = useState([]);
@@ -43,7 +44,7 @@ export default function Anketa() {
   useEffect(() => {
     debouncedFetch({ ...filters, offset: 0 });
   }, [filters.full_name, filters.id, filters.organization_name, filters.phone, filters.limit]);
-
+  const router = useRouter();
   const fetchQuestionnaires = async (currentFilters) => {
     try {
       setLoading(true);
@@ -53,7 +54,8 @@ export default function Anketa() {
       const token = localStorage.getItem("accessToken");
 
       if (!token) {
-        throw new Error("Токен не найден. Пожалуйста, войдите в систему.");
+        router.push('/login');
+        return;
       }
 
       // Filter parametrlarni tozalash
@@ -191,7 +193,7 @@ export default function Anketa() {
   const getPageNumbers = () => {
     const pages = [];
     const maxVisiblePages = 3;
-    
+
     if (totalPages <= maxVisiblePages) {
       for (let i = 1; i <= totalPages; i++) {
         pages.push(i);
@@ -199,16 +201,16 @@ export default function Anketa() {
     } else {
       let start = Math.max(1, currentPage - 1);
       let end = Math.min(totalPages, start + maxVisiblePages - 1);
-      
+
       if (end - start + 1 < maxVisiblePages) {
         start = end - maxVisiblePages + 1;
       }
-      
+
       for (let i = start; i <= end; i++) {
         pages.push(i);
       }
     }
-    
+
     return pages;
   };
 
@@ -227,7 +229,7 @@ export default function Anketa() {
             <FaSearch size={20} className='text-black font-thin' />
           </button>
         </div>
-        <button 
+        <button
           className="text-gray-400 hover:text-white"
           onClick={handleSort}
         >
@@ -240,11 +242,7 @@ export default function Anketa() {
           <h1 className="font-normal not-italic text-[37px] leading-[100%] tracking-normal text-white">
             АНКЕТЫ
           </h1>
-          {pagination.count > 0 && (
-            <p className="text-gray-400 text-lg mt-2">
-              Всего: {pagination.count} записей
-            </p>
-          )}
+
         </div>
 
         {error && (
@@ -374,11 +372,11 @@ export default function Anketa() {
           </>
         )}
 
-        <div className="ml-10 mt-10">
+        <Link href={'/archive'} className="ml-10 mt-10 mb-10">
           <button className="w-[166px] h-[44px] rounded-[25px] bg-[#D7B7068A] font-normal not-italic text-[25px] leading-[100%] tracking-normal hover:bg-[#D7B706] transition-colors">
             АРХИВ
           </button>
-        </div>
+        </Link>
       </div>
     </div>
   );

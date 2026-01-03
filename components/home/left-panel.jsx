@@ -32,11 +32,11 @@ export default function LeftPanel({ }) {
       path: '/reports',
       icon: null
     },
-    {
-      name: 'ОПЛАТЫ',
-      path: '/payments',
-      icon: null
-    }
+    // {
+    //   name: 'ОПЛАТЫ',
+    //   path: '/payments',
+    //   icon: null
+    // }
   ]
 
   // Orqaga qaytish funksiyasi
@@ -44,17 +44,18 @@ export default function LeftPanel({ }) {
     router.back()
   }
 
-  // Hozirgi sahifani aniqlash
-  const getCurrentStep = () => {
-    const currentPath = pathname
-    const index = menuItems.findIndex(item => currentPath.startsWith(item.path))
-    return index !== -1 ? index : 0
+  // Hozirgi sahifani aniqlash - to'g'rilangan versiya
+  const isActive = (itemPath) => {
+    if (itemPath === '/') {
+      // Asosiy sahifa faqat "/" bo'lsa active bo'lsin
+      return pathname === '/'
+    }
+    // Boshqa sahifalar uchun pathname shu path bilan boshlansa
+    return pathname.startsWith(itemPath)
   }
 
-  const currentStep = getCurrentStep()
-
   return (
-    <div className="relative min-h-screen max-h-full flex flex-col justify-between w-full bg-linear-to-b from-[#0B1A4A] to-[#081437] text-white">
+    <div className="relative min-h-screen max-h-full flex flex-col justify-between w-full text-white">
       {/* Orqaga tugmasi */}
       <div
         className="absolute top-10 left-[30px] cursor-pointer hover:opacity-80 transition-opacity"
@@ -74,7 +75,7 @@ export default function LeftPanel({ }) {
 
       {/* Menu buttonlari */}
       <div className="flex flex-col gap-[22px] mt-[86px] pl-[30px] pr-[15px]">
-        {menuItems.map((item, idx) => (
+        {menuItems.map((item) => (
           <Link
             key={item.name}
             href={item.path}
@@ -85,7 +86,7 @@ export default function LeftPanel({ }) {
               h="h-[62px]"
               text={item.name}
               textsize="text-[26px]"
-              active={currentStep === idx}
+              active={isActive(item.path)}
             />
           </Link>
         ))}
@@ -101,8 +102,6 @@ export default function LeftPanel({ }) {
           priority
         />
       </div>
-
-
     </div>
   )
 }
