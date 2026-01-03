@@ -36,9 +36,9 @@ export default function LoginBox() {
                     <Image src={'/icons/star.svg'} alt='star' width={50} height={50} />
                 </div>
             }
-            <div className="fixed left-[112px] bottom-[112px]  text-white ">
+            {/* <div className="fixed left-[112px] bottom-[112px]  text-white ">
                 <GlassButton text={'ДАЛЛЕ'} click={() => { setStep(prev => prev + 1) }} />
-            </div>
+            </div> */}
         </div>
     )
 }

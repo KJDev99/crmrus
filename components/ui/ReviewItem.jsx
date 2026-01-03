@@ -19,11 +19,11 @@ export default function ReviewItem({ status = "positive" }) {
               </span>
             </div>
           </div>
-          <textarea placeholder="  Здравствуйте, хочу оставить отзыв благодарности,
-            поставщику ...." className="flex-1 resize-none w-[585px] h-[130px] outline-none bg-[#3f4763] p-4 font-normal text-[18px] leading-[1] tracking-normal text-white">
-          
-          </textarea>
         </div>
+        <textarea placeholder="  Здравствуйте, хочу оставить отзыв благодарности,
+            поставщику ...." className="flex-1 resize-none w-[585px] h-[130px] outline-none bg-[#3f4763] p-4 font-normal text-[18px] leading-[1] tracking-normal text-white">
+
+        </textarea>
         <div className="flex flex-col gap-3 min-w-[130px]">
           <button className="rounded-full bg-[#2e9c63] w-[166px] h-[44px] text-white font-normal text-[22px] leading-[1] tracking-normal">
             одобрить
