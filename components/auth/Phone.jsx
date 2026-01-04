@@ -13,11 +13,11 @@ export default function Enter({ step, setStep }) {
         <PhoneInput text={'Телефон'} isPhone={true} />
 
 
-        <p className="font-jeju font-normal text-[24px] leading-[100%] tracking-[0%] text-center mt-[136px] ">
+        <a target='_blank' href='https://r-profi.taplink.ws' className="font-jeju font-normal text-[24px] leading-[100%] tracking-[0%] text-center mt-[136px] ">
           Если вы хотите стать<br />
           членом Клуба —<br />
           <span className="underline">свяжитесь с нами</span>
-        </p>
+        </a>
       </div>
     </div>
   )

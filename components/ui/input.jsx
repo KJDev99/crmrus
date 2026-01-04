@@ -11,12 +11,12 @@ export default function PhoneInput({
   const handleChange = (e) => {
     let val = e.target.value;
     if (isPhone) {
-      val = val.replace(/\D/g, "").slice(0, 9);
+      val = val.replace(/\D/g, "").slice(0, 14);
       let formatted = "";
-      if (val.length > 0) formatted += "(" + val.slice(0, 2);
+      if (val.length > 0) formatted += "+(" + val.slice(0, 2);
       if (val.length >= 3) formatted += ") " + val.slice(2, 5);
       if (val.length >= 6) formatted += "-" + val.slice(5, 7);
-      if (val.length >= 8) formatted += "-" + val.slice(7, 9);
+      if (val.length >= 8) formatted += "-" + val.slice(7, 14);
       setValue(formatted);
     }
     else {

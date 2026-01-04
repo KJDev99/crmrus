@@ -19,6 +19,7 @@ export default function DetailUsers() {
     const [editData, setEditData] = useState({})
     const [searchText, setSearchText] = useState('')
     const [requestName, setRequestName] = useState('')
+    const [saving, setSaving] = useState(false)
 
     // URL endpointlarini aniqlash
     const getEndpoints = (type) => {
@@ -58,7 +59,7 @@ export default function DetailUsers() {
                     delete: `${baseURL}/media-questionnaires/${id}/`
                 }
             default:
-                return null // Type aniqlanmagan bo'lsa null qaytar
+                return null
         }
     }
 
@@ -76,7 +77,7 @@ export default function DetailUsers() {
         }
     }, [])
 
-    // Ma'lumotlarni yuklash - type aniqlangandan keyin
+    // Ma'lumotlarni yuklash
     useEffect(() => {
         if (requestName && id) {
             fetchData()
@@ -96,7 +97,6 @@ export default function DetailUsers() {
 
             const endpoints = getEndpoints(requestName)
 
-            // Endpoints aniqlanmagan bo'lsa, chiqish
             if (!endpoints) {
                 toast.error('Неверный тип анкеты')
                 router.push('/')
@@ -154,9 +154,10 @@ export default function DetailUsers() {
         }))
     }
 
-    // Saqlash funksiyasi
+    // Saqlash funksiyasi - To'g'rilangan
     const handleSave = async () => {
         try {
+            setSaving(true)
             const token = getToken()
             const endpoints = getEndpoints(requestName)
 
@@ -165,6 +166,7 @@ export default function DetailUsers() {
                 return
             }
 
+            // PUT so'rov uchun payload
             const payload = {
                 group: editData.group,
                 full_name: editData.full_name,
@@ -172,12 +174,12 @@ export default function DetailUsers() {
                 brand_name: editData.brand_name,
                 email: editData.email,
                 responsible_person: editData.responsible_person,
-                representative_cities: editData.representative_cities,
+                representative_cities: editData.representative_cities || [],
                 business_form: editData.business_form,
                 activity_description: editData.activity_description,
                 welcome_message: editData.welcome_message,
                 cooperation_terms: editData.cooperation_terms,
-                segments: editData.segments,
+                segments: editData.segments || [],
                 vk: editData.vk,
                 telegram_channel: editData.telegram_channel,
                 pinterest: editData.pinterest,
@@ -188,7 +190,12 @@ export default function DetailUsers() {
                 additional_info: editData.additional_info
             }
 
-            await axios.put(endpoints.update, payload, {
+            // Faqat to'ldirilgan field'larni yuborish
+            const cleanPayload = Object.fromEntries(
+                Object.entries(payload).filter(([_, value]) => value !== undefined && value !== null)
+            )
+
+            await axios.put(endpoints.update, cleanPayload, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                     'Content-Type': 'application/json'
@@ -197,14 +204,21 @@ export default function DetailUsers() {
 
             toast.success('Данные успешно обновлены')
             setEditMode(false)
-            fetchData() // Yangi ma'lumotlarni yuklash
+            fetchData()
         } catch (error) {
             console.error('Ошибка при обновлении:', error)
-            toast.error(error.response?.data?.message || 'Ошибка при обновлении данных')
+            if (error.response?.status === 404) {
+                toast.error('Анкета не найдена. Возможно, она была удалена.')
+                router.push('/')
+            } else {
+                toast.error(error.response?.data?.message || 'Ошибка при обновлении данных')
+            }
+        } finally {
+            setSaving(false)
         }
     }
 
-    // Moderation funksiyasi
+    // Moderation funksiyasi - YANGI QO'SHILGAN
     const handleModeration = async () => {
         try {
             const token = getToken()
@@ -223,7 +237,6 @@ export default function DetailUsers() {
             })
 
             toast.success('Модерация пройдена успешно')
-            fetchData()
             setShowModal(false)
         } catch (error) {
             console.error('Ошибка при модерации:', error)
@@ -231,7 +244,7 @@ export default function DetailUsers() {
         }
     }
 
-    // Status o'zgartirish
+    // Status o'zgartirish - YANGILANGAN (moderation qo'shildi)
     const handleStatusChange = async (status) => {
         try {
             const token = getToken()
@@ -242,12 +255,28 @@ export default function DetailUsers() {
                 return
             }
 
+            // 1. Statusni o'zgartirish
             await axios.post(endpoints.status, { status }, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                     'Content-Type': 'application/json'
                 }
             })
+
+            // 2. Agar status "published" bo'lsa, moderation patch so'rovi yuborish
+            if (status === 'published') {
+                try {
+                    await axios.patch(endpoints.moderation, {}, {
+                        headers: {
+                            Authorization: `Bearer ${token}`,
+                            'Content-Type': 'application/json'
+                        }
+                    })
+                } catch (modError) {
+                    console.warn('Moderation error (ignored):', modError)
+                    // Moderation xatosi status o'zgarishiga ta'sir qilmasin
+                }
+            }
 
             toast.success(`Статус изменен на: ${status}`)
             fetchData()
@@ -291,7 +320,7 @@ export default function DetailUsers() {
         setShowModal(true)
     }
 
-    // Info text generatsiya - TOG'RILANGAN VERSIYA
+    // Info text generatsiya - To'g'rilangan (JSON emas, readable text)
     const generateInfoText = () => {
         if (!data) return ''
 
@@ -305,7 +334,7 @@ export default function DetailUsers() {
         info += `Ответственное лицо: ${data.responsible_person || 'Не указано'}\n\n`
 
         // Qo'shimcha ma'lumotlar
-        info += `Форма бизнеса: ${data.business_form || 'Не указано'}\n`
+        info += `Форма бизнеса: ${data.business_form_display || data.business_form || 'Не указано'}\n`
         info += `НДС: ${data.vat_payment_display || 'Не указано'}\n`
         info += `Статус: ${data.status_display || 'Не указано'}\n`
         info += `Дата создания: ${formatDate(data.created_at) || 'Не указано'}\n\n`
@@ -313,6 +342,11 @@ export default function DetailUsers() {
         // Faoliyat tavsifi
         if (data.activity_description) {
             info += `Описание деятельности:\n${data.activity_description}\n\n`
+        }
+
+        // Приветственное сообщение
+        if (data.welcome_message) {
+            info += `Приветственное сообщение:\n${data.welcome_message}\n\n`
         }
 
         // Hamkorlik shartlari
@@ -330,9 +364,13 @@ export default function DetailUsers() {
         if (data.vk) info += `VK: ${data.vk}\n`
         if (data.instagram) info += `Instagram: ${data.instagram}\n`
         if (data.telegram_channel) info += `Telegram: ${data.telegram_channel}\n`
+        if (data.pinterest) info += `Pinterest: ${data.pinterest}\n`
         if (data.website) info += `Website: ${data.website}\n`
+        if (data.other_contacts && data.other_contacts.length > 0) {
+            info += `Другие контакты: ${Array.isArray(data.other_contacts) ? data.other_contacts.join(', ') : data.other_contacts}\n`
+        }
 
-        // Shaharlar - TOG'RILANGAN QISM
+        // Shaharlar
         if (data.representative_cities && Array.isArray(data.representative_cities) && data.representative_cities.length > 0) {
             info += `\nГорода представительства:\n`
             data.representative_cities.forEach(city => {
@@ -345,22 +383,89 @@ export default function DetailUsers() {
             info += `\nГорода представительства: ${data.representative_cities}\n`
         }
 
-        // Reitinglar
-        if (data.rating_list && Array.isArray(data.rating_list) && data.rating_list.length > 0) {
-            info += `\nОтзывы (${data.rating_count?.total || 0}):\n`
-            data.rating_list.forEach(review => {
-                const type = review.is_positive ? 'Положительный' : review.is_constructive ? 'Конструктивный' : 'Негативный'
-                info += `${type}: ${review.text}\n`
-            })
+        // Дополнительная информация
+        if (data.additional_info) {
+            info += `\nДополнительная информация:\n${data.additional_info}\n`
+        }
+
+        // Гарантии
+        if (data.guarantees) {
+            info += `\nГарантии: ${data.guarantees}\n`
         }
 
         return info
     }
 
+    // Edit mode uchun textarea formati - YANGI FUNKSIYA
+    const getEditTextareaValue = () => {
+        if (!editData) return ''
+
+        let text = ''
+
+        // Har bir fieldni alohida qator sifatida ko'rsatish
+        text += `full_name: ${editData.full_name || ''}\n`
+        text += `phone: ${editData.phone || ''}\n`
+        text += `email: ${editData.email || ''}\n`
+        text += `brand_name: ${editData.brand_name || ''}\n`
+        text += `responsible_person: ${editData.responsible_person || ''}\n`
+        text += `business_form: ${editData.business_form || ''}\n`
+        text += `activity_description: ${editData.activity_description || ''}\n`
+        text += `welcome_message: ${editData.welcome_message || ''}\n`
+        text += `cooperation_terms: ${editData.cooperation_terms || ''}\n`
+        text += `vk: ${editData.vk || ''}\n`
+        text += `instagram: ${editData.instagram || ''}\n`
+        text += `telegram_channel: ${editData.telegram_channel || ''}\n`
+        text += `website: ${editData.website || ''}\n`
+        text += `vat_payment: ${editData.vat_payment || ''}\n`
+        text += `additional_info: ${editData.additional_info || ''}\n`
+
+        // Array field'lar
+        if (editData.segments && Array.isArray(editData.segments)) {
+            text += `segments: ${editData.segments.join(', ')}\n`
+        }
+
+        if (editData.representative_cities && Array.isArray(editData.representative_cities)) {
+            text += `representative_cities: \n`
+            editData.representative_cities.forEach(city => {
+                text += `  - ${JSON.stringify(city)}\n`
+            })
+        }
+
+        return text
+    }
+
+    // Textarea'dan editData'ga o'girish - YANGI FUNKSIYA
+    const handleTextareaChange = (e) => {
+        const text = e.target.value
+        const lines = text.split('\n')
+        const newData = { ...editData }
+
+        lines.forEach(line => {
+            const [key, ...valueParts] = line.split(':')
+            if (key && key.trim()) {
+                const value = valueParts.join(':').trim()
+
+                // Special handling for array fields
+                if (key.trim() === 'segments') {
+                    newData.segments = value ? value.split(',').map(s => s.trim()) : []
+                }
+                // Special handling for representative_cities
+                else if (key.trim() === 'representative_cities') {
+                    // This is complex - skip for now or implement JSON parsing
+                }
+                else {
+                    newData[key.trim()] = value
+                }
+            }
+        })
+
+        setEditData(newData)
+    }
+
     if (!requestName) {
         return (
             <div className="flex justify-center items-center h-screen">
-                <div className="text-2xl text-yellow-400">Загрузка типа анкеты...</div>
+                <div className="text-2xl text-white">Загрузка типа анкеты...</div>
             </div>
         )
     }
@@ -368,7 +473,7 @@ export default function DetailUsers() {
     if (loading) {
         return (
             <div className="flex justify-center items-center h-screen">
-                <div className="text-2xl text-yellow-400">Загрузка данных...</div>
+                <div className="text-2xl text-white">Загрузка данных...</div>
             </div>
         )
     }
@@ -376,13 +481,13 @@ export default function DetailUsers() {
     if (!data) {
         return (
             <div className="flex justify-center items-center h-screen">
-                <div className="text-2xl text-red-400">Данные не найдены</div>
+                <div className="text-2xl text-white">Данные не найдены</div>
             </div>
         )
     }
 
     return (
-        <div>
+        <div className="min-h-screen bg-[#122161] text-white">
             <Toaster
                 position="top-right"
                 toastOptions={{
@@ -416,7 +521,7 @@ export default function DetailUsers() {
                     message={
                         modalType === 'delete' ? 'Вы уверены, что хотите переместить эту анкету в архив?' :
                             modalType === 'moderation' ? 'Вы уверены, что хотите пройти модерацию этой анкеты?' :
-                                modalType === 'publish' ? 'Вы уверены, что хотите опубликовать эту анкету?' :
+                                modalType === 'publish' ? 'Вы уверены, что хотите опубликовать эту анкету? (Будет выполнена модерация)' :
                                     modalType === 'reject' ? 'Вы уверены, что хотите отклонить эту анкету?' :
                                         'Вы уверены, что хотите переместить эту анкету в архив?'
                     }
@@ -428,12 +533,12 @@ export default function DetailUsers() {
                     <input
                         type="text"
                         placeholder="Найти анкету по ID, телефон, название организации, ФИ человека"
-                        className="w-full outline-none text-[#FFF] font-normal not-italic text-[16px] leading-[100%] tracking-normal bg-transparent"
+                        className="w-full outline-none text-white font-normal not-italic text-[16px] leading-[100%] tracking-normal bg-transparent placeholder-white/70"
                         value={searchText}
                         onChange={(e) => setSearchText(e.target.value)}
                     />
                     <button className="text-white">
-                        <FaSearch size={20} className='text-black font-thin' />
+                        <FaSearch size={20} className='text-white font-thin' />
                     </button>
                 </div>
                 <button className="text-gray-400 hover:text-white">
@@ -448,20 +553,20 @@ export default function DetailUsers() {
             </div>
 
             <div className="text-white">
-                <div className='w-full m-auto'>
+                <div className='w-full'>
                     <div className="overflow-x-auto">
                         {/* Header */}
-                        <div className="text-left text-[white] text-sm grid grid-cols-12">
-                            <div className="col-span-1 pb-4 px-4 text-[20px] font-normal leading-[100%] border-b border-white tracking-normal">ID</div>
-                            <div className="col-span-3 pb-4 px-4 text-[20px] font-normal leading-[100%] border-b border-white tracking-normal">Название организации / ФИ</div>
-                            <div className="col-span-2 pb-4 px-4 text-[20px] font-normal leading-[100%] border-b border-white tracking-normal">Группа</div>
-                            <div className="col-span-2 pb-4 px-4 text-[20px] font-normal leading-[100%] border-b border-white tracking-normal">Телефон</div>
-                            <div className="col-span-2 pb-4 px-4 text-[20px] font-normal leading-[100%] border-b border-white tracking-normal">Дата заявки</div>
-                            <div className="col-span-2 pb-4 px-4 text-[20px] font-normal leading-[100%] border-b border-white tracking-normal"></div>
+                        <div className="text-left text-white text-sm grid grid-cols-12">
+                            <div className="col-span-1 pb-4 px-4 text-[20px] font-normal leading-[100%] border-b border-white/30 tracking-normal">ID</div>
+                            <div className="col-span-3 pb-4 px-4 text-[20px] font-normal leading-[100%] border-b border-white/30 tracking-normal">Название организации / ФИ</div>
+                            <div className="col-span-2 pb-4 px-4 text-[20px] font-normal leading-[100%] border-b border-white/30 tracking-normal">Группа</div>
+                            <div className="col-span-2 pb-4 px-4 text-[20px] font-normal leading-[100%] border-b border-white/30 tracking-normal">Телефон</div>
+                            <div className="col-span-2 pb-4 px-4 text-[20px] font-normal leading-[100%] border-b border-white/30 tracking-normal">Дата заявки</div>
+                            <div className="col-span-2 pb-4 px-4 text-[20px] font-normal leading-[100%] border-b border-white/30 tracking-normal"></div>
                         </div>
 
                         {/* Content */}
-                        <div className="text-white hover:bg-gray-750 grid grid-cols-12 items-start">
+                        <div className="text-white grid grid-cols-12 items-start">
                             <div className="col-span-10 grid grid-cols-10">
                                 {/* Row data */}
                                 <div className="col-span-1 h-20 flex items-center px-4 font-normal text-[20px] leading-[100%] tracking-normal">
@@ -470,7 +575,7 @@ export default function DetailUsers() {
                                             type="text"
                                             value={editData.id || ''}
                                             disabled
-                                            className="bg-transparent border border-gray-600 rounded px-2 py-1 w-full"
+                                            className="bg-white/10 border border-white/30 rounded px-2 py-1 w-full text-white"
                                         />
                                     ) : data.id}
                                 </div>
@@ -481,7 +586,7 @@ export default function DetailUsers() {
                                             type="text"
                                             value={editData.full_name || ''}
                                             onChange={(e) => handleEditChange('full_name', e.target.value)}
-                                            className="bg-transparent border border-gray-600 rounded px-2 py-1 w-full"
+                                            className="bg-white/10 border border-white/30 rounded px-2 py-1 w-full text-white"
                                         />
                                     ) : data.full_name || 'Не указано'}
                                 </div>
@@ -491,7 +596,7 @@ export default function DetailUsers() {
                                         <select
                                             value={editData.group || ''}
                                             onChange={(e) => handleEditChange('group', e.target.value)}
-                                            className="bg-transparent border border-gray-600 rounded px-2 py-1 w-full"
+                                            className="bg-white/10 border border-white/30 rounded px-2 py-1 w-full text-white"
                                         >
                                             <option value="design">Дизайн</option>
                                             <option value="repair">Ремонт</option>
@@ -507,7 +612,7 @@ export default function DetailUsers() {
                                             type="text"
                                             value={editData.phone || ''}
                                             onChange={(e) => handleEditChange('phone', e.target.value)}
-                                            className="bg-transparent border border-gray-600 rounded px-2 py-1 w-full"
+                                            className="bg-white/10 border border-white/30 rounded px-2 py-1 w-full text-white"
                                         />
                                     ) : formatPhone(data.phone)}
                                 </div>
@@ -516,23 +621,14 @@ export default function DetailUsers() {
                                     {formatDate(data.created_at)}
                                 </div>
 
-                                {/* Info textarea */}
+                                {/* Info textarea - To'g'rilangan */}
                                 <textarea
-                                    className='col-span-10 bg-[#71707080] outline-none h-[438px] p-4.5 text-[#FFFFFF] mt-4 resize-none'
-                                    value={editMode ? JSON.stringify(editData, null, 2) : generateInfoText()}
-                                    onChange={(e) => {
-                                        if (editMode) {
-                                            try {
-                                                const parsed = JSON.parse(e.target.value)
-                                                setEditData(parsed)
-                                            } catch (err) {
-                                                // JSON parse error bo'lsa, faqat text sifatida saqlash
-                                                handleEditChange('additional_info', e.target.value)
-                                            }
-                                        }
-                                    }}
+                                    className='col-span-10 bg-white/10 outline-none h-[438px] p-4.5 text-white mt-4 resize-none border border-white/20 rounded-lg'
+                                    value={editMode ? getEditTextareaValue() : generateInfoText()}
+                                    onChange={editMode ? handleTextareaChange : undefined}
                                     readOnly={!editMode}
                                     placeholder='ИНФОРМАЦИЯ СОГЛАСНО ПРОФЕЛЮ УЧАСТНИКОВ'
+                                    style={{ fontFamily: editMode ? 'monospace' : 'inherit' }}
                                 />
                             </div>
 
@@ -543,9 +639,10 @@ export default function DetailUsers() {
                                         <>
                                             <button
                                                 onClick={handleSave}
-                                                className="font-normal not-italic text-base leading-[100%] tracking-normal bg-green-600 hover:bg-green-700 w-40 h-11 rounded-[25px] transition-colors"
+                                                disabled={saving}
+                                                className="font-normal not-italic text-base leading-[100%] tracking-normal bg-green-600 hover:bg-green-700 w-40 h-11 rounded-[25px] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                                             >
-                                                СОХРАНИТЬ
+                                                {saving ? 'СОХРАНЕНИЕ...' : 'СОХРАНИТЬ'}
                                             </button>
                                             <button
                                                 onClick={() => {
@@ -561,7 +658,7 @@ export default function DetailUsers() {
                                         <>
                                             <button
                                                 onClick={() => setEditMode(true)}
-                                                className="font-normal not-italic text-base leading-[100%] tracking-normal bg-[#71707099] hover:bg-[#717070cc] w-40 h-11 rounded-[25px] transition-colors"
+                                                className="font-normal not-italic text-base leading-[100%] tracking-normal bg-white/10 hover:bg-white/20 w-40 h-11 rounded-[25px] transition-colors border border-white/30"
                                             >
                                                 редактировать
                                             </button>
@@ -569,7 +666,7 @@ export default function DetailUsers() {
                                             {data.status !== 'published' && (
                                                 <button
                                                     onClick={() => openModal('publish')}
-                                                    className="font-normal not-italic text-base leading-[100%] tracking-normal bg-[#71707099] hover:bg-[#717070cc] w-40 h-11 rounded-[25px] transition-colors"
+                                                    className="font-normal not-italic text-base leading-[100%] tracking-normal bg-blue-600 hover:bg-blue-700 w-40 h-11 rounded-[25px] transition-colors"
                                                 >
                                                     опубликовать
                                                 </button>
@@ -578,31 +675,24 @@ export default function DetailUsers() {
                                             {data.status !== 'rejected' && (
                                                 <button
                                                     onClick={() => openModal('reject')}
-                                                    className="font-normal not-italic text-base leading-[100%] tracking-normal bg-[#71707099] hover:bg-[#717070cc] w-40 h-11 rounded-[25px] transition-colors"
+                                                    className="font-normal not-italic text-base leading-[100%] tracking-normal bg-yellow-600 hover:bg-yellow-700 w-40 h-11 rounded-[25px] transition-colors"
                                                 >
                                                     отклонить
                                                 </button>
                                             )}
 
-                                            {/* <button
-                                                onClick={() => openModal('moderation')}
-                                                className="font-normal not-italic text-base leading-[100%] tracking-normal bg-blue-600 hover:bg-blue-700 w-40 h-11 rounded-[25px] transition-colors"
-                                            >
-                                                модерация
-                                            </button> */}
-
                                             <button
                                                 onClick={() => openModal('delete')}
-                                                className="font-normal not-italic text-base leading-[100%] tracking-normal bg-[#D7B7068A] hover:bg-[#D7B706] w-40 h-11 rounded-[25px] transition-colors"
+                                                className="font-normal not-italic text-base leading-[100%] tracking-normal bg-[#D7B706] hover:bg-[#C0A205] w-40 h-11 rounded-[25px] transition-colors"
                                             >
                                                 в архив
                                             </button>
 
                                             {/* <button
-                                                onClick={() => openModal('delete')}
-                                                className="font-normal not-italic text-base leading-[100%] tracking-normal bg-red-700 hover:bg-red-800 w-40 h-11 rounded-[25px] transition-colors mt-4"
+                                                onClick={() => openModal('moderation')}
+                                                className="font-normal not-italic text-base leading-[100%] tracking-normal bg-purple-600 hover:bg-purple-700 w-40 h-11 rounded-[25px] transition-colors mt-4"
                                             >
-                                                УДАЛИТЬ
+                                                модерация
                                             </button> */}
                                         </>
                                     )}
