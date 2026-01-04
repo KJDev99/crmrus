@@ -11,9 +11,6 @@ export default function DetailUsers() {
     const params = useParams()
     const router = useRouter()
     const { id } = params
-    const searchParams = new URLSearchParams(window.location.search)
-    const requestName = searchParams.get('type')
-
     const [loading, setLoading] = useState(true)
     const [data, setData] = useState(null)
     const [showModal, setShowModal] = useState(false)
@@ -21,12 +18,13 @@ export default function DetailUsers() {
     const [editMode, setEditMode] = useState(false)
     const [editData, setEditData] = useState({})
     const [searchText, setSearchText] = useState('')
+    const [requestName, setRequestName] = useState('')
 
     // URL endpointlarini aniqlash
-    const getEndpoints = () => {
+    const getEndpoints = (type) => {
         const baseURL = 'https://api.reiting-profi.ru/api/v1/accounts'
 
-        switch (requestName) {
+        switch (type) {
             case 'DesignerQuestionnaire':
                 return {
                     get: `${baseURL}/questionnaires/${id}/`,
@@ -60,13 +58,7 @@ export default function DetailUsers() {
                     delete: `${baseURL}/media-questionnaires/${id}/`
                 }
             default:
-                return {
-                    get: `${baseURL}/questionnaires/${id}/`,
-                    update: `${baseURL}/questionnaires/${id}/`,
-                    moderation: `${baseURL}/questionnaires/${id}/moderation/`,
-                    status: `${baseURL}/questionnaires/${id}/update-status/`,
-                    delete: `${baseURL}/questionnaires/${id}/`
-                }
+                return null // Type aniqlanmagan bo'lsa null qaytar
         }
     }
 
@@ -75,9 +67,20 @@ export default function DetailUsers() {
         return localStorage.getItem('accessToken')
     }
 
-    // Ma'lumotlarni yuklash
+    // Type'ni URL dan olish
     useEffect(() => {
-        fetchData()
+        if (typeof window !== 'undefined') {
+            const searchParams = new URLSearchParams(window.location.search)
+            const type = searchParams.get('type')
+            setRequestName(type)
+        }
+    }, [])
+
+    // Ma'lumotlarni yuklash - type aniqlangandan keyin
+    useEffect(() => {
+        if (requestName && id) {
+            fetchData()
+        }
     }, [id, requestName])
 
     const fetchData = async () => {
@@ -91,7 +94,15 @@ export default function DetailUsers() {
                 return
             }
 
-            const endpoints = getEndpoints()
+            const endpoints = getEndpoints(requestName)
+
+            // Endpoints aniqlanmagan bo'lsa, chiqish
+            if (!endpoints) {
+                toast.error('Неверный тип анкеты')
+                router.push('/')
+                return
+            }
+
             const response = await axios.get(endpoints.get, {
                 headers: {
                     Authorization: `Bearer ${token}`,
@@ -103,7 +114,12 @@ export default function DetailUsers() {
             setEditData(response.data)
         } catch (error) {
             console.error('Ошибка при загрузке данных:', error)
-            toast.error(error.response?.data?.message || 'Ошибка при загрузке данных')
+            if (error.response?.status === 404) {
+                toast.error('Анкета не найдена')
+                router.push('/')
+            } else {
+                toast.error(error.response?.data?.message || 'Ошибка при загрузке данных')
+            }
         } finally {
             setLoading(false)
         }
@@ -142,7 +158,12 @@ export default function DetailUsers() {
     const handleSave = async () => {
         try {
             const token = getToken()
-            const endpoints = getEndpoints()
+            const endpoints = getEndpoints(requestName)
+
+            if (!endpoints) {
+                toast.error('Неверный тип анкеты')
+                return
+            }
 
             const payload = {
                 group: editData.group,
@@ -187,7 +208,12 @@ export default function DetailUsers() {
     const handleModeration = async () => {
         try {
             const token = getToken()
-            const endpoints = getEndpoints()
+            const endpoints = getEndpoints(requestName)
+
+            if (!endpoints) {
+                toast.error('Неверный тип анкеты')
+                return
+            }
 
             await axios.patch(endpoints.moderation, {}, {
                 headers: {
@@ -209,7 +235,12 @@ export default function DetailUsers() {
     const handleStatusChange = async (status) => {
         try {
             const token = getToken()
-            const endpoints = getEndpoints()
+            const endpoints = getEndpoints(requestName)
+
+            if (!endpoints) {
+                toast.error('Неверный тип анкеты')
+                return
+            }
 
             await axios.post(endpoints.status, { status }, {
                 headers: {
@@ -231,7 +262,12 @@ export default function DetailUsers() {
     const handleDelete = async () => {
         try {
             const token = getToken()
-            const endpoints = getEndpoints()
+            const endpoints = getEndpoints(requestName)
+
+            if (!endpoints) {
+                toast.error('Неверный тип анкеты')
+                return
+            }
 
             await axios.delete(endpoints.delete, {
                 headers: {
@@ -255,7 +291,7 @@ export default function DetailUsers() {
         setShowModal(true)
     }
 
-    // Info text generatsiya
+    // Info text generatsiya - TOG'RILANGAN VERSIYA
     const generateInfoText = () => {
         if (!data) return ''
 
@@ -285,7 +321,7 @@ export default function DetailUsers() {
         }
 
         // Segmentlar
-        if (data.segments && data.segments.length > 0) {
+        if (data.segments && Array.isArray(data.segments) && data.segments.length > 0) {
             info += `Сегменты: ${data.segments.join(', ')}\n\n`
         }
 
@@ -296,16 +332,21 @@ export default function DetailUsers() {
         if (data.telegram_channel) info += `Telegram: ${data.telegram_channel}\n`
         if (data.website) info += `Website: ${data.website}\n`
 
-        // Shaharlar
-        if (data.representative_cities && data.representative_cities.length > 0) {
+        // Shaharlar - TOG'RILANGAN QISM
+        if (data.representative_cities && Array.isArray(data.representative_cities) && data.representative_cities.length > 0) {
             info += `\nГорода представительства:\n`
             data.representative_cities.forEach(city => {
-                info += `${city.city}: ${city.address}, тел: ${formatPhone(city.phone)}\n`
+                const cityName = city.city || 'Не указано'
+                const address = city.address || 'Не указано'
+                const phone = city.phone ? formatPhone(city.phone) : 'Не указано'
+                info += `${cityName}: ${address}, тел: ${phone}\n`
             })
+        } else if (data.representative_cities && typeof data.representative_cities === 'string') {
+            info += `\nГорода представительства: ${data.representative_cities}\n`
         }
 
         // Reitinglar
-        if (data.rating_list && data.rating_list.length > 0) {
+        if (data.rating_list && Array.isArray(data.rating_list) && data.rating_list.length > 0) {
             info += `\nОтзывы (${data.rating_count?.total || 0}):\n`
             data.rating_list.forEach(review => {
                 const type = review.is_positive ? 'Положительный' : review.is_constructive ? 'Конструктивный' : 'Негативный'
@@ -314,6 +355,14 @@ export default function DetailUsers() {
         }
 
         return info
+    }
+
+    if (!requestName) {
+        return (
+            <div className="flex justify-center items-center h-screen">
+                <div className="text-2xl text-yellow-400">Загрузка типа анкеты...</div>
+            </div>
+        )
     }
 
     if (loading) {
