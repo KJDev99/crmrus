@@ -6,7 +6,7 @@ import { FaUser, FaEnvelope, FaBuilding, FaCity, FaHandshake, FaVk, FaTelegram, 
 
 export default function SupplierBox() {
     const [formData, setFormData] = useState({
-        group: '',
+        group: 'supplier',
         full_name: '',
         brand_name: '',
         email: '',
@@ -39,17 +39,10 @@ export default function SupplierBox() {
     const [cardFileName, setCardFileName] = useState('');
 
     const groupOptions = [
-        { value: 'designer', label: 'Дизайнер' },
-        { value: 'architect', label: 'Архитектор' },
-        { value: 'decorator', label: 'Декоратор' },
-        { value: 'landscape_designer', label: 'Ландшафтный дизайнер' },
-        { value: 'light_designer', label: 'Светодизайнер' },
-        { value: 'interior_designer', label: 'Дизайнер интерьера' },
-        { value: 'repair_team', label: 'Ремонтная бригада' },
-        { value: 'contractor', label: 'Подрядчик' },
+        { value: 'media', label: 'Медиа' },
         { value: 'supplier', label: 'Поставщик' },
-        { value: 'factory', label: 'Фабрика' },
-        { value: 'salon', label: 'Салон' }
+        { value: 'repair', label: 'Ремонт' },
+        { value: 'design', label: 'Дизайн' }
     ];
 
     const segmentOptions = [
@@ -350,7 +343,7 @@ export default function SupplierBox() {
 
                     <form onSubmit={handleSubmit} className="space-y-6">
                         {/* Group Selection */}
-                        <div>
+                        {/* <div>
                             <label className="block text-sm font-medium mb-2 text-white flex items-center gap-2">
                                 <FaBuilding /> Группа <span className="text-red-400">*</span>
                             </label>
@@ -368,7 +361,7 @@ export default function SupplierBox() {
                                     </option>
                                 ))}
                             </select>
-                        </div>
+                        </div> */}
 
                         {/* Full Name */}
                         <div>

@@ -6,7 +6,7 @@ import { FaUser, FaPhone, FaEnvelope, FaBuilding, FaCity, FaHandshake, FaVk, FaT
 
 export default function MediaBox() {
     const [formData, setFormData] = useState({
-        group: '',
+        group: 'media',
         full_name: '',
         phone: '',
         brand_name: '',
@@ -32,17 +32,10 @@ export default function MediaBox() {
     const [isSubmitting, setIsSubmitting] = useState(false);
 
     const groupOptions = [
-        { value: 'designer', label: 'Дизайнер' },
-        { value: 'architect', label: 'Архитектор' },
-        { value: 'decorator', label: 'Декоратор' },
-        { value: 'landscape_designer', label: 'Ландшафтный дизайнер' },
-        { value: 'light_designer', label: 'Светодизайнер' },
-        { value: 'interior_designer', label: 'Дизайнер интерьера' },
-        { value: 'repair_team', label: 'Ремонтная бригада' },
-        { value: 'contractor', label: 'Подрядчик' },
+        { value: 'media', label: 'Медиа' },
         { value: 'supplier', label: 'Поставщик' },
-        { value: 'factory', label: 'Фабрика' },
-        { value: 'salon', label: 'Салон' }
+        { value: 'repair', label: 'Ремонт' },
+        { value: 'design', label: 'Дизайн' }
     ];
 
     const segmentOptions = [
@@ -283,7 +276,7 @@ export default function MediaBox() {
 
                     <form onSubmit={handleSubmit} className="space-y-6">
                         {/* Group Selection */}
-                        <div>
+                        {/* <div>
                             <label className="block text-sm font-medium mb-2 text-white flex items-center gap-2">
                                 <FaBuilding /> Группа <span className="text-red-400">*</span>
                             </label>
@@ -301,7 +294,7 @@ export default function MediaBox() {
                                     </option>
                                 ))}
                             </select>
-                        </div>
+                        </div> */}
 
                         {/* Full Name */}
                         <div>

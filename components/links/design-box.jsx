@@ -6,7 +6,7 @@ import { FaUser, FaPhone, FaEnvelope, FaCity, FaBuilding, FaBriefcase, FaHandsha
 
 export default function DesignBox() {
     const [formData, setFormData] = useState({
-        group: '',
+        group: 'design',
         full_name: '',
         full_name_en: '',
         phone: '',
@@ -39,17 +39,10 @@ export default function DesignBox() {
     const [photoPreview, setPhotoPreview] = useState(null);
 
     const groupOptions = [
-        { value: 'designer', label: 'Дизайнер' },
-        { value: 'architect', label: 'Архитектор' },
-        { value: 'decorator', label: 'Декоратор' },
-        { value: 'landscape_designer', label: 'Ландшафтный дизайнер' },
-        { value: 'light_designer', label: 'Светодизайнер' },
-        { value: 'interior_designer', label: 'Дизайнер интерьера' },
-        { value: 'repair_team', label: 'Ремонтная бригада' },
-        { value: 'contractor', label: 'Подрядчик' },
+        { value: 'media', label: 'Медиа' },
         { value: 'supplier', label: 'Поставщик' },
-        { value: 'exhibition_hall', label: 'Выставочный зал' },
-        { value: 'factory', label: 'Фабрика' }
+        { value: 'repair', label: 'Ремонт' },
+        { value: 'design', label: 'Дизайн' }
     ];
 
     const serviceOptions = [
@@ -366,7 +359,7 @@ export default function DesignBox() {
 
                     <form onSubmit={handleSubmit} className="space-y-6">
                         {/* Group Selection */}
-                        <div>
+                        {/* <div>
                             <label className="block text-sm font-medium mb-2 text-white flex items-center gap-2">
                                 <FaBuilding /> Группа <span className="text-red-400">*</span>
                             </label>
@@ -384,7 +377,7 @@ export default function DesignBox() {
                                     </option>
                                 ))}
                             </select>
-                        </div>
+                        </div> */}
 
                         {/* Full Name */}
                         <div>
