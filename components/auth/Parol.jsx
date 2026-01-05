@@ -33,7 +33,7 @@ export default function Parol({ onSubmit, error, loading }) {
 
           <div className="mt-10">
             <GlassButton
-              text={loading ? 'TEKSHIRILMOQDA...' : 'КИРИШ'}
+              text={loading ? 'ПРОВЕРКА...' : 'ВОЙТИ'}
               click={handleSubmit}
               disabled={loading || !code}
             />

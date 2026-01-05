@@ -27,7 +27,7 @@ export default function Enter({ phone, setPhone, error }) {
         <a
           target='_blank'
           href='https://r-profi.taplink.ws'
-          className="font-jeju font-normal text-[24px] leading-[100%] tracking-[0%] text-center mt-[136px]"
+          className="font-jeju font-normal text-[24px] mb-30 leading-[100%] tracking-[0%] text-center mt-[136px]"
         >
           Если вы хотите стать<br />
           членом Клуба —<br />

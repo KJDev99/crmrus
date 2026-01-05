@@ -148,7 +148,7 @@ export default function LoginBox() {
                 step === 0 &&
                 <div className="fixed right-[112px] bottom-[80px] text-white">
                     <GlassButton
-                        text={loading ? 'YUKLANMOQDA...' : 'ДАЛЛЕ'}
+                        text={loading ? 'ДАЛЛЕ...' : 'ДАЛЛЕ'}
                         click={handleNext}
                         disabled={loading}
                     />

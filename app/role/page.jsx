@@ -1,7 +1,10 @@
+import HomeRestriction from '@/components/auth/HomeRestriction'
 import React from 'react'
 
 export default function page() {
     return (
-        <div>page</div>
+        <div>
+            <HomeRestriction />
+        </div>
     )
 }

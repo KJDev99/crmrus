@@ -11,8 +11,9 @@ import {
   addDays,
   isSameMonth,
 } from "date-fns";
-import { IoIosArrowBack } from "react-icons/io";
+import { IoIosArrowBack, IoIosArrowForward } from "react-icons/io";
 import { ru } from "date-fns/locale";
+import { MdCalendarToday } from 'react-icons/md';
 
 const holidays = [
   "2025-05-03", // 3-may
@@ -21,21 +22,11 @@ const holidays = [
   "2025-05-31", // 31-may
 ];
 
-export default function Calendar() {
+export default function Calendar({ setStep }) {
   const [currentMonth, setCurrentMonth] = useState(new Date(2025, 4, 1)); // 2025-yil May oyi
 
   const prevMonth = () => setCurrentMonth(subMonths(currentMonth, 1));
   const nextMonth = () => setCurrentMonth(addMonths(currentMonth, 1));
-
-  const renderHeader = () => (
-    <div className="text-white flex justify-between items-center mt-[17px] px-6 max-w-7xl mx-auto w-full">
-      <div className="cursor-pointer">
-        <IoIosArrowBack size={40} />
-      </div>
-      <img src="/icons/logo.svg" alt="logo" />
-      <img src="/icons/support.svg" alt="support" />
-    </div>
-  );
 
   const renderDays = () => {
     const days = ["ПН", "ВТ", "СР", "ЧТ", "ПТ", "СБ", "ВС"];
@@ -82,7 +73,6 @@ export default function Calendar() {
                 bg-white/10
                 ${isCurrentMonth ? "opacity-100" : "opacity-0"}
                 transition-all duration-200
-                hover:scale-110
                 before:absolute
                 before:inset-0
                 before:rounded-[18px]
@@ -94,6 +84,11 @@ export default function Calendar() {
                 before:[mask-composite:exclude]
                 shadow-[inset_0px_0px_30px_-9px_rgba(255,255,255,0.4)]
               `}
+              onClick={() => {
+                if (isCurrentMonth) {
+                  setStep(2);
+                }
+              }}
             >
               {isHoliday && (
                 <div className="absolute inset-0 rounded-[18px] bg-yellow-400/80 shadow-[0_8px_25px_rgba(250,204,21,0.5)]" />
@@ -131,16 +126,17 @@ export default function Calendar() {
           onClick={prevMonth}
           className="text-white text-4xl mx-8 opacity-70 hover:opacity-100 transition hover:scale-125"
         >
-          {'<'}
+          <IoIosArrowBack size={40} />
         </button>
-        <div className="text-white text-2xl font-medium uppercase tracking-wider min-w-[180px] text-center">
+        <div className="flex items-center gap-2 text-white text-2xl font-medium uppercase tracking-wider min-w-[180px] text-center">
+          <MdCalendarToday size={24} />
           {`${monthName.toUpperCase()} ${year}`}
         </div>
         <button
           onClick={nextMonth}
           className="text-white text-4xl mx-8 opacity-70 hover:opacity-100 transition hover:scale-125"
         >
-          {'>'}
+          <IoIosArrowForward size={40} />
         </button>
       </div>
     );
@@ -148,14 +144,20 @@ export default function Calendar() {
 
   return (
     <div className="min-h-screen flex flex-col items-center">
-      {renderHeader()}
+      <div className=" text-white flex justify-between items-center mt-[0px] w-full">
+        <div onClick={() => setStep(0)} className=" cursor-pointer"><IoIosArrowBack size={40} /></div>
+        <img src="/icons/logo.svg" alt="a" />
+        <div></div>
+      </div>
       <div className="w-full max-w-md px-4">
         {renderDays()}
         {renderCells()}
       </div>
       {renderMonthNavigation()}
-      <div className="fixed bottom-10 right-10 text-white/40 text-6xl pointer-events-none">
-        ★
+      <div className="relative w-full max-w-[1200px] mx-auto mb-[64px] flex justify-center">
+        <div className="absolute right-0 top-1/2 -translate-y-1/2 text-white text-[50px]">
+          ★
+        </div>
       </div>
     </div>
   );
