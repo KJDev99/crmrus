@@ -31,7 +31,7 @@ export default function Calendar({ setStep }) {
   const renderDays = () => {
     const days = ["ПН", "ВТ", "СР", "ЧТ", "ПТ", "СБ", "ВС"];
     return (
-      <div className="grid grid-cols-7 text-white/60 text-lg text-center mb-6 max-w-md mx-auto w-full">
+      <div className="grid grid-cols-7 text-white/60 text-lg text-center mb-4 max-w-md mx-auto w-full">
         {days.map((day) => (
           <div key={day} className="py-1 flex justify-center items-center">
             {day}
@@ -44,7 +44,7 @@ export default function Calendar({ setStep }) {
   const renderCells = () => {
     const monthStart = startOfMonth(currentMonth);
     const monthEnd = endOfMonth(monthStart);
-    const startDate = startOfWeek(monthStart, { weekStartsOn: 1 }); // Dushanbadan boshlash
+    const startDate = startOfWeek(monthStart, { weekStartsOn: 1 });
     const endDate = endOfWeek(monthEnd, { weekStartsOn: 1 });
 
     const rows = [];
@@ -61,29 +61,19 @@ export default function Calendar({ setStep }) {
         days.push(
           <div
             key={day.toString()}
-            className="flex items-center justify-center h-[65px]"
+            className="flex items-center justify-center h-[55px]"
           >
             <div
               className={`
                 relative
                 flex items-center justify-center
-                ${isCurrentMonth ? "w-[75px] h-[65px]" : "w-0 h-0"}
-                rounded-[18px]
-                backdrop-blur-[70px]
-                bg-white/10
+                ${isCurrentMonth ? "w-[75px] h-[55px]" : "w-0 h-0"}
+                
                 ${isCurrentMonth ? "opacity-100" : "opacity-0"}
                 transition-all duration-200
-                before:absolute
-                before:inset-0
-                before:rounded-[18px]
-                before:border
-                before:border-transparent
-                before:bg-[radial-gradient(120.73%_120.73%_at_-10.62%_0%,rgba(255,250,250,0.4)_0%,rgba(255,255,255,0.1)_100%),radial-gradient(116.46%_116.46%_at_0%_9.52%,rgba(255,255,255,0.12)_0%,rgba(255,255,255,0)_50%,rgba(255,255,255,0.6)_100%)]
-                before:[-webkit-mask:linear-gradient(#fff_0_0)_content-box,linear-gradient(#fff_0_0)]
-                before:[-webkit-mask-composite:xor]
-                before:[mask-composite:exclude]
-                shadow-[inset_0px_0px_30px_-9px_rgba(255,255,255,0.4)]
+               calc_style
               `}
+
               onClick={() => {
                 if (isCurrentMonth) {
                   setStep(2);
@@ -113,7 +103,7 @@ export default function Calendar({ setStep }) {
       );
       days = [];
     }
-    return <div className="space-y-2">{rows}</div>;
+    return <div className="space-y-0">{rows}</div>;
   };
 
   const renderMonthNavigation = () => {
@@ -150,6 +140,9 @@ export default function Calendar({ setStep }) {
         <div></div>
       </div>
       <div className="w-full max-w-md px-4">
+        <p className="font-normal text-white text-[20px] leading-[100%] tracking-[0%] text-center uppercase underline hover:cursor-pointer mb-4">
+          Ближайшие мероприятия
+        </p>
         {renderDays()}
         {renderCells()}
       </div>

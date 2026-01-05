@@ -6,28 +6,30 @@ export default function HomeRestriction() {
   return (
     <div className='max-w-7xl m-auto  '>
       <div className=" text-white flex justify-between items-center mt-[0px]">
-        <div className=" cursor-pointer  "><IoIosArrowBack size={40} /></div>
+        <div className=" cursor-pointer  ">
+          <IoIosArrowBack size={40} className='opacity-0' />
+        </div>
         <img src="/icons/logo.svg" alt="a" />
         <a target='_blank'
           href='https://r-profi.taplink.ws'>
           <img src="/icons/support.svg" alt="s" className='w-14 h-14' />
         </a>
       </div>
-      <div className='text-center mt-[13px]'>
+      <div className='text-center mt-[13px] flex flex-col items-center'>
 
 
-        <div className='mt-3'>
+        <Link href={'/role/supplier'} className='mt-3'>
           <GlassButton1 w="w-120"
             h="h-[80px]" textsize="text-[26px]" text={'Поставщики'} />
-        </div>
-        <div className='mt-[32px]'>
+        </Link>
+        <Link href={'/role/repair'} className='mt-[32px]'>
           <GlassButton1 w="w-120"
             h="h-[80px]" textsize="text-[26px]" text={'Ремонт'} />
-        </div>
-        <div className='mt-[32px]'>
+        </Link>
+        <Link href={'/role/design'} className='mt-[32px]'>
           <GlassButton1 w="w-120"
             h="h-[80px]" textsize="text-[26px]" text={'Дизайн'} />
-        </div>
+        </Link>
       </div>
       <div className="relative w-full max-w-[1200px] mx-auto mt-[79px] mb-[64px] flex justify-center">
 
