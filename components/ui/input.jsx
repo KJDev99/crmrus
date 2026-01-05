@@ -5,30 +5,38 @@ export default function PhoneInput({
   text,
   w,
   h,
-  isPhone = false
+  isPhone = false,
+  value,
+  onChange
 }) {
-  const [value, setValue] = useState("");
+  const [internalValue, setInternalValue] = useState("");
+
+  const currentValue = value !== undefined ? value : internalValue;
+  const setValue = onChange || setInternalValue;
+
   const handleChange = (e) => {
     let val = e.target.value;
     if (isPhone) {
-      val = val.replace(/\D/g, "").slice(0, 14);
+      val = val.replace(/\D/g, "").slice(0, 12);
       let formatted = "";
-      if (val.length > 0) formatted += "+(" + val.slice(0, 2);
-      if (val.length >= 3) formatted += ") " + val.slice(2, 5);
-      if (val.length >= 6) formatted += "-" + val.slice(5, 7);
-      if (val.length >= 8) formatted += "-" + val.slice(7, 14);
+      if (val.length > 0) formatted += "+(";
+      if (val.length >= 1) formatted += val.slice(0, 3);
+      if (val.length >= 3) formatted += ") " + val.slice(3, 5);
+      if (val.length >= 5) formatted += "-" + val.slice(5, 8);
+      if (val.length >= 8) formatted += "-" + val.slice(8, 10);
+      if (val.length >= 10) formatted += "-" + val.slice(10, 12);
       setValue(formatted);
-    }
-    else {
+    } else {
       setValue(val);
     }
   };
+
   return (
     <div>
       <input
         type="text"
         placeholder={text}
-        value={value}
+        value={currentValue}
         onChange={handleChange}
         className={`px-5 ${w ? w : "w-[480px]"} ${h ? h : "h-[105px]"} 
           text-[37px] text-yellow-400 
