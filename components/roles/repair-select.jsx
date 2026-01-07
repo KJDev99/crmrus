@@ -1,17 +1,19 @@
 'use client';
 import React, { useState } from 'react'
+import GlassButton from '../ui/GlassButton1'
 import Link from 'next/link'
 import { IoIosArrowBack, IoIosArrowDown } from 'react-icons/io'
 
-export default function DesignSelect({ filterChoices, selectedFilters, onFilterChange, onSearch, loading }) {
+export default function RepairSelect({ filterChoices, selectedFilters, onFilterChange, onSearch, loading }) {
     const [dropdowns, setDropdowns] = useState({
-        category: false,
+        group: false,
         city: false,
         segment: false,
-        property_purpose: false,
-        object_area: false,
-        cost_per_sqm: false,
-        experience: false,
+        vat_payment: false,
+        magazine_cards: false,
+        execution_speed: false,
+        cooperation_terms: false,
+        business_form: false,
     });
 
     const toggleDropdown = (dropdownName) => {
@@ -24,10 +26,36 @@ export default function DesignSelect({ filterChoices, selectedFilters, onFilterC
     const getSelectedLabel = (filterName, value) => {
         if (!value || !filterChoices) return `Выберете ${getPlaceholder(filterName)}`;
 
-        const choices = filterChoices[filterName + (filterName === 'segment' ? 's' : '_options')] ||
-            filterChoices[filterName + (filterName === 'property_purpose' ? 's' : '')] ||
-            filterChoices[filterName === 'group' ? 'categories' : filterName + 's'] ||
-            [];
+        let choices = [];
+
+        switch (filterName) {
+            case 'group':
+                choices = filterChoices.categories || [];
+                break;
+            case 'city':
+                choices = filterChoices.cities || [];
+                break;
+            case 'segment':
+                choices = filterChoices.segments || [];
+                break;
+            case 'vat_payment':
+                choices = filterChoices.vat_payments || [];
+                break;
+            case 'magazine_cards':
+                choices = filterChoices.magazine_cards || [];
+                break;
+            case 'execution_speed':
+                choices = filterChoices.execution_speeds || [];
+                break;
+            case 'cooperation_terms':
+                choices = filterChoices.cooperation_terms_options || [];
+                break;
+            case 'business_form':
+                choices = filterChoices.business_forms || [];
+                break;
+            default:
+                choices = [];
+        }
 
         const choice = choices.find(item => item.value === value);
         return choice ? choice.label : `Выберете ${getPlaceholder(filterName)}`;
@@ -38,10 +66,11 @@ export default function DesignSelect({ filterChoices, selectedFilters, onFilterC
             group: 'основную категорию',
             city: 'город',
             segment: 'сегмент',
-            property_purpose: 'назначение недвижимости',
-            object_area: 'площадь объекта',
-            cost_per_sqm: 'стоимость за м2',
-            experience: 'опыт работы',
+            vat_payment: 'наличие НДС',
+            magazine_cards: 'карточки журналов',
+            execution_speed: 'скорость исполнения',
+            cooperation_terms: 'условия сотрудничества',
+            business_form: 'форму бизнеса',
         };
         return placeholders[filterName] || '';
     };
@@ -61,14 +90,16 @@ export default function DesignSelect({ filterChoices, selectedFilters, onFilterC
                 return filterChoices.cities || [];
             case 'segment':
                 return filterChoices.segments || [];
-            case 'property_purpose':
-                return filterChoices.property_purposes || [];
-            case 'object_area':
-                return filterChoices.object_areas || [];
-            case 'cost_per_sqm':
-                return filterChoices.cost_per_sqm_options || [];
-            case 'experience':
-                return filterChoices.experience_options || [];
+            case 'vat_payment':
+                return filterChoices.vat_payments || [];
+            case 'magazine_cards':
+                return filterChoices.magazine_cards || [];
+            case 'execution_speed':
+                return filterChoices.execution_speeds || [];
+            case 'cooperation_terms':
+                return filterChoices.cooperation_terms_options || [];
+            case 'business_form':
+                return filterChoices.business_forms || [];
             default:
                 return [];
         }
@@ -91,6 +122,17 @@ export default function DesignSelect({ filterChoices, selectedFilters, onFilterC
         );
     }
 
+    const filterConfigs = [
+        { key: 'group', label: 'Выберете основную категорию' },
+        { key: 'city', label: 'Выберете город' },
+        { key: 'segment', label: 'Выберете сегмент' },
+        { key: 'vat_payment', label: 'Наличие НДС' },
+        { key: 'magazine_cards', label: 'Карточки журналов' },
+        { key: 'execution_speed', label: 'Скорость исполнения' },
+        { key: 'cooperation_terms', label: 'Условия сотрудничества' },
+        { key: 'business_form', label: 'Форма бизнеса' },
+    ];
+
     return (
         <div className='max-w-7xl m-auto'>
             <div className="text-white flex justify-between items-center mt-[0px]">
@@ -101,22 +143,14 @@ export default function DesignSelect({ filterChoices, selectedFilters, onFilterC
                 <div></div>
             </div>
             <div className='text-center mt-[13px] flex flex-col items-center'>
-                <h2 className='text-xl text-white mb-4'>ДИЗАЙН</h2>
+                <h2 className='text-xl text-white mb-4'>РЕМОНТ</h2>
 
-                {[
-                    { key: 'group', label: 'Выберете основную категорию' },
-                    { key: 'city', label: 'Выберете город' },
-                    { key: 'segment', label: 'Выберете сегмент' },
-                    { key: 'property_purpose', label: 'Назначение недвижимости' },
-                    { key: 'object_area', label: 'Площадь объекта' },
-                    { key: 'cost_per_sqm', label: 'Стоимость за м2' },
-                    { key: 'experience', label: 'Опыт работы' },
-                ].map((item) => (
-                    <div key={item.key} className='mt-3 relative'>
+                {filterConfigs.map((item) => (
+                    <div key={item.key} className='mt-3 relative w-120'>
                         <button
                             onClick={() => toggleDropdown(item.key)}
                             className={`
-                                w-120 h-20 text-[17px]
+                                w-full h-20 text-[17px]
                                 rounded-2xl transition-all duration-200
                                 bg-glass2 text-white hover:bg-white/40 text-left px-5
                                 flex items-center justify-between

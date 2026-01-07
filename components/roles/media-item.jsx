@@ -1,38 +1,15 @@
 'use client';
 import React from 'react'
 import { IoIosArrowBack } from 'react-icons/io'
-import GlassButton from '../ui/GlassButton1'
+import Link from 'next/link'
 
-export default function DesignItem({
+export default function MediaItem({
     questionnaires,
     onSelectQuestionnaire,
     onLoadMore,
-    onResetFilter,
     loading,
     hasMore
 }) {
-    const getServiceDisplay = (services) => {
-        if (!services || !Array.isArray(services)) return '';
-
-        const serviceMap = {
-            'decorator': 'Декоратор',
-            'residential_designer': 'Дизайнер жилых помещений',
-            'commercial_designer': 'Дизайнер коммерческой недвижимости',
-            'home_stager': 'Хоустейджер',
-            'architect': 'Архитектор',
-            'landscape_designer': 'Ландшафтный дизайнер',
-            'light_designer': 'Светодизайнер',
-            'author_supervision': 'Авторский надзор',
-            'design': 'Дизайн',
-            'completing': 'Комплектация',
-            'architecture': 'Архитектура',
-            'landscape_design': 'Ландшафтный дизайн',
-            'designer_horika': 'Дизайнер Хорека',
-        };
-
-        return services.map(service => serviceMap[service] || service).join(' / ');
-    };
-
     const getSegmentDisplay = (segments) => {
         if (!segments || !Array.isArray(segments)) return '';
 
@@ -42,18 +19,57 @@ export default function DesignItem({
             'business': 'Бизнес',
             'premium': 'Премиум',
             'horeca': 'Хорека',
+            'exclusive': 'Эксклюзив',
             'medium': 'Средний',
         };
 
         return segments.map(segment => segmentMap[segment] || segment).join(' / ');
     };
 
+    const getBusinessFormDisplay = (businessForm) => {
+        if (!businessForm) return '';
+
+        const businessFormMap = {
+            'own_business': 'Собственный бизнес',
+            'franchise': 'Франшиза',
+        };
+
+        // Agar qo'shimcha ma'lumot bo'lsa (masalan, "(ЗАО)")
+        if (businessForm.includes('(')) {
+            const parts = businessForm.split(' (');
+            const baseForm = parts[0];
+            const additional = parts[1]?.replace(')', '');
+            const displayBase = businessFormMap[baseForm] || baseForm;
+            return `${displayBase} (${additional})`;
+        }
+
+        return businessFormMap[businessForm] || businessForm;
+    };
+
+    const getRepresentativeCities = (representativeCities) => {
+        if (!representativeCities) return '';
+
+        try {
+            // Agar string bo'lsa, JSON parse qilish
+            const cities = typeof representativeCities === 'string'
+                ? JSON.parse(representativeCities)
+                : representativeCities;
+
+            if (Array.isArray(cities) && cities.length > 0) {
+                return cities.map(city => city.city || '').filter(city => city).join(', ');
+            }
+            return '';
+        } catch (error) {
+            return '';
+        }
+    };
+
     return (
         <div>
             <div className="text-white flex justify-between items-center mt-[0px]">
-                <button onClick={onResetFilter} className="cursor-pointer">
+                <Link href={'/role'} className="cursor-pointer">
                     <IoIosArrowBack size={40} />
-                </button>
+                </Link>
                 <img src="/icons/logo.svg" alt="a" />
                 <div></div>
             </div>
@@ -72,50 +88,32 @@ export default function DesignItem({
                                     onClick={() => onSelectQuestionnaire(questionnaire.id)}
                                 >
                                     <div className='w-[120px] h-[100px] card_img flex-shrink-0'>
-                                        {questionnaire.photo ? (
-                                            <img
-                                                src={questionnaire.photo}
-                                                alt={questionnaire.full_name}
-                                                className="w-full h-full object-cover rounded-lg"
-                                            />
-                                        ) : (
-                                            <div className="w-full h-full card_img rounded-lg flex items-center justify-center">
-                                                <span className="text-white text-2xl uppercase">{questionnaire.full_name ? questionnaire.full_name.charAt(0) : '?'}</span>
-                                            </div>
-                                        )}
+                                        <div className="w-full h-full rounded-lg flex items-center justify-center">
+                                            <span className="text-white text-2xl uppercase font-bold">
+                                                {questionnaire.brand_name ? questionnaire.brand_name.charAt(0) : 'M'}
+                                            </span>
+                                        </div>
                                     </div>
                                     <div className="flex flex-col border-b border-b-[#FFFFFF91] pl-6 ml-4 flex-grow">
                                         <h2 className='mb-0.5 text-[#FFFFFF] text-[22px]'>
-                                            {questionnaire.full_name || 'Название организации'}
+                                            {questionnaire.brand_name || questionnaire.full_name || 'Медиа пространство'}
                                         </h2>
                                         <p className='text-sm text-[#FFFFFF] mt-1'>
-                                            {questionnaire.city || 'Город не указан'}
+                                            {getRepresentativeCities(questionnaire.representative_cities) || 'Город не указан'}
                                         </p>
-                                        <p className='text-[#FFFFFF] uppercase text-sm leading-[100%] mt-2'>
-                                            {getServiceDisplay(questionnaire.services)}
-                                        </p>
+
+
                                         <p className='text-[#FFFFFF] text-sm mt-1'>
-                                            {getSegmentDisplay(questionnaire.segments)}
+                                            {getBusinessFormDisplay(questionnaire.business_form)}
                                         </p>
+
                                     </div>
                                 </div>
                             ))}
                         </>
                     )}
 
-                    <div className="flex justify-between">
-                        <button
-                            onClick={onResetFilter}
-                            className={`
-                                w-[180px] h-[40px] rounded-full
-                                bg-glass2 text-white hover:bg-white/40
-                                text-sm font-medium transition-all duration-200
-                                flex items-center justify-center
-                            `}
-                        >
-                            Сбросить фильтр
-                        </button>
-
+                    <div className="flex justify-center">
                         {hasMore && (
                             <button
                                 onClick={onLoadMore}

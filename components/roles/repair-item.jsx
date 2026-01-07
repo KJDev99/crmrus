@@ -3,7 +3,7 @@ import React from 'react'
 import { IoIosArrowBack } from 'react-icons/io'
 import GlassButton from '../ui/GlassButton1'
 
-export default function DesignItem({
+export default function RepairItem({
     questionnaires,
     onSelectQuestionnaire,
     onLoadMore,
@@ -11,26 +11,19 @@ export default function DesignItem({
     loading,
     hasMore
 }) {
-    const getServiceDisplay = (services) => {
-        if (!services || !Array.isArray(services)) return '';
-
-        const serviceMap = {
-            'decorator': 'Декоратор',
-            'residential_designer': 'Дизайнер жилых помещений',
-            'commercial_designer': 'Дизайнер коммерческой недвижимости',
-            'home_stager': 'Хоустейджер',
-            'architect': 'Архитектор',
-            'landscape_designer': 'Ландшафтный дизайнер',
-            'light_designer': 'Светодизайнер',
-            'author_supervision': 'Авторский надзор',
-            'design': 'Дизайн',
-            'completing': 'Комплектация',
-            'architecture': 'Архитектура',
-            'landscape_design': 'Ландшафтный дизайн',
-            'designer_horika': 'Дизайнер Хорека',
+    const getCategoryDisplay = (group) => {
+        const categoryMap = {
+            'turnkey': 'Под ключ',
+            'rough_works': 'Черновые работы',
+            'finishing_works': 'Чистовые работы',
+            'plumbing_tiles': 'Сантехника и плитка',
+            'floor': 'Полы',
+            'walls': 'Стены',
+            'rooms_turnkey': 'Комнаты под ключ',
+            'electrical': 'Электрика',
+            'all': 'Все виды работ',
         };
-
-        return services.map(service => serviceMap[service] || service).join(' / ');
+        return categoryMap[group] || group;
     };
 
     const getSegmentDisplay = (segments) => {
@@ -42,10 +35,19 @@ export default function DesignItem({
             'business': 'Бизнес',
             'premium': 'Премиум',
             'horeca': 'Хорека',
+            'exclusive': 'Эксклюзив',
             'medium': 'Средний',
         };
 
         return segments.map(segment => segmentMap[segment] || segment).join(' / ');
+    };
+
+    const getBusinessFormDisplay = (businessForm) => {
+        const businessFormMap = {
+            'own_business': 'Собственный бизнес',
+            'franchise': 'Франшиза',
+        };
+        return businessFormMap[businessForm] || businessForm;
     };
 
     return (
@@ -72,30 +74,35 @@ export default function DesignItem({
                                     onClick={() => onSelectQuestionnaire(questionnaire.id)}
                                 >
                                     <div className='w-[120px] h-[100px] card_img flex-shrink-0'>
-                                        {questionnaire.photo ? (
+                                        {questionnaire.company_logo ? (
                                             <img
-                                                src={questionnaire.photo}
-                                                alt={questionnaire.full_name}
+                                                src={questionnaire.company_logo}
+                                                alt={questionnaire.brand_name}
                                                 className="w-full h-full object-cover rounded-lg"
                                             />
                                         ) : (
                                             <div className="w-full h-full card_img rounded-lg flex items-center justify-center">
-                                                <span className="text-white text-2xl uppercase">{questionnaire.full_name ? questionnaire.full_name.charAt(0) : '?'}</span>
+                                                <span className="text-white text-2xl uppercase">
+                                                    {questionnaire.brand_name ? questionnaire.brand_name.charAt(0) : '?'}
+                                                </span>
                                             </div>
                                         )}
                                     </div>
                                     <div className="flex flex-col border-b border-b-[#FFFFFF91] pl-6 ml-4 flex-grow">
                                         <h2 className='mb-0.5 text-[#FFFFFF] text-[22px]'>
-                                            {questionnaire.full_name || 'Название организации'}
+                                            {questionnaire.brand_name || questionnaire.full_name || 'Название организации'}
                                         </h2>
                                         <p className='text-sm text-[#FFFFFF] mt-1'>
-                                            {questionnaire.city || 'Город не указан'}
+                                            {getCategoryDisplay(questionnaire.group)}
                                         </p>
                                         <p className='text-[#FFFFFF] uppercase text-sm leading-[100%] mt-2'>
-                                            {getServiceDisplay(questionnaire.services)}
+                                            {questionnaire.vat_payment_display ? `НДС: ${questionnaire.vat_payment_display}` : ''}
                                         </p>
                                         <p className='text-[#FFFFFF] text-sm mt-1'>
                                             {getSegmentDisplay(questionnaire.segments)}
+                                        </p>
+                                        <p className='text-[#FFFFFF] text-sm mt-1'>
+                                            {getBusinessFormDisplay(questionnaire.business_form)}
                                         </p>
                                     </div>
                                 </div>

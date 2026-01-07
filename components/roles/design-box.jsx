@@ -1,44 +1,223 @@
-import React from 'react'
-import GlassButton from '../ui/GlassButton1'
-import Link from 'next/link'
-import { IoIosArrowBack } from 'react-icons/io'
+'use client';
+import React, { useState, useEffect } from 'react'
+import DesignSelect from './design-select';
+import DesignItem from './design-item';
+import DesignDetail from './design-detail';
+import axios from 'axios';
 
 export default function DesignBox() {
+    const [step, setStep] = useState('select'); // select, list, detail
+    const [filterChoices, setFilterChoices] = useState(null);
+    const [selectedFilters, setSelectedFilters] = useState({
+        group: '',
+        city: '',
+        segment: '',
+        property_purpose: '',
+        object_area: '',
+        cost_per_sqm: '',
+        experience: '',
+    });
+    const [questionnaires, setQuestionnaires] = useState([]);
+    const [loading, setLoading] = useState(false);
+    const [selectedQuestionnaire, setSelectedQuestionnaire] = useState(null);
+    const [currentPage, setCurrentPage] = useState(1);
+    const [totalCount, setTotalCount] = useState(0);
+    const limit = 7;
+
+    useEffect(() => {
+        fetchFilterChoices();
+    }, []);
+
+    const fetchFilterChoices = async () => {
+        try {
+            const token = localStorage.getItem('access_token');
+            if (!token) {
+                window.location.href = '/login';
+                return;
+            }
+
+            const response = await axios.get(
+                'https://api.reiting-profi.ru/api/v1/accounts/questionnaires/filter-choices/',
+                {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                }
+            );
+            setFilterChoices(response.data);
+        } catch (error) {
+            console.error('Filter choices yuklashda xatolik:', error);
+        }
+    };
+
+    const handleFilterChange = (filterName, value) => {
+        setSelectedFilters(prev => ({
+            ...prev,
+            [filterName]: value
+        }));
+    };
+
+    const handleSearch = async () => {
+        try {
+            setLoading(true);
+            const token = localStorage.getItem('access_token');
+            if (!token) {
+                window.location.href = '/login';
+                return;
+            }
+
+            const params = {
+                ...selectedFilters,
+                limit: limit,
+                offset: (currentPage - 1) * limit
+            };
+
+            // Bo'sh filterlarni olib tashlash
+            Object.keys(params).forEach(key => {
+                if (!params[key]) {
+                    delete params[key];
+                }
+            });
+
+            const response = await axios.get(
+                'https://api.reiting-profi.ru/api/v1/accounts/questionnaires/',
+                {
+                    params: params,
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                }
+            );
+
+            setQuestionnaires(response.data.results);
+            setTotalCount(response.data.count);
+            setStep('list');
+        } catch (error) {
+            console.error('Questionnaire yuklashda xatolik:', error);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const handleLoadMore = async () => {
+        try {
+            setLoading(true);
+            const token = localStorage.getItem('access_token');
+            if (!token) {
+                window.location.href = '/login';
+                return;
+            }
+
+            const nextPage = currentPage + 1;
+            const params = {
+                ...selectedFilters,
+                limit: limit,
+                offset: nextPage * limit
+            };
+
+            Object.keys(params).forEach(key => {
+                if (!params[key]) {
+                    delete params[key];
+                }
+            });
+
+            const response = await axios.get(
+                'https://api.reiting-profi.ru/api/v1/accounts/questionnaires/',
+                {
+                    params: params,
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                }
+            );
+
+            setQuestionnaires(prev => [...prev, ...response.data.results]);
+            setCurrentPage(nextPage);
+        } catch (error) {
+            console.error('Ko\'proq yuklashda xatolik:', error);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const handleResetFilter = () => {
+        setSelectedFilters({
+            group: '',
+            city: '',
+            segment: '',
+            property_purpose: '',
+            object_area: '',
+            cost_per_sqm: '',
+            experience: '',
+        });
+        setQuestionnaires([]);
+        setCurrentPage(1);
+        setStep('select');
+    };
+
+    const handleSelectQuestionnaire = async (id) => {
+        try {
+            setLoading(true);
+            const token = localStorage.getItem('access_token');
+            if (!token) {
+                window.location.href = '/login';
+                return;
+            }
+
+            const response = await axios.get(
+                `https://api.reiting-profi.ru/api/v1/accounts/questionnaires/${id}/`,
+                {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                }
+            );
+
+            setSelectedQuestionnaire(response.data);
+            setStep('detail');
+        } catch (error) {
+            console.error('Questionnaire detail yuklashda xatolik:', error);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const handleBackToList = () => {
+        setStep('list');
+        setSelectedQuestionnaire(null);
+    };
+
+    const handleBackToSelect = () => {
+        setStep('select');
+    };
+
     return (
-        <div className='max-w-7xl m-auto  '>
-            <div className=" text-white flex justify-between items-center mt-[0px]">
-                <Link href={'/role'} className=" cursor-pointer  ">
-                    <IoIosArrowBack size={40} className='' />
-                </Link>
-                <img src="/icons/logo.svg" alt="a" />
-                <div></div>
-            </div>
-            <div className='text-center mt-[13px] flex flex-col items-center'>
-                <h2 className='text-xl text-white mb-4'>ДИЗАЙН</h2>
-
-                <div className='mt-3'>
-                    <GlassButton w="w-[350px] rounded-full text-left px-5"
-                        h="h-[58px]" textsize="text-[17px]" text={'Выберете основную котегорию'} />
-                </div>
-                <div className='mt-3'>
-                    <GlassButton w="w-[350px] rounded-full text-left px-5"
-                        h="h-[58px]" textsize="text-[17px]" text={'Выберете город'} />
-                </div>
-                <div className='mt-3'>
-                    <GlassButton w="w-[350px] rounded-full text-left px-5"
-                        h="h-[58px]" textsize="text-[17px]" text={'Выберете сегмент'} />
-                </div>
-
-            </div>
-            <div className="relative w-full max-w-[1200px] mx-auto mt-[79px] mb-[64px] flex justify-center">
-
-                <GlassButton w="w-[180px] rounded-full"
-                    h="h-[40px]" textsize="text-sm" text={'ИСКАТЬ'} />
-                <div className="absolute right-0 top-1/2 -translate-y-1/2 text-white text-[50px]">
-                    ★
-                </div>
-
-            </div>
+        <div className=''>
+            {step === 'select' && (
+                <DesignSelect
+                    filterChoices={filterChoices}
+                    selectedFilters={selectedFilters}
+                    onFilterChange={handleFilterChange}
+                    onSearch={handleSearch}
+                    loading={loading}
+                />
+            )}
+            {step === 'list' && (
+                <DesignItem
+                    questionnaires={questionnaires}
+                    onSelectQuestionnaire={handleSelectQuestionnaire}
+                    onLoadMore={handleLoadMore}
+                    onResetFilter={handleResetFilter}
+                    loading={loading}
+                    hasMore={questionnaires.length < totalCount}
+                />
+            )}
+            {step === 'detail' && (
+                <DesignDetail
+                    questionnaire={selectedQuestionnaire}
+                    onBack={handleBackToList}
+                />
+            )}
         </div>
     )
 }

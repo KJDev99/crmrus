@@ -2,7 +2,7 @@
 import React from 'react'
 import { IoIosArrowBack } from 'react-icons/io'
 
-export default function DesignDetail({ questionnaire, onBack }) {
+export default function SupplierDetail({ questionnaire, onBack }) {
     if (!questionnaire) {
         return (
             <div>
@@ -27,8 +27,8 @@ export default function DesignDetail({ questionnaire, onBack }) {
         if (!item) return null;
 
         if (typeof item.value === 'object') {
-            if (type === 'experience_geography') {
-                return item.value.description || `${item.value.city || ''} ${item.value.work_cities?.join(', ') || ''}`.trim();
+            if (type === 'office_addresses') {
+                return Array.isArray(item.value) ? item.value.join(', ') : item.value;
             } else if (type === 'social_networks') {
                 return (
                     <div className="space-y-1">
@@ -47,26 +47,33 @@ export default function DesignDetail({ questionnaire, onBack }) {
         return item?.value || null;
     };
 
-    const getServiceDisplay = (services) => {
-        if (!services || !Array.isArray(services)) return '';
+    const getCategoryDisplay = () => {
+        const categoryMap = {
+            'rough_materials': 'Черновые материалы',
+            'finishing_materials': 'Чистовые материалы',
+            'soft_furniture': 'Мягкая мебель',
+            'cabinet_furniture': 'Корпусная мебель',
+            'appliances': 'Техника',
+            'decor': 'Декор',
+            'all': 'Все категории',
+        };
+        return categoryMap[questionnaire.group] || questionnaire.group;
+    };
 
-        const serviceMap = {
-            'decorator': 'Декоратор',
-            'residential_designer': 'Дизайнер жилых помещений',
-            'commercial_designer': 'Дизайнер коммерческой недвижимости',
-            'home_stager': 'Хоустейджер',
-            'architect': 'Архитектор',
-            'landscape_designer': 'Ландшафтный дизайнер',
-            'light_designer': 'Светодизайнер',
-            'author_supervision': 'Авторский надзор',
-            'design': 'Дизайн',
-            'completing': 'Комплектация',
-            'architecture': 'Архитектура',
-            'landscape_design': 'Ландшафтный дизайн',
-            'designer_horika': 'Дизайнер Хорека',
+    const getSegmentDisplay = (segments) => {
+        if (!segments || !Array.isArray(segments)) return '';
+
+        const segmentMap = {
+            'economy': 'Эконом',
+            'comfort': 'Комфорт',
+            'business': 'Бизнес',
+            'premium': 'Премиум',
+            'horeca': 'Хорека',
+            'exclusive': 'Эксклюзив',
+            'medium': 'Средний',
         };
 
-        return services.map(service => serviceMap[service] || service).join(' / ');
+        return segments.map(segment => segmentMap[segment] || segment).join(', ');
     };
 
     return (
@@ -84,63 +91,65 @@ export default function DesignDetail({ questionnaire, onBack }) {
                 <div className="">
                     <div className="flex mb-6">
                         <div className='w-[125px] h-[100px] card_img flex-shrink-0'>
-                            {questionnaire.photo ? (
+                            {questionnaire.company_logo ? (
                                 <img
-                                    src={questionnaire.photo}
-                                    alt={questionnaire.full_name}
+                                    src={questionnaire.company_logo}
+                                    alt={questionnaire.brand_name}
                                     className="w-full h-full object-cover rounded-lg"
                                 />
                             ) : (
                                 <div className="w-full h-full card_img rounded-lg flex items-center justify-center">
-                                    <span className="text-white text-2xl uppercase">{questionnaire.full_name ? questionnaire.full_name.charAt(0) : '?'}</span>
+                                    <span className="text-white text-2xl uppercase">
+                                        {questionnaire.brand_name ? questionnaire.brand_name.charAt(0) : '?'}
+                                    </span>
                                 </div>
                             )}
                         </div>
                         <div className="flex flex-col border-b border-b-[#FFFFFF91] pl-6 ml-4 flex-grow">
                             <h2 className='mb-0.5 text-[#FFFFFF] text-[22px]'>
-                                {questionnaire.full_name || 'Название организации'}
+                                {questionnaire.brand_name || questionnaire.full_name || 'Название организации'}
                             </h2>
                             <div className='w-full h-0.25 bg-[#FFFFFF4F]'></div>
                             <p className='text-[#FFFFFF] uppercase text-sm leading-[100%] mt-3'>
-                                {getServiceDisplay(questionnaire.services)}
+                                {getCategoryDisplay()}
+                            </p>
+                            <p className='text-[#FFFFFF] text-sm mt-1'>
+                                Сегменты: {getSegmentDisplay(questionnaire.segments)}
                             </p>
                         </div>
                     </div>
 
                     <h2 className='mt-4 mb-4 text-center text-lg text-[#FFFFFF]'>Контактная информация</h2>
                     <div className='text-lg border-y border-[#FFFFFF91] px-2 py-4 text-[#FFFFFF] space-y-2'>
+                        <p><strong>Бренд:</strong> {questionnaire.brand_name || 'Не указан'}</p>
+                        <p><strong>Ответственное лицо:</strong> {questionnaire.responsible_person || 'Не указано'}</p>
                         <p><strong>Телефон:</strong> {questionnaire.phone || 'Не указан'}</p>
                         <p><strong>Email:</strong> {questionnaire.email || 'Не указан'}</p>
-                        <p><strong>Город:</strong> {questionnaire.city || 'Не указан'}</p>
+                        <p><strong>Форма бизнеса:</strong> {questionnaire.business_form_display || 'Не указана'}</p>
+                        <p><strong>НДС:</strong> {questionnaire.vat_payment_display || 'Не указано'}</p>
+                        <p><strong>Карточки журнала:</strong> {questionnaire.magazine_cards_display || 'Не указаны'}</p>
                     </div>
 
-                    <h2 className='mt-4 mb-4 text-center text-lg text-[#FFFFFF]'>О дизайнере</h2>
+                    <h2 className='mt-4 mb-4 text-center text-lg text-[#FFFFFF]'>О компании</h2>
                     <div className='space-y-4'>
-                        {getAboutValue('welcome_message') && (
+                        {getAboutValue('company_description') && (
                             <div className='text-[#FFFFFF] px-2 py-2'>
-                                <strong>Приветственное сообщение:</strong><br />
-                                {getAboutValue('welcome_message')}
+                                <strong>Описание компании:</strong><br />
+                                {getAboutValue('company_description')}
                             </div>
                         )}
 
-                        {getAboutValue('experience_geography') && (
+                        {getAboutValue('product_assortment') && (
                             <div className='text-[#FFFFFF] px-2 py-2'>
-                                <strong>Опыт и география:</strong><br />
-                                {getAboutValue('experience_geography')}
+                                <strong>Ассортимент продукции:</strong><br />
+                                {getAboutValue('product_assortment')}
                             </div>
                         )}
 
-                        {getAboutValue('service_packages') && (
+                        {getAboutValue('office_addresses') && (
                             <div className='text-[#FFFFFF] px-2 py-2'>
-                                <strong>Пакеты услуг и стоимость:</strong><br />
-                                {getAboutValue('service_packages')}
-                            </div>
-                        )}
-
-                        {getAboutValue('promotions_utp') && (
-                            <div className='text-[#FFFFFF] px-2 py-2'>
-                                <strong>Акции и УТП:</strong><br />
-                                {getAboutValue('promotions_utp')}
+                                <strong>Адреса офисов:</strong><br />
+                                {getAboutValue('office_addresses')}
                             </div>
                         )}
 
@@ -154,10 +163,10 @@ export default function DesignDetail({ questionnaire, onBack }) {
 
                     <h2 className='mt-4 mb-4 text-center text-lg text-[#FFFFFF]'>Условия сотрудничества</h2>
                     <div className='space-y-4'>
-                        {getTermValue('project_periods') && (
+                        {getTermValue('delivery_periods') && (
                             <div className='text-[#FFFFFF] px-2 py-2'>
-                                <strong>Сроки выполнения проекта:</strong><br />
-                                {getTermValue('project_periods')}
+                                <strong>Сроки поставки:</strong><br />
+                                {getTermValue('delivery_periods')}
                             </div>
                         )}
 
@@ -174,10 +183,16 @@ export default function DesignDetail({ questionnaire, onBack }) {
                             </div>
                         )}
 
-                        {getTermValue('other_cities_terms') && (
+                        {getTermValue('magazine_cards') && (
                             <div className='text-[#FFFFFF] px-2 py-2'>
-                                <strong>Работа с другими городами:</strong><br />
-                                {getTermValue('other_cities_terms')}
+                                <strong>Карточки журнала:</strong> {getTermValue('magazine_cards')}
+                            </div>
+                        )}
+
+                        {getTermValue('designer_contractor_terms') && (
+                            <div className='text-[#FFFFFF] px-2 py-2'>
+                                <strong>Условия для дизайнеров и прорабов:</strong><br />
+                                {getTermValue('designer_contractor_terms')}
                             </div>
                         )}
                     </div>

@@ -1,46 +1,160 @@
-import React from 'react'
+'use client';
+import React, { useEffect, useState } from 'react'
 import { IoIosArrowBack } from "react-icons/io";
-import GlassButton1 from '../ui/GlassButton1';
+import { CiLock } from "react-icons/ci";
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import axios from 'axios';
+
+
 export default function HomeRestriction() {
+  const router = useRouter();
+  const [roles, setRoles] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    // LocalStoragedan token ni tekshirish
+    const token = localStorage.getItem('access_token');
+
+    if (!token) {
+      // Token bo'lmasa, login sahifasiga yo'naltirish
+      router.push('/login');
+      return;
+    }
+
+    // Role'lar yuklash
+    fetchRoles(token);
+  }, [router]);
+
+  const fetchRoles = async (token) => {
+    try {
+      const response = await axios.get('https://api.reiting-profi.ru/api/v1/accounts/roles/', {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+
+      // Faqat "Media" (id:4) dan tashqari role'lar va is_locked maydoni bor elementlar
+      const filteredRoles = response.data.filter((role) =>
+        role.id !== 4 && role.hasOwnProperty('is_locked')
+      );
+
+      setRoles(filteredRoles);
+    } catch (error) {
+      console.error('Role yuklashda xatolik:', error);
+      // Xatolik yuz bersa, token noto'g'ri bo'lishi mumkin, login sahifasiga qaytish
+      localStorage.removeItem('access_token');
+      router.push('/login');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Role nomi uchun route'ni aniqlash
+  const getRoleRoute = (roleName) => {
+    switch (roleName.toLowerCase()) {
+      case 'поставщик':
+        return '/role/supplier';
+      case 'ремонт':
+        return '/role/repair';
+      case 'дизайн':
+        return '/role/design';
+      default:
+        return '/';
+    }
+  };
+
+  // Role nomini chiroyli ko'rinishga o'tkazish
+  const getDisplayName = (roleName) => {
+    switch (roleName.toLowerCase()) {
+      case 'поставщик':
+        return 'Поставщики';
+      case 'ремонт':
+        return 'Ремонт';
+      case 'дизайн':
+        return 'Дизайн';
+      default:
+        return roleName;
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className='max-w-7xl m-auto'>
+        <div className="text-white flex justify-between items-center mt-[0px]">
+          <div className="cursor-pointer">
+            <IoIosArrowBack size={40} className='opacity-0' />
+          </div>
+          <img src="/icons/logo.svg" alt="logo" />
+          <a target='_blank' href='https://r-profi.taplink.ws'>
+            <img src="/icons/support.svg" alt="support" className='w-14 h-14' />
+          </a>
+        </div>
+        <div className='text-center mt-20'>
+          <p className='text-white text-xl'>Загрузка...</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <div className='max-w-7xl m-auto  '>
-      <div className=" text-white flex justify-between items-center mt-[0px]">
-        <div className=" cursor-pointer  ">
+    <div className='max-w-7xl m-auto'>
+      <div className="text-white flex justify-between items-center mt-[0px]">
+        <div className="cursor-pointer">
           <IoIosArrowBack size={40} className='opacity-0' />
         </div>
-        <img src="/icons/logo.svg" alt="a" />
-        <a target='_blank'
-          href='https://r-profi.taplink.ws'>
-          <img src="/icons/support.svg" alt="s" className='w-14 h-14' />
+        <img src="/icons/logo.svg" alt="logo" />
+        <a target='_blank' href='https://r-profi.taplink.ws'>
+          <img src="/icons/support.svg" alt="support" className='w-14 h-14' />
         </a>
       </div>
+
       <div className='text-center mt-[13px] flex flex-col items-center'>
-
-
-        <Link href={'/role/supplier'} className='mt-3'>
-          <GlassButton1 w="w-120"
-            h="h-[80px]" textsize="text-[26px]" text={'Поставщики'} />
-        </Link>
-        <Link href={'/role/repair'} className='mt-[32px]'>
-          <GlassButton1 w="w-120"
-            h="h-[80px]" textsize="text-[26px]" text={'Ремонт'} />
-        </Link>
-        <Link href={'/role/design'} className='mt-[32px]'>
-          <GlassButton1 w="w-120"
-            h="h-[80px]" textsize="text-[26px]" text={'Дизайн'} />
-        </Link>
+        {roles.map((role) => (
+          <div key={role.id} className='mt-3 first:mt-0'>
+            {role.is_locked ? (
+              // Qulflangan bo'lsa - faqat button, Link emas
+              <button
+                className={`
+                  w-120 h-20 text-[26px]
+                  rounded-2xl transition-all duration-200
+                  bg-glass2 text-white hover:bg-white/40 relative
+                  cursor-not-allowed opacity-80
+                `}
+                disabled
+              >
+                {getDisplayName(role.name)}
+                <CiLock className='absolute right-15 top-1/2 -translate-y-1/2' size={32} />
+              </button>
+            ) : (
+              // Qulflanmagan bo'lsa - Link bilan
+              <Link href={getRoleRoute(role.name)}>
+                <button
+                  className={`
+                    w-120 h-20 text-[26px]
+                    rounded-2xl transition-all duration-200
+                    bg-glass2 text-white hover:bg-white/40
+                  `}
+                >
+                  {getDisplayName(role.name)}
+                </button>
+              </Link>
+            )}
+          </div>
+        ))}
       </div>
-      <div className="relative w-full max-w-[1200px] mx-auto mt-[79px] mb-[64px] flex justify-center">
 
+      <div className="relative w-full max-w-[1200px] mx-auto mt-[79px] mb-[64px] flex justify-center">
         <div className="text-center text-white space-y-4">
           <Link href={'/events'} className="font-normal text-[20px] leading-[100%] tracking-[0%] text-center uppercase hover:underline hover:cursor-pointer">
             Ближайшие мероприятия
           </Link>
 
-          <p className="font-normal text-[20px] leading-[100%] tracking-[0%] text-center hover:underline hover:cursor-pointer">
-            Интерьерные журналы
-          </p>
+          <div>
+            <Link href={'/role/media'} className="font-normal text-[20px] leading-[100%] tracking-[0%] text-center hover:underline hover:cursor-pointer">
+              Интерьерные журналы
+            </Link>
+          </div>
 
           <p className="font-[JejuMyeongjo] font-normal text-[16px] leading-[100%] tracking-[0%] text-center mt-[52px]">
             ИП Кудряшова М.А<br />
@@ -51,7 +165,6 @@ export default function HomeRestriction() {
         <div className="absolute right-0 top-1/2 -translate-y-1/2 text-white text-[50px]">
           ★
         </div>
-
       </div>
     </div>
   )
