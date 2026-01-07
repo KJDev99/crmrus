@@ -17,14 +17,41 @@ export default function PhoneInput({
   const handleChange = (e) => {
     let val = e.target.value;
     if (isPhone) {
-      val = val.replace(/\D/g, "").slice(0, 12);
+      // Faqat raqamlarni olish
+      val = val.replace(/\D/g, "");
+
+      // Rossiya formatiga moslashtirish (+7)
+      if (val.startsWith('7')) {
+        val = val.slice(1); // +7 ni olib tashlash
+      } else if (val.startsWith('8')) {
+        val = val.slice(1); // 8 raqamini olib tashlash
+      }
+
+      // 10 ta raqam bilan cheklash
+      val = val.slice(0, 10);
+
       let formatted = "";
-      if (val.length > 0) formatted += "+(";
-      if (val.length >= 1) formatted += val.slice(0, 3);
-      if (val.length >= 3) formatted += ") " + val.slice(3, 5);
-      if (val.length >= 5) formatted += "-" + val.slice(5, 8);
-      if (val.length >= 8) formatted += "-" + val.slice(8, 10);
-      if (val.length >= 10) formatted += "-" + val.slice(10, 12);
+
+      if (val.length > 0) {
+        formatted = "+7 ";
+      }
+
+      if (val.length > 0) {
+        formatted += "(" + val.slice(0, 3);
+      }
+
+      if (val.length >= 4) {
+        formatted += ") " + val.slice(3, 6);
+      }
+
+      if (val.length >= 7) {
+        formatted += "-" + val.slice(6, 8);
+      }
+
+      if (val.length >= 9) {
+        formatted += "-" + val.slice(8, 10);
+      }
+
       setValue(formatted);
     } else {
       setValue(val);

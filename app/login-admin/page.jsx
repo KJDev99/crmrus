@@ -85,8 +85,8 @@ export default function LoginPage() {
     return (
         <div className="min-h-screen flex items-center justify-center ">
             <div className="p-12 rounded-4xl bg-gray-800/50 border border-gray-700 backdrop-blur-sm">
-                <h1 className="text-5xl font-bold mb-10 text-center text-white">
-                    Вход в Админ Панель
+                <h1 className="text-[26px] font-bold mb-10 text-center text-white">
+                    Вход в Административную панель
                 </h1>
 
                 <form onSubmit={handleSubmit} className="space-y-8">

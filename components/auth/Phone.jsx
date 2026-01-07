@@ -30,7 +30,7 @@ export default function Enter({ phone, setPhone, error }) {
           className="font-jeju font-normal text-[24px] mb-30 leading-[100%] tracking-[0%] text-center mt-[136px]"
         >
           Если вы хотите стать<br />
-          членом Клуба —<br />
+          членом Сообщество —<br />
           <span className="underline">свяжитесь с нами</span>
         </a>
       </div>

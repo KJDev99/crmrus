@@ -16,7 +16,7 @@ export default function LoginBox() {
 
     const handlePhoneSubmit = async () => {
         if (!phone || phone.length < 12) {
-            setError('Iltimos, to\'liq telefon raqam kiriting')
+            setError('Пожалуйста, введите свой полный номер телефона.')
             return
         }
 
@@ -83,10 +83,10 @@ export default function LoginBox() {
                 // Role sahifasiga yo'naltirish
                 router.push('/role')
             } else {
-                setError(data.message || 'Kod noto\'g\'ri')
+                setError(data.message || 'Код неверен.')
             }
         } catch (err) {
-            setError('Tarmoq xatosi. Iltimos, qayta urinib ko\'ring')
+            setError('Сетевая ошибка. Пожалуйста, попробуйте еще раз.')
         } finally {
             setLoading(false)
         }
