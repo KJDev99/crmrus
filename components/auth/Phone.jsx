@@ -8,7 +8,7 @@ export default function Enter({ phone, setPhone, error }) {
         <p className="font-[JejuMyeongjo] mb-20 text-[24px] leading-[24px] tracking-normal text-center">
           Вход в личный кабинет<br />
           <span className="font-semibold">только</span><br />
-          для членов клуба
+          для членов Сообществa
         </p>
 
         <PhoneInput
@@ -30,7 +30,7 @@ export default function Enter({ phone, setPhone, error }) {
           className="font-jeju font-normal text-[24px] mb-30 leading-[100%] tracking-[0%] text-center mt-[136px]"
         >
           Если вы хотите стать<br />
-          членом Сообщество —<br />
+          членом Сообществa —<br />
           <span className="underline">свяжитесь с нами</span>
         </a>
       </div>

@@ -44,7 +44,7 @@ export default function LoginBox() {
                 setError(data.message || 'Xatolik yuz berdi')
             }
         } catch (err) {
-            setError('Tarmoq xatosi. Iltimos, qayta urinib ko\'ring')
+            setError('Сетевая ошибка. Пожалуйста, попробуйте еще раз.')
         } finally {
             setLoading(false)
         }
@@ -52,7 +52,7 @@ export default function LoginBox() {
 
     const handleCodeSubmit = async (code) => {
         if (!code || code.length < 4) {
-            setError('Iltimos, to\'liq kodni kiriting')
+            setError('Пожалуйста, введите полный код.')
             return
         }
 
