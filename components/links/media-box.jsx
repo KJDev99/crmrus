@@ -894,7 +894,7 @@ export default function MediaBox() {
                                 и карточку юридического лица (для составления договора). <span className="text-red-400">*</span>
                             </label>
                             <p className="text-white/60 text-sm mb-3">
-                                До 20 файлов, допустимый общий размер файлов — 20 МБ.
+                                До 5 файлов, допустимый общий размер файлов — 5 МБ.
                             </p>
 
                             {/* Company Logo Upload */}
