@@ -13,9 +13,12 @@ const axiosInstance = axios.create({
 // Add token to requests
 axiosInstance.interceptors.request.use(
     (config) => {
-        const token = authService.getAccessToken();
-        if (token) {
-            config.headers.Authorization = `Bearer ${token}`;
+        // Faqat browser muhitida token qo'shish
+        if (typeof window !== 'undefined') {
+            const token = localStorage.getItem('access_token');
+            if (token) {
+                config.headers.Authorization = `Bearer ${token}`;
+            }
         }
         return config;
     },
@@ -26,8 +29,6 @@ axiosInstance.interceptors.request.use(
 
 export const authService = {
     // ========== AUTH ENDPOINTS ==========
-
-    // 1. Telefon raqamni tekshirish (yangi user yoki eski)
     async checkPhone(phone) {
         const response = await fetch(`${API_BASE_URL}/login/check-phone/`, {
             method: 'POST',
@@ -45,7 +46,6 @@ export const authService = {
         return response.json();
     },
 
-    // 2. SMS kodni tekshirish
     async verifyCode(phone, code) {
         const response = await fetch(`${API_BASE_URL}/login/verify-code/`, {
             method: 'POST',
@@ -63,7 +63,6 @@ export const authService = {
         return response.json();
     },
 
-    // 3. Login qilish (parol bilan)
     async login(phone, password = '') {
         const response = await fetch(`${API_BASE_URL}/login/`, {
             method: 'POST',
@@ -82,8 +81,6 @@ export const authService = {
     },
 
     // ========== PROFILE ENDPOINTS ==========
-
-    // Profile ma'lumotlarini olish
     async getProfile() {
         try {
             const response = await axiosInstance.get('/profile/');
@@ -93,7 +90,6 @@ export const authService = {
         }
     },
 
-    // Profile ma'lumotlarini yangilash
     async updateProfile(data) {
         try {
             const response = await axiosInstance.put('/profile/', data);
@@ -103,7 +99,6 @@ export const authService = {
         }
     },
 
-    // Profile rasm yuklash
     async uploadProfilePhoto(file) {
         try {
             const formData = new FormData();
@@ -121,8 +116,6 @@ export const authService = {
     },
 
     // ========== PASSWORD ENDPOINTS ==========
-
-    // Parolni o'zgartirish
     async changePassword(oldPassword, newPassword) {
         try {
             const response = await axiosInstance.post('/change-password/', {
@@ -136,8 +129,6 @@ export const authService = {
     },
 
     // ========== PHONE CHANGE ENDPOINTS ==========
-
-    // Telefon raqamni o'zgartirish uchun SMS yuborish
     async requestPhoneChange(newPhone) {
         try {
             const response = await axiosInstance.post('/change-phone/', {
@@ -149,7 +140,6 @@ export const authService = {
         }
     },
 
-    // Yangi telefon raqamni SMS kod bilan tasdiqlash
     async verifyPhoneChange(newPhone, code) {
         try {
             const response = await axiosInstance.post('/change-phone/verify/', {
@@ -163,25 +153,31 @@ export const authService = {
     },
 
     // ========== TOKEN MANAGEMENT ==========
-
-    // Token saqlash
     saveTokens(accessToken, refreshToken) {
-        localStorage.setItem('access_token', accessToken);
-        localStorage.setItem('refresh_token', refreshToken);
+        if (typeof window !== 'undefined') {
+            localStorage.setItem('access_token', accessToken);
+            localStorage.setItem('refresh_token', refreshToken);
+        }
     },
 
-    // Token olish
     getAccessToken() {
-        return localStorage.getItem('access_token');
+        if (typeof window !== 'undefined') {
+            return localStorage.getItem('access_token');
+        }
+        return null;
     },
 
     getRefreshToken() {
-        return localStorage.getItem('refresh_token');
+        if (typeof window !== 'undefined') {
+            return localStorage.getItem('refresh_token');
+        }
+        return null;
     },
 
-    // Logout
     logout() {
-        localStorage.removeItem('access_token');
-        localStorage.removeItem('refresh_token');
+        if (typeof window !== 'undefined') {
+            localStorage.removeItem('access_token');
+            localStorage.removeItem('refresh_token');
+        }
     }
 };
