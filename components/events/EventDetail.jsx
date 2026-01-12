@@ -67,7 +67,7 @@ export default function EventDetail({ setStep, selectedEvent }) {
                     </div>
                 </div>
                 <div className="text-center text-white py-20">
-                    <p>Ma'lumotlar Загрузка...</p>
+                    <p>Загрузка...</p>
                 </div>
             </div>
         )

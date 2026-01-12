@@ -85,7 +85,7 @@ export default function AllEvents({ setStep, selectedCity, selectedDate, onEvent
                     </div>
                 ) : events.length === 0 ? (
                     <div className="text-center text-white py-10">
-                        <p>Bu kunda мероприятий нет</p>
+                        <p>мероприятий нет</p>
                     </div>
                 ) : (
                     <div className="max-w-xl mx-auto space-y-6">

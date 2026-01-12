@@ -36,6 +36,11 @@ export default function LeftPanel({ }) {
       name: 'ОПЛАТЫ',
       path: '/payments',
       icon: null
+    },
+    {
+      name: 'ПОЛЬЗОВАТЕЛИ',
+      path: '/users',
+      icon: null
     }
   ]
 

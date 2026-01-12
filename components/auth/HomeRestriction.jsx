@@ -5,6 +5,7 @@ import { CiLock } from "react-icons/ci";
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import axios from 'axios';
+import { FaRegUserCircle } from 'react-icons/fa';
 
 
 export default function HomeRestriction() {
@@ -104,9 +105,17 @@ export default function HomeRestriction() {
           <IoIosArrowBack size={40} className='opacity-0' />
         </div>
         <img src="/icons/logo.svg" alt="logo" />
-        <a target='_blank' href='https://r-profi.taplink.ws'>
-          <img src="/icons/support.svg" alt="support" className='w-14 h-14' />
-        </a>
+        <div className="flex items-center gap-x-3">
+
+          <a target='_blank' href='https://r-profi.taplink.ws'>
+            <img src="/icons/support.svg" alt="support" className='w-14 h-14' />
+          </a>
+
+          <Link href={'/role/settings'}>
+            <FaRegUserCircle size={36} />
+          </Link>
+
+        </div>
       </div>
 
       <div className='text-center mt-[13px] flex flex-col items-center'>

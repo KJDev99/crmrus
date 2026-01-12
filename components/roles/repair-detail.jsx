@@ -16,7 +16,7 @@ export default function RepairDetail({ questionnaire, onBack }) {
                     </div>
                 </div>
                 <div className="text-center text-white py-10">
-                    <p>Ma'lumotlar Загрузка...</p>
+                    <p>Загрузка...</p>
                 </div>
             </div>
         );
