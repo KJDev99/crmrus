@@ -8,6 +8,7 @@ export default function MediaBox() {
         group: 'media',
         brand_name: '',
         email: '',
+        phone: '',
         responsible_person: '',
         representative_cities: [''],
         business_form: '',
@@ -264,6 +265,7 @@ export default function MediaBox() {
                 group: '',
                 brand_name: '',
                 email: '',
+                phone: '',
                 responsible_person: '',
                 representative_cities: [''],
                 business_form: '',
@@ -489,6 +491,21 @@ export default function MediaBox() {
                                 onChange={handleInputChange}
                                 className="input-glass px-4 py-3 rounded-lg transition-all text-sm sm:text-base"
                                 placeholder="example@email.com"
+                                required
+                            />
+                        </div>
+
+                        <div>
+                            <label className="block text-sm font-medium mb-2 text-white">
+                                Номер телефона
+                            </label>
+                            <input
+                                type="tel"
+                                name="phone"
+                                value={formData.phone}
+                                onChange={handleInputChange}
+                                className="input-glass px-4 py-3 rounded-lg transition-all text-sm sm:text-base"
+                                placeholder="+7 (999) 999-99-99"
                                 required
                             />
                         </div>

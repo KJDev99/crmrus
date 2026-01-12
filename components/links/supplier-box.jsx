@@ -8,6 +8,7 @@ export default function SupplierBox() {
         group: 'supplier',
         full_name: 'без имени',
         brand_name: '',
+        phone: '',
         email: '',
         responsible_person: '',
         representative_cities: [''],
@@ -287,6 +288,7 @@ export default function SupplierBox() {
                 group: 'supplier',
                 brand_name: '',
                 email: '',
+                phone: '',
                 responsible_person: '',
                 representative_cities: [''],
                 business_form: '',
@@ -501,6 +503,20 @@ export default function SupplierBox() {
                                 onChange={handleInputChange}
                                 className="input-glass px-4 py-3 rounded-lg transition-all text-sm sm:text-base"
                                 placeholder="example@email.com"
+                                required
+                            />
+                        </div>
+                        <div>
+                            <label className="block text-sm font-medium mb-2 text-white">
+                                Номер телефона
+                            </label>
+                            <input
+                                type="tel"
+                                name="phone"
+                                value={formData.phone}
+                                onChange={handleInputChange}
+                                className="input-glass px-4 py-3 rounded-lg transition-all text-sm sm:text-base"
+                                placeholder="+7 (999) 999-99-99"
                                 required
                             />
                         </div>
