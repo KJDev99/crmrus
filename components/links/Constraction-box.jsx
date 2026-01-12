@@ -5,7 +5,7 @@ import { toast } from 'react-hot-toast';
 
 export default function ConstructionBox() {
     const [formData, setFormData] = useState({
-        group: 'repair_team',
+        group: 'repair',
         brand_name: '',
         phone: '',
         email: '',
@@ -41,17 +41,8 @@ export default function ConstructionBox() {
     const [cardFileName, setCardFileName] = useState('');
 
     const groupOptions = [
-        { value: 'designer', label: 'Дизайнер' },
-        { value: 'architect', label: 'Архитектор' },
-        { value: 'decorator', label: 'Декоратор' },
-        { value: 'landscape_designer', label: 'Ландшафтный дизайнер' },
-        { value: 'light_designer', label: 'Светодизайнер' },
-        { value: 'interior_designer', label: 'Дизайнер интерьера' },
-        { value: 'repair_team', label: 'Ремонтная бригада' },
-        { value: 'contractor', label: 'Подрядчик' },
-        { value: 'supplier', label: 'Поставщик' },
-        { value: 'exhibition_hall', label: 'Выставочный зал' },
-        { value: 'factory', label: 'Фабрика' }
+        { value: 'repair', label: 'Ремонт' },
+
     ];
 
     const segmentOptions = [
@@ -479,7 +470,7 @@ export default function ConstructionBox() {
 
                     <form onSubmit={handleSubmit} className="space-y-6">
                         {/* Group Selection */}
-                        <div>
+                        {/* <div>
                             <label className="block text-sm font-medium mb-2 text-white">
                                 Группа <span className="text-red-400">*</span>
                             </label>
@@ -496,7 +487,7 @@ export default function ConstructionBox() {
                                     </option>
                                 ))}
                             </select>
-                        </div>
+                        </div> */}
 
                         {/* Brand Name */}
                         <div>

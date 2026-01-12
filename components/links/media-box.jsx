@@ -5,7 +5,7 @@ import { toast } from 'react-hot-toast';
 
 export default function MediaBox() {
     const [formData, setFormData] = useState({
-        group: '',
+        group: 'media',
         brand_name: '',
         email: '',
         responsible_person: '',
@@ -35,7 +35,7 @@ export default function MediaBox() {
     const [cardFileName, setCardFileName] = useState('');
 
     const groupOptions = [
-        { value: 'designer', label: 'Дизайнер' },
+        { value: 'media', label: 'Медиа' },
         { value: 'architect', label: 'Архитектор' },
         { value: 'decorator', label: 'Декоратор' },
         { value: 'landscape_designer', label: 'Ландшафтный дизайнер' },
@@ -441,7 +441,7 @@ export default function MediaBox() {
 
                     <form onSubmit={handleSubmit} className="space-y-6">
                         {/* Group Selection */}
-                        <div>
+                        {/* <div>
                             <label className="block text-sm font-medium mb-2 text-white">
                                 Группа <span className="text-red-400">*</span>
                             </label>
@@ -459,7 +459,7 @@ export default function MediaBox() {
                                     </option>
                                 ))}
                             </select>
-                        </div>
+                        </div> */}
 
                         {/* Brand Name */}
                         <div>

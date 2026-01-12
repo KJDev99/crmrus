@@ -5,7 +5,7 @@ import { toast } from 'react-hot-toast';
 
 export default function DesignBox() {
     const [formData, setFormData] = useState({
-        group: 'designer',
+        group: 'design',
         full_name: '',
         full_name_en: '',
         phone: '',
@@ -38,7 +38,7 @@ export default function DesignBox() {
     const [photoPreview, setPhotoPreview] = useState(null);
 
     const groupOptions = [
-        { value: 'designer', label: 'Дизайнер' },
+        { value: 'design', label: 'Дизайнер' },
         { value: 'architect', label: 'Архитектор' },
         { value: 'decorator', label: 'Декоратор' },
         { value: 'landscape_designer', label: 'Ландшафтный дизайнер' },
@@ -472,7 +472,7 @@ export default function DesignBox() {
 
                     <form onSubmit={handleSubmit} className="space-y-6">
                         {/* Group Selection */}
-                        <div>
+                        {/* <div>
                             <label className="block text-sm font-medium mb-2 text-white">
                                 Группа <span className="text-red-400">*</span>
                             </label>
@@ -489,7 +489,7 @@ export default function DesignBox() {
                                     </option>
                                 ))}
                             </select>
-                        </div>
+                        </div> */}
 
                         {/* Full Name */}
                         <div>
