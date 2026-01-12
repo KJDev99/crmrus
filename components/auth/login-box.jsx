@@ -4,16 +4,21 @@ import React, { useState } from 'react'
 import { IoIosArrowBack } from 'react-icons/io'
 import GlassButton from '../ui/GlassButton'
 import Enter from './Phone'
-import Parol from './Parol'
+import SmsVerification from './SmsVerification'
+import PasswordCreate from './PasswordCreate'
 import { useRouter } from 'next/navigation'
+import { authService } from '@/services/auth.service'
 
 export default function LoginBox() {
-    const [step, setStep] = useState(0)
+    const [step, setStep] = useState(0) // 0: telefon, 1: SMS kod (yangi user), 2: parol yaratish, 3: parol kiriting
     const [phone, setPhone] = useState('')
     const [loading, setLoading] = useState(false)
     const [error, setError] = useState('')
+    const [isPhoneVerified, setIsPhoneVerified] = useState(false)
+    const [isNewUser, setIsNewUser] = useState(false)
     const router = useRouter()
 
+    // 1-qadam: Telefon raqamni tekshirish
     const handlePhoneSubmit = async () => {
         if (!phone || phone.length < 12) {
             setError('Пожалуйста, введите свой полный номер телефона.')
@@ -26,31 +31,29 @@ export default function LoginBox() {
         try {
             const cleanPhone = phone.replace(/\D/g, '')
 
-            const response = await fetch('https://api.reiting-profi.ru/api/v1/accounts/login/', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    phone: cleanPhone
-                })
-            })
+            // Telefon verificatsiyadan o'tganmi tekshirish
+            const checkResult = await authService.checkPhone(cleanPhone)
 
-            const data = await response.json()
+            setIsPhoneVerified(checkResult.is_phone_verified)
 
-            if (response.ok) {
-                setStep(1)
+            if (!checkResult.is_phone_verified) {
+                // Yangi user - SMS kod yuboriladi
+                setIsNewUser(true)
+                setStep(1) // SMS kod kiritish sahifasiga
             } else {
-                setError(data.message || 'Xatolik yuz berdi')
+                // Eski user - parol kiritish sahifasiga
+                setIsNewUser(false)
+                setStep(3) // Parol kiritish sahifasiga
             }
         } catch (err) {
-            setError('Сетевая ошибка. Пожалуйста, попробуйте еще раз.')
+            setError(err.message || 'Произошла ошибка. Попробуйте снова.')
         } finally {
             setLoading(false)
         }
     }
 
-    const handleCodeSubmit = async (code) => {
+    // 2-qadam: SMS kodni tekshirish (faqat yangi userlar uchun)
+    const handleSmsCodeSubmit = async (code) => {
         if (!code || code.length < 4) {
             setError('Пожалуйста, введите полный код.')
             return
@@ -62,50 +65,66 @@ export default function LoginBox() {
         try {
             const cleanPhone = phone.replace(/\D/g, '')
 
-            const response = await fetch('https://api.reiting-profi.ru/api/v1/accounts/verify-sms/', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    phone: cleanPhone,
-                    code: code
-                })
-            })
+            // SMS kodni tekshirish
+            const verifyResult = await authService.verifyCode(cleanPhone, code)
 
-            const data = await response.json()
-
-            if (response.ok && data.tokens) {
-                // Tokenlarni saqlash
-                localStorage.setItem('access_token', data.tokens.access)
-                localStorage.setItem('refresh_token', data.tokens.refresh)
-
-                // Role sahifasiga yo'naltirish
-                router.push('/role')
+            if (verifyResult.is_phone_verified) {
+                // SMS tasdiqlandi - parol yaratish sahifasiga
+                setIsPhoneVerified(true)
+                setStep(2) // Parol yaratish sahifasiga
             } else {
-                setError(data.message || 'Код неверен.')
+                setError('Не удалось подтвердить код.')
             }
         } catch (err) {
-            setError('Сетевая ошибка. Пожалуйста, попробуйте еще раз.')
+            setError(err.message || 'Код неверен.')
         } finally {
             setLoading(false)
         }
     }
 
-    const handleNext = () => {
-        if (step === 0) {
-            handlePhoneSubmit()
+    // 3-qadam: Parol bilan login qilish
+    const handlePasswordSubmit = async (password) => {
+        if (!password && !isNewUser) {
+            setError('Пожалуйста, введите пароль.')
+            return
+        }
+
+        setLoading(true)
+        setError('')
+
+        try {
+            const cleanPhone = phone.replace(/\D/g, '')
+
+            // Login qilish
+            const loginResult = await authService.login(cleanPhone, password)
+
+            if (loginResult.access_token && loginResult.refresh_token) {
+                // Tokenlarni saqlash
+                authService.saveTokens(loginResult.access_token, loginResult.refresh_token)
+
+                // Role sahifasiga yo'naltirish
+                router.push('/role')
+            } else {
+                setError('Ошибка входа. Попробуйте снова.')
+            }
+        } catch (err) {
+            setError(err.message || 'Неверный пароль.')
+        } finally {
+            setLoading(false)
         }
     }
 
     const handleBack = () => {
-        setStep(prev => prev - 1)
-        setError('')
+        if (step > 0) {
+            setStep(prev => prev - 1)
+            setError('')
+        }
     }
 
     let content;
     switch (step) {
         case 0:
+            // Telefon raqam kiritish
             content = <Enter
                 phone={phone}
                 setPhone={setPhone}
@@ -113,10 +132,30 @@ export default function LoginBox() {
             />
             break
         case 1:
-            content = <Parol
-                onSubmit={handleCodeSubmit}
+            // SMS kod kiritish (yangi userlar)
+            content = <SmsVerification
+                onSubmit={handleSmsCodeSubmit}
                 error={error}
                 loading={loading}
+                phone={phone}
+            />
+            break
+        case 2:
+            // Parol yaratish (yangi userlar)
+            content = <PasswordCreate
+                onSubmit={handlePasswordSubmit}
+                error={error}
+                loading={loading}
+                isNewUser={true}
+            />
+            break
+        case 3:
+            // Parol kiritish (eski userlar)
+            content = <PasswordCreate
+                onSubmit={handlePasswordSubmit}
+                error={error}
+                loading={loading}
+                isNewUser={false}
             />
             break
     }
@@ -138,18 +177,11 @@ export default function LoginBox() {
             {content}
 
             {
-                step !== 0 && step !== 1 &&
-                <div className="fixed right-[112px] bottom-[112px] text-white">
-                    <Image src={'/icons/star.svg'} alt='star' width={50} height={50} />
-                </div>
-            }
-
-            {
                 step === 0 &&
                 <div className="fixed right-[112px] bottom-[80px] text-white">
                     <GlassButton
-                        text={loading ? 'ДАЛЛЕ...' : 'ДАЛЛЕ'}
-                        click={handleNext}
+                        text={loading ? 'ЗАГРУЗКА...' : 'ДАЛЕЕ'}
+                        click={handlePhoneSubmit}
                         disabled={loading}
                     />
                 </div>

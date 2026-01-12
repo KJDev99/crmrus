@@ -32,11 +32,11 @@ export default function LeftPanel({ }) {
       path: '/reports',
       icon: null
     },
-    // {
-    //   name: 'ОПЛАТЫ',
-    //   path: '/payments',
-    //   icon: null
-    // }
+    {
+      name: 'ОПЛАТЫ',
+      path: '/payments',
+      icon: null
+    }
   ]
 
   // Orqaga qaytish funksiyasi

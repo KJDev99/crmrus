@@ -92,7 +92,7 @@ function ReviewItem({ review, onApprove, onReject, onStatusUpdate }) {
         <div className="flex">
           <div className="min-w-[160px] text-white">
             <p className="font-normal text-[20px] leading-[1] tracking-normal">
-              {review.reviewer_name || 'Аноним'}
+              {review.reviewer_name || review?.questionnaire?.full_name || 'Аноним'}
             </p>
             <p className="font-normal text-[20px] leading-[1] tracking-normal text-white/35 mt-3">
               {review.role}
@@ -354,7 +354,7 @@ export default function Reviews() {
     try {
       const token = localStorage.getItem('accessToken')
       await axios.patch(
-        `https://api.reiting-profi.ru/api/v1/events/reviews/${reviewId}/update-status/`,
+        `https://api.reiting-profi.ru/api/v1/ratings/questionnaire-ratings/${reviewId}/update-status/`,
         { status: 'approved' },
         {
           headers: {
@@ -374,7 +374,7 @@ export default function Reviews() {
     try {
       const token = localStorage.getItem('accessToken')
       await axios.patch(
-        `https://api.reiting-profi.ru/api/v1/events/reviews/${reviewId}/update-status/`,
+        `https://api.reiting-profi.ru/api/v1/ratings/questionnaire-ratings/${reviewId}/update-status/`,
         { status: 'rejected' },
         {
           headers: {

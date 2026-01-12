@@ -2,11 +2,10 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import { toast } from 'react-hot-toast';
-import { FaUser, FaPhone, FaEnvelope, FaCity, FaBuilding, FaBriefcase, FaHandshake, FaVk, FaTelegram, FaPinterest, FaInstagram, FaGlobe, FaPlus, FaTrash, FaCheck, FaCamera, FaCalendar } from 'react-icons/fa';
 
 export default function DesignBox() {
     const [formData, setFormData] = useState({
-        group: 'design',
+        group: 'designer',
         full_name: '',
         full_name_en: '',
         phone: '',
@@ -15,9 +14,9 @@ export default function DesignBox() {
         city: '',
         services: [],
         work_type: '',
+        work_type_details: '',
         welcome_message: '',
-        work_cities: [],
-        cooperation_terms: '',
+        work_cities: [''],
         segments: [],
         unique_trade_proposal: '',
         vk: '',
@@ -25,7 +24,7 @@ export default function DesignBox() {
         pinterest: '',
         instagram: '',
         website: '',
-        other_contacts: [],
+        other_contacts: [''],
         service_packages_description: '',
         vat_payment: '',
         supplier_contractor_recommendation_terms: '',
@@ -39,10 +38,17 @@ export default function DesignBox() {
     const [photoPreview, setPhotoPreview] = useState(null);
 
     const groupOptions = [
-        { value: 'media', label: 'Медиа' },
+        { value: 'designer', label: 'Дизайнер' },
+        { value: 'architect', label: 'Архитектор' },
+        { value: 'decorator', label: 'Декоратор' },
+        { value: 'landscape_designer', label: 'Ландшафтный дизайнер' },
+        { value: 'light_designer', label: 'Светодизайнер' },
+        { value: 'interior_designer', label: 'Дизайнер интерьера' },
+        { value: 'repair_team', label: 'Ремонтная бригада' },
+        { value: 'contractor', label: 'Подрядчик' },
         { value: 'supplier', label: 'Поставщик' },
-        { value: 'repair', label: 'Ремонт' },
-        { value: 'design', label: 'Дизайн' }
+        { value: 'exhibition_hall', label: 'Выставочный зал' },
+        { value: 'factory', label: 'Фабрика' }
     ];
 
     const serviceOptions = [
@@ -53,7 +59,7 @@ export default function DesignBox() {
         { value: 'residential_designer', label: 'Дизайнер жилой недвижимости' },
         { value: 'commercial_designer', label: 'Дизайнер коммерческой недвижимости' },
         { value: 'completing', label: 'Комплектация' },
-        { value: 'landscape_design', label: 'Ландшафтный дизайн' },
+        { value: 'landscape_design', label: 'Ландшашфтный дизайн' },
         { value: 'design', label: 'Проектирование' },
         { value: 'light_designer', label: 'Светодизайнер' },
         { value: 'home_stager', label: 'Хоумстейджер' }
@@ -66,6 +72,11 @@ export default function DesignBox() {
         { value: 'premium', label: 'Премиум' },
         { value: 'medium', label: 'Средний' },
         { value: 'economy', label: 'Эконом' }
+    ];
+
+    const vatPaymentOptions = [
+        { value: 'yes', label: 'Да' },
+        { value: 'no', label: 'Нет' }
     ];
 
     const handleInputChange = (e) => {
@@ -102,10 +113,12 @@ export default function DesignBox() {
     };
 
     const removeWorkCity = (index) => {
-        setFormData(prev => ({
-            ...prev,
-            work_cities: prev.work_cities.filter((_, i) => i !== index)
-        }));
+        if (formData.work_cities.length > 1) {
+            setFormData(prev => ({
+                ...prev,
+                work_cities: prev.work_cities.filter((_, i) => i !== index)
+            }));
+        }
     };
 
     const updateWorkCity = (index, value) => {
@@ -125,10 +138,12 @@ export default function DesignBox() {
     };
 
     const removeOtherContact = (index) => {
-        setFormData(prev => ({
-            ...prev,
-            other_contacts: prev.other_contacts.filter((_, i) => i !== index)
-        }));
+        if (formData.other_contacts.length > 1) {
+            setFormData(prev => ({
+                ...prev,
+                other_contacts: prev.other_contacts.filter((_, i) => i !== index)
+            }));
+        }
     };
 
     const updateOtherContact = (index, value) => {
@@ -141,12 +156,22 @@ export default function DesignBox() {
     };
 
     const handlePhotoChange = (e) => {
-        const file = e.target.files[0];
-        if (file) {
-            if (file.size > 5 * 1024 * 1024) { // 5MB limit
+        const files = Array.from(e.target.files);
+        if (files.length > 0) {
+            const totalSize = files.reduce((sum, file) => sum + file.size, 0);
+
+            if (totalSize > 20 * 1024 * 1024) {
+                toast.error('Общий размер файлов не должен превышать 20MB');
+                return;
+            }
+
+            // For now, take only first file for photo
+            const file = files[0];
+            if (file.size > 5 * 1024 * 1024) {
                 toast.error('Размер файла не должен превышать 5MB');
                 return;
             }
+
             setFormData(prev => ({ ...prev, photo: file }));
 
             const reader = new FileReader();
@@ -169,8 +194,16 @@ export default function DesignBox() {
             toast.error('Пожалуйста, введите ФИО');
             return;
         }
+        if (!formData.full_name_en) {
+            toast.error('Пожалуйста, введите ФИ на английском');
+            return;
+        }
         if (!formData.phone) {
             toast.error('Пожалуйста, введите номер телефона');
+            return;
+        }
+        if (!formData.birth_date) {
+            toast.error('Пожалуйста, введите дату рождения');
             return;
         }
         if (!formData.email) {
@@ -185,6 +218,38 @@ export default function DesignBox() {
             toast.error('Пожалуйста, выберите хотя бы одну услугу');
             return;
         }
+        if (!formData.work_type) {
+            toast.error('Пожалуйста, укажите тип работы');
+            return;
+        }
+        if (!formData.welcome_message) {
+            toast.error('Пожалуйста, введите приветственное сообщение');
+            return;
+        }
+        if (!formData.work_cities[0] || formData.work_cities.every(city => !city.trim())) {
+            toast.error('Пожалуйста, укажите города работы');
+            return;
+        }
+        if (formData.segments.length === 0) {
+            toast.error('Пожалуйста, выберите сегменты работы');
+            return;
+        }
+        if (!formData.unique_trade_proposal) {
+            toast.error('Пожалуйста, укажите уникальное торговое предложение');
+            return;
+        }
+        if (!formData.service_packages_description) {
+            toast.error('Пожалуйста, опишите пакеты услуг');
+            return;
+        }
+        if (!formData.vat_payment) {
+            toast.error('Пожалуйста, укажите возможность оплаты с НДС');
+            return;
+        }
+        if (!formData.supplier_contractor_recommendation_terms) {
+            toast.error('Пожалуйста, укажите условия сотрудничества по рекомендациям');
+            return;
+        }
         if (!formData.data_processing_consent) {
             toast.error('Необходимо согласие на обработку данных');
             return;
@@ -196,32 +261,23 @@ export default function DesignBox() {
             const submitFormData = new FormData();
 
             // Add all fields to FormData
-            submitFormData.append('group', formData.group);
-            submitFormData.append('full_name', formData.full_name);
-            if (formData.full_name_en) submitFormData.append('full_name_en', formData.full_name_en);
-            submitFormData.append('phone', formData.phone);
-            if (formData.birth_date) submitFormData.append('birth_date', formData.birth_date);
-            submitFormData.append('email', formData.email);
-            submitFormData.append('city', formData.city);
-            submitFormData.append('services', JSON.stringify(formData.services));
-            if (formData.work_type) submitFormData.append('work_type', formData.work_type);
-            if (formData.welcome_message) submitFormData.append('welcome_message', formData.welcome_message);
-            if (formData.work_cities.length > 0) submitFormData.append('work_cities', JSON.stringify(formData.work_cities));
-            if (formData.cooperation_terms) submitFormData.append('cooperation_terms', formData.cooperation_terms);
-            if (formData.segments.length > 0) submitFormData.append('segments', JSON.stringify(formData.segments));
-            if (formData.unique_trade_proposal) submitFormData.append('unique_trade_proposal', formData.unique_trade_proposal);
-            if (formData.vk) submitFormData.append('vk', formData.vk);
-            if (formData.telegram_channel) submitFormData.append('telegram_channel', formData.telegram_channel);
-            if (formData.pinterest) submitFormData.append('pinterest', formData.pinterest);
-            if (formData.instagram) submitFormData.append('instagram', formData.instagram);
-            if (formData.website) submitFormData.append('website', formData.website);
-            if (formData.other_contacts.length > 0) submitFormData.append('other_contacts', JSON.stringify(formData.other_contacts));
-            if (formData.service_packages_description) submitFormData.append('service_packages_description', formData.service_packages_description);
-            if (formData.vat_payment) submitFormData.append('vat_payment', formData.vat_payment);
-            if (formData.supplier_contractor_recommendation_terms) submitFormData.append('supplier_contractor_recommendation_terms', formData.supplier_contractor_recommendation_terms);
-            if (formData.additional_info) submitFormData.append('additional_info', formData.additional_info);
-            submitFormData.append('data_processing_consent', formData.data_processing_consent);
-            if (formData.photo) submitFormData.append('photo', formData.photo);
+            Object.keys(formData).forEach(key => {
+                const value = formData[key];
+
+                if (key === 'photo') {
+                    if (value) submitFormData.append(key, value);
+                } else if (key === 'work_cities' || key === 'other_contacts') {
+                    // Filter out empty strings
+                    const filteredValues = value.filter(v => v.trim() !== '');
+                    if (filteredValues.length > 0) submitFormData.append(key, JSON.stringify(filteredValues));
+                } else if (key === 'services' || key === 'segments') {
+                    if (value.length > 0) submitFormData.append(key, JSON.stringify(value));
+                } else if (key === 'data_processing_consent') {
+                    submitFormData.append(key, value.toString());
+                } else if (value !== '' && value !== null) {
+                    submitFormData.append(key, value);
+                }
+            });
 
             await axios.post('https://api.reiting-profi.ru/api/v1/accounts/questionnaires/', submitFormData, {
                 headers: {
@@ -234,7 +290,7 @@ export default function DesignBox() {
 
             // Reset form
             setFormData({
-                group: '',
+                group: 'designer',
                 full_name: '',
                 full_name_en: '',
                 phone: '',
@@ -243,9 +299,9 @@ export default function DesignBox() {
                 city: '',
                 services: [],
                 work_type: '',
+                work_type_details: '',
                 welcome_message: '',
-                work_cities: [],
-                cooperation_terms: '',
+                work_cities: [''],
                 segments: [],
                 unique_trade_proposal: '',
                 vk: '',
@@ -253,7 +309,7 @@ export default function DesignBox() {
                 pinterest: '',
                 instagram: '',
                 website: '',
-                other_contacts: [],
+                other_contacts: [''],
                 service_packages_description: '',
                 vat_payment: '',
                 supplier_contractor_recommendation_terms: '',
@@ -275,7 +331,7 @@ export default function DesignBox() {
     };
 
     return (
-        <div className="min-h-screen py-12 px-4 sm:px-6 lg:px-8" style={{ background: '#122161' }}>
+        <div className="min-h-screen py-8 px-4 sm:px-6 lg:px-8" style={{ background: '#fff' }}>
             <style>{`
                 .bg-glass2 {
                     background: linear-gradient(91.53deg, rgba(255, 255, 255, 0.044) -6.96%, rgba(255, 255, 255, 0.029) 106.1%);
@@ -286,7 +342,7 @@ export default function DesignBox() {
                 }
 
                 .bg-glass1 {
-                    background: linear-gradient(91.53deg, rgba(255, 255, 255, 0.2024) -6.96%, rgba(255, 255, 255, 0.1334) 106.1%);
+                         background: #232D69;
                     border: 1px solid rgba(255, 255, 255, 0.3);
                     backdrop-filter: blur(70px);
                     box-shadow: 0px 0px 30px -9px #FFFFFF66 inset;
@@ -298,6 +354,7 @@ export default function DesignBox() {
                     border: 1px solid rgba(255, 255, 255, 0.2);
                     backdrop-filter: blur(10px);
                     color: white;
+                    width: 100%;
                 }
 
                 .input-glass::placeholder {
@@ -319,6 +376,7 @@ export default function DesignBox() {
                     background: rgba(255, 255, 255, 0.05);
                     cursor: pointer;
                     position: relative;
+                    flex-shrink: 0;
                 }
 
                 .checkbox-glass:checked {
@@ -337,90 +395,148 @@ export default function DesignBox() {
                     font-weight: bold;
                 }
 
-                .photo-upload-area {
+                .radio-glass {
+                    appearance: none;
+                    width: 20px;
+                    height: 20px;
+                    border: 2px solid rgba(255, 255, 255, 0.3);
+                    border-radius: 50%;
+                    background: rgba(255, 255, 255, 0.05);
+                    cursor: pointer;
+                    position: relative;
+                    flex-shrink: 0;
+                }
+
+                .radio-glass:checked {
+                    border-color: rgba(255, 255, 255, 0.6);
+                }
+
+                .radio-glass:checked::after {
+                    content: '';
+                    position: absolute;
+                    top: 50%;
+                    left: 50%;
+                    transform: translate(-50%, -50%);
+                    width: 10px;
+                    height: 10px;
+                    border-radius: 50%;
+                    background: rgba(255, 255, 255, 0.8);
+                }
+
+                .file-upload-area {
                     border: 2px dashed rgba(255, 255, 255, 0.3);
                     transition: all 0.3s ease;
                 }
 
-                .photo-upload-area:hover {
+                .file-upload-area:hover {
                     border-color: rgba(255, 255, 255, 0.5);
                     background: rgba(255, 255, 255, 0.08);
+                }
+
+                @keyframes fade-in {
+                    from { opacity: 0; transform: translateY(-10px); }
+                    to { opacity: 1; transform: translateY(0); }
+                }
+
+                .animate-fade-in {
+                    animation: fade-in 0.3s ease-out;
+                }
+
+                /* Mobile optimizations */
+                @media (max-width: 640px) {
+                    .mobile-stack {
+                        flex-direction: column;
+                        gap: 0.5rem;
+                    }
+                    
+                    .mobile-full {
+                        width: 100%;
+                    }
+                    
+                    .mobile-padding {
+                        padding: 1rem;
+                    }
+                    
+                    .mobile-text-sm {
+                        font-size: 0.875rem;
+                    }
                 }
             `}</style>
 
             <div className="max-w-4xl mx-auto">
-                <div className="bg-glass1 rounded-2xl p-8 sm:p-10 shadow-2xl">
-                    <h1 className="text-3xl sm:text-4xl font-bold text-center mb-2 text-white">
-                        Анкета дизайнера
+                <div className="bg-glass1 rounded-2xl p-4 sm:p-6 md:p-8 lg:p-10 shadow-2xl mobile-padding">
+                    <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-center mb-2 text-white">
+                        Копия "Дизайн"
                     </h1>
-                    <p className="text-center text-white/70 mb-8">
-                        Заполните форму для регистрации в сообществе
-                    </p>
+
 
                     <form onSubmit={handleSubmit} className="space-y-6">
                         {/* Group Selection */}
-                        {/* <div>
-                            <label className="block text-sm font-medium mb-2 text-white flex items-center gap-2">
-                                <FaBuilding /> Группа <span className="text-red-400">*</span>
+                        <div>
+                            <label className="block text-sm font-medium mb-2 text-white">
+                                Группа <span className="text-red-400">*</span>
                             </label>
                             <select
                                 name="group"
                                 value={formData.group}
                                 onChange={handleInputChange}
-                                className="input-glass w-full px-4 py-3 rounded-lg transition-all"
+                                className="input-glass px-4 py-3 rounded-lg transition-all text-sm sm:text-base"
                                 required
                             >
-                                <option value="" className="bg-[#122161]">Выберите группу</option>
                                 {groupOptions.map(option => (
                                     <option key={option.value} value={option.value} className="bg-[#122161]">
                                         {option.label}
                                     </option>
                                 ))}
                             </select>
-                        </div> */}
+                        </div>
 
                         {/* Full Name */}
                         <div>
-                            <label className="block text-sm font-medium mb-2 text-white flex items-center gap-2">
-                                <FaUser /> ФИО <span className="text-red-400">*</span>
+                            <label className="block text-sm font-medium mb-2 text-white">
+                                ФИО <span className="text-red-400">*</span>
                             </label>
                             <input
                                 type="text"
                                 name="full_name"
                                 value={formData.full_name}
                                 onChange={handleInputChange}
-                                className="input-glass w-full px-4 py-3 rounded-lg transition-all"
+                                className="input-glass px-4 py-3 rounded-lg transition-all text-sm sm:text-base"
                                 placeholder="Введите ваше ФИО"
                                 required
                             />
                         </div>
 
                         {/* Full Name EN */}
-                        {/* <div>
-                            <label className="block text-sm font-medium mb-2 text-white flex items-center gap-2">
-                                <FaUser /> ФИО на английском
+                        <div>
+                            <label className="block text-sm font-medium mb-2 text-white">
+                                ФИ на английском <span className="text-red-400">*</span>
                             </label>
+                            <p className="text-white/60 text-sm mb-2">
+                                Для внутреннего пользования, не отображается в системе
+                            </p>
                             <input
                                 type="text"
                                 name="full_name_en"
                                 value={formData.full_name_en}
                                 onChange={handleInputChange}
-                                className="input-glass w-full px-4 py-3 rounded-lg transition-all"
+                                className="input-glass px-4 py-3 rounded-lg transition-all text-sm sm:text-base"
                                 placeholder="Full Name in English"
+                                required
                             />
-                        </div> */}
+                        </div>
 
                         {/* Phone */}
                         <div>
-                            <label className="block text-sm font-medium mb-2 text-white flex items-center gap-2">
-                                <FaPhone /> Номер телефона <span className="text-red-400">*</span>
+                            <label className="block text-sm font-medium mb-2 text-white">
+                                Номер телефона <span className="text-red-400">*</span>
                             </label>
                             <input
                                 type="tel"
                                 name="phone"
                                 value={formData.phone}
                                 onChange={handleInputChange}
-                                className="input-glass w-full px-4 py-3 rounded-lg transition-all"
+                                className="input-glass px-4 py-3 rounded-lg transition-all text-sm sm:text-base"
                                 placeholder="+7 (999) 999-99-99"
                                 required
                             />
@@ -428,29 +544,33 @@ export default function DesignBox() {
 
                         {/* Birth Date */}
                         <div>
-                            <label className="block text-sm font-medium mb-2 text-white flex items-center gap-2">
-                                <FaCalendar /> Дата рождения
+                            <label className="block text-sm font-medium mb-2 text-white">
+                                Дата рождения <span className="text-red-400">*</span>
                             </label>
+                            <p className="text-white/60 text-sm mb-2">
+                                ДД.ММ.ГГГГ
+                            </p>
                             <input
                                 type="date"
                                 name="birth_date"
                                 value={formData.birth_date}
                                 onChange={handleInputChange}
-                                className="input-glass w-full px-4 py-3 rounded-lg transition-all"
+                                className="input-glass px-4 py-3 rounded-lg transition-all text-sm sm:text-base"
+                                required
                             />
                         </div>
 
                         {/* Email */}
                         <div>
-                            <label className="block text-sm font-medium mb-2 text-white flex items-center gap-2">
-                                <FaEnvelope /> E-mail <span className="text-red-400">*</span>
+                            <label className="block text-sm font-medium mb-2 text-white">
+                                Ваш e-mail <span className="text-red-400">*</span>
                             </label>
                             <input
                                 type="email"
                                 name="email"
                                 value={formData.email}
                                 onChange={handleInputChange}
-                                className="input-glass w-full px-4 py-3 rounded-lg transition-all"
+                                className="input-glass px-4 py-3 rounded-lg transition-all text-sm sm:text-base"
                                 placeholder="example@email.com"
                                 required
                             />
@@ -458,15 +578,15 @@ export default function DesignBox() {
 
                         {/* City */}
                         <div>
-                            <label className="block text-sm font-medium mb-2 text-white flex items-center gap-2">
-                                <FaCity /> Город проживания <span className="text-red-400">*</span>
+                            <label className="block text-sm font-medium mb-2 text-white">
+                                В каком городе проживаете? <span className="text-red-400">*</span>
                             </label>
                             <input
                                 type="text"
                                 name="city"
                                 value={formData.city}
                                 onChange={handleInputChange}
-                                className="input-glass w-full px-4 py-3 rounded-lg transition-all"
+                                className="input-glass px-4 py-3 rounded-lg transition-all text-sm sm:text-base"
                                 placeholder="Введите город"
                                 required
                             />
@@ -475,9 +595,9 @@ export default function DesignBox() {
                         {/* Services */}
                         <div>
                             <label className="block text-sm font-medium mb-3 text-white">
-                                Услуги <span className="text-red-400">*</span>
+                                Выберите одну или несколько услуг, которые вы предоставляете. <span className="text-red-400">*</span>
                             </label>
-                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
                                 {serviceOptions.map(option => (
                                     <label
                                         key={option.value}
@@ -488,6 +608,7 @@ export default function DesignBox() {
                                             checked={formData.services.includes(option.value)}
                                             onChange={() => handleServiceToggle(option.value)}
                                             className="checkbox-glass"
+                                            required={formData.services.length === 0}
                                         />
                                         <span className="text-sm text-white">{option.label}</span>
                                     </label>
@@ -497,103 +618,138 @@ export default function DesignBox() {
 
                         {/* Work Type */}
                         <div>
-                            <label className="block text-sm font-medium mb-3 text-white">
-                                Тип работы
+                            <label className="block text-sm font-medium mb-2 text-white">
+                                Вы работаете под собственным именем или в студии? <span className="text-red-400">*</span>
                             </label>
-                            <div className="flex flex-wrap gap-4">
-                                <label className="bg-glass2 px-6 py-3 rounded-lg cursor-pointer hover:bg-opacity-80 transition-all flex items-center gap-2">
+                            <p className="text-white/60 text-sm mb-2">
+                                Если вы работаете в студии — укажите её название и адрес.<br />
+                                Если вы работаете на себя — укажите форму налогообложения (самозанятый, ИП, ООО).
+                            </p>
+                            <p className="text-white/50 text-xs mb-3 italic">
+                                Например:<br />
+                                Работаю в студии "ED" Краснодар, ул. Путевая, дом 6, оф 35.<br />
+                                Самозанятый
+                            </p>
+
+                            {/* Radio buttons for backend */}
+                            <div className="flex flex-col sm:flex-row gap-3 mb-3">
+                                <label className="bg-glass2 px-4 py-3 rounded-lg cursor-pointer hover:bg-opacity-80 transition-all flex items-center gap-2 mobile-full">
                                     <input
                                         type="radio"
                                         name="work_type"
                                         value="own_name"
                                         checked={formData.work_type === 'own_name'}
                                         onChange={handleInputChange}
-                                        className="w-4 h-4"
+                                        className="radio-glass"
+                                        required
                                     />
-                                    <span className="text-white">Под собственным именем</span>
+                                    <span className="text-white text-sm sm:text-base">Под собственным именем</span>
                                 </label>
-                                <label className="bg-glass2 px-6 py-3 rounded-lg cursor-pointer hover:bg-opacity-80 transition-all flex items-center gap-2">
+                                <label className="bg-glass2 px-4 py-3 rounded-lg cursor-pointer hover:bg-opacity-80 transition-all flex items-center gap-2 mobile-full">
                                     <input
                                         type="radio"
                                         name="work_type"
                                         value="studio"
                                         checked={formData.work_type === 'studio'}
                                         onChange={handleInputChange}
-                                        className="w-4 h-4"
+                                        className="radio-glass"
+                                        required
                                     />
-                                    <span className="text-white">В студии</span>
+                                    <span className="text-white text-sm sm:text-base">В студии</span>
                                 </label>
+                            </div>
+
+                            {/* Details text area */}
+                            <div>
+                                <textarea
+                                    name="work_type_details"
+                                    value={formData.work_type_details || ''}
+                                    onChange={handleInputChange}
+                                    className="input-glass w-full px-4 py-3 rounded-lg transition-all resize-none text-sm sm:text-base"
+                                    rows="3"
+                                    placeholder="Укажите название студии и адрес или форму налогообложения"
+                                    required
+                                />
                             </div>
                         </div>
 
                         {/* Welcome Message */}
                         <div>
                             <label className="block text-sm font-medium mb-2 text-white">
-                                Приветственное сообщение о вас и вашем опыте
+                                Приветственное сообщение о вас и вашем опыте. <span className="text-red-400">*</span>
                             </label>
+                            <p className="text-white/60 text-sm mb-2">
+                                Расскажите:<br />
+                                – в каком году вы закончили обучение (в каждой из сфер, указанных выше),<br />
+                                – географию вашей работы (в каких городах реализованы проекты),<br />
+                                – общий опыт (например, сколько квадратных метров спроектировано).<br />
+                                Эта информация будет использована в вашем приветственном блоке в личном кабинете, поэтому включите все профессиональные регалии и достижения.
+                            </p>
+                            <p className="text-white/50 text-xs mb-3 italic">
+                                Закончила Архитектурный г. Москва в 2017 году<br />
+                                Завершила Курсы Дизайнера интерьера в школе "Название" г. Уфа в 2018<br /><br />
+                                Работаю по всему Югу России (от Краснодара до Сочи) Так же веду проекты в Абхазии и в Крыму.<br /><br />
+                                Спроектировала свыше 700000 кв метров в дизайне и более 60000 как архитектор.
+                            </p>
                             <textarea
                                 name="welcome_message"
                                 value={formData.welcome_message}
                                 onChange={handleInputChange}
-                                className="input-glass w-full px-4 py-3 rounded-lg transition-all resize-none"
-                                rows="4"
+                                className="input-glass w-full px-4 py-3 rounded-lg transition-all resize-none text-sm sm:text-base"
+                                rows="6"
                                 placeholder="Расскажите о себе и своем опыте"
+                                required
                             />
                         </div>
 
                         {/* Work Cities */}
                         <div>
-                            <label className="block text-sm font-medium mb-2 text-white flex items-center gap-2">
-                                <FaCity /> Города работы
+                            <label className="block text-sm font-medium mb-2 text-white">
+                                В каких городах вы готовы работать? <span className="text-red-400">*</span>
                             </label>
+                            <p className="text-white/60 text-sm mb-2">
+                                Укажите, возможна ли онлайн-работа, выезды в другие регионы, а также ограничения (например, «работаю только в Краснодарском крае» или «не выезжаю дальше 200 км от основного города»)
+                            </p>
+                            <p className="text-white/50 text-xs mb-3 italic">
+                                Например:<br />
+                                Работаю по всему Югу России с выездом. Другие регионы только online. Ростов и Ростовская область по согласованию.
+                            </p>
                             {formData.work_cities.map((city, index) => (
-                                <div key={index} className="flex gap-2 mb-2">
-                                    <input
-                                        type="text"
+                                <div key={index} className="flex gap-2 mb-3 mobile-stack">
+                                    <textarea
                                         value={city}
                                         onChange={(e) => updateWorkCity(index, e.target.value)}
-                                        className="input-glass flex-1 px-4 py-2 rounded-lg transition-all"
-                                        placeholder="Город"
+                                        className="input-glass flex-1 px-4 py-3 rounded-lg transition-all resize-none text-sm sm:text-base"
+                                        rows="2"
+                                        placeholder="Укажите города и условия работы"
+                                        required={index === 0}
                                     />
-                                    <button
-                                        type="button"
-                                        onClick={() => removeWorkCity(index)}
-                                        className="bg-glass2 px-4 py-2 rounded-lg hover:bg-opacity-80 transition-all text-red-400"
-                                    >
-                                        <FaTrash />
-                                    </button>
+                                    {formData.work_cities.length > 1 && (
+                                        <button
+                                            type="button"
+                                            onClick={() => removeWorkCity(index)}
+                                            className="bg-glass2 px-4 py-2 rounded-lg hover:bg-opacity-80 transition-all text-red-400 text-sm sm:text-base flex-shrink-0 h-fit"
+                                        >
+                                            Удалить
+                                        </button>
+                                    )}
                                 </div>
                             ))}
                             <button
                                 type="button"
                                 onClick={addWorkCity}
-                                className="bg-glass2 w-full px-4 py-2 rounded-lg hover:bg-opacity-80 transition-all flex items-center justify-center gap-2"
+                                className="bg-glass2 w-full px-4 py-2 rounded-lg hover:bg-opacity-80 transition-all text-sm sm:text-base"
                             >
-                                <FaPlus /> Добавить город
+                                + Добавить еще город
                             </button>
-                        </div>
-
-                        {/* Cooperation Terms */}
-                        <div>
-                            <label className="block text-sm font-medium mb-2 text-white flex items-center gap-2">
-                                <FaHandshake /> Условия сотрудничества
-                            </label>
-                            <textarea
-                                name="cooperation_terms"
-                                value={formData.cooperation_terms}
-                                onChange={handleInputChange}
-                                className="input-glass w-full px-4 py-3 rounded-lg transition-all resize-none"
-                                rows="3"
-                                placeholder="Условия работы с объектами в других городах или регионах"
-                            />
                         </div>
 
                         {/* Segments */}
                         <div>
                             <label className="block text-sm font-medium mb-3 text-white">
-                                Сегменты работы
+                                Выберите один или несколько сегментов, в которых вы работаете. <span className="text-red-400">*</span>
                             </label>
-                            <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
                                 {segmentOptions.map(option => (
                                     <label
                                         key={option.value}
@@ -604,6 +760,7 @@ export default function DesignBox() {
                                             checked={formData.segments.includes(option.value)}
                                             onChange={() => handleSegmentToggle(option.value)}
                                             className="checkbox-glass"
+                                            required={formData.segments.length === 0}
                                         />
                                         <span className="text-sm text-white">{option.label}</span>
                                     </label>
@@ -613,214 +770,274 @@ export default function DesignBox() {
 
                         {/* Unique Trade Proposal */}
                         <div>
-                            <label className="block text-sm font-medium mb-2 text-white flex items-center gap-2">
-                                <FaBriefcase /> Уникальное торговое предложение (УТП)
+                            <label className="block text-sm font-medium mb-2 text-white">
+                                Ваше уникальное торговое предложение (УТП) <span className="text-red-400">*</span>
                             </label>
+                            <p className="text-white/50 text-xs mb-3 italic">
+                                Например: Лучшая в АРТ-дико. Базовые чертежи предоставляю в течение 1 недели.
+                            </p>
                             <textarea
                                 name="unique_trade_proposal"
                                 value={formData.unique_trade_proposal}
                                 onChange={handleInputChange}
-                                className="input-glass w-full px-4 py-3 rounded-lg transition-all resize-none"
+                                className="input-glass w-full px-4 py-3 rounded-lg transition-all resize-none text-sm sm:text-base"
                                 rows="3"
                                 placeholder="Ваше уникальное торговое предложение"
+                                required
                             />
                         </div>
 
                         {/* Social Media Links */}
                         <div className="space-y-4">
-                            <h3 className="text-lg font-semibold text-white">Социальные сети и контакты</h3>
+                            <h3 className="text-lg font-semibold text-white">
+                                Ссылки на социальные сети и другие каналы связи.
+                            </h3>
 
-                            <div>
-                                <label className="block text-sm font-medium mb-2 text-white flex items-center gap-2">
-                                    <FaVk /> VK
-                                </label>
-                                <input
-                                    type="text"
-                                    name="vk"
-                                    value={formData.vk}
-                                    onChange={handleInputChange}
-                                    className="input-glass w-full px-4 py-3 rounded-lg transition-all"
-                                    placeholder="Ссылка на VK"
-                                />
-                            </div>
-
-                            <div>
-                                <label className="block text-sm font-medium mb-2 text-white flex items-center gap-2">
-                                    <FaTelegram /> Telegram
-                                </label>
-                                <input
-                                    type="text"
-                                    name="telegram_channel"
-                                    value={formData.telegram_channel}
-                                    onChange={handleInputChange}
-                                    className="input-glass w-full px-4 py-3 rounded-lg transition-all"
-                                    placeholder="Ссылка на Telegram канал"
-                                />
-                            </div>
-
-                            <div>
-                                <label className="block text-sm font-medium mb-2 text-white flex items-center gap-2">
-                                    <FaPinterest /> Pinterest
-                                </label>
-                                <input
-                                    type="text"
-                                    name="pinterest"
-                                    value={formData.pinterest}
-                                    onChange={handleInputChange}
-                                    className="input-glass w-full px-4 py-3 rounded-lg transition-all"
-                                    placeholder="Ссылка на Pinterest"
-                                />
-                            </div>
-
-                            <div>
-                                <label className="block text-sm font-medium mb-2 text-white flex items-center gap-2">
-                                    <FaInstagram /> Instagram
-                                </label>
-                                <input
-                                    type="text"
-                                    name="instagram"
-                                    value={formData.instagram}
-                                    onChange={handleInputChange}
-                                    className="input-glass w-full px-4 py-3 rounded-lg transition-all"
-                                    placeholder="Ссылка на Instagram"
-                                />
-                            </div>
-
-                            <div>
-                                <label className="block text-sm font-medium mb-2 text-white flex items-center gap-2">
-                                    <FaGlobe /> Веб-сайт
-                                </label>
-                                <input
-                                    type="url"
-                                    name="website"
-                                    value={formData.website}
-                                    onChange={handleInputChange}
-                                    className="input-glass w-full px-4 py-3 rounded-lg transition-all"
-                                    placeholder="https://example.com"
-                                />
-                            </div>
-                        </div>
-
-                        {/* Other Contacts */}
-                        <div>
-                            <label className="block text-sm font-medium mb-2 text-white">
-                                Дополнительные контакты
-                            </label>
-                            {formData.other_contacts.map((contact, index) => (
-                                <div key={index} className="flex gap-2 mb-2">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                <div>
+                                    <label className="block text-sm font-medium mb-2 text-white">
+                                        VK
+                                    </label>
                                     <input
                                         type="text"
-                                        value={contact}
-                                        onChange={(e) => updateOtherContact(index, e.target.value)}
-                                        className="input-glass flex-1 px-4 py-2 rounded-lg transition-all"
-                                        placeholder="Дополнительный контакт"
+                                        name="vk"
+                                        value={formData.vk}
+                                        onChange={handleInputChange}
+                                        className="input-glass w-full px-4 py-2 rounded-lg transition-all text-sm sm:text-base"
+                                        placeholder="Ссылка на VK"
                                     />
-                                    <button
-                                        type="button"
-                                        onClick={() => removeOtherContact(index)}
-                                        className="bg-glass2 px-4 py-2 rounded-lg hover:bg-opacity-80 transition-all text-red-400"
-                                    >
-                                        <FaTrash />
-                                    </button>
                                 </div>
-                            ))}
-                            <button
-                                type="button"
-                                onClick={addOtherContact}
-                                className="bg-glass2 w-full px-4 py-2 rounded-lg hover:bg-opacity-80 transition-all flex items-center justify-center gap-2"
-                            >
-                                <FaPlus /> Добавить контакт
-                            </button>
+
+                                <div>
+                                    <label className="block text-sm font-medium mb-2 text-white">
+                                        Telegram канал
+                                    </label>
+                                    <input
+                                        type="text"
+                                        name="telegram_channel"
+                                        value={formData.telegram_channel}
+                                        onChange={handleInputChange}
+                                        className="input-glass w-full px-4 py-2 rounded-lg transition-all text-sm sm:text-base"
+                                        placeholder="Ссылка на Telegram канал"
+                                    />
+                                </div>
+
+                                <div>
+                                    <label className="block text-sm font-medium mb-2 text-white">
+                                        Pinterest
+                                    </label>
+                                    <input
+                                        type="text"
+                                        name="pinterest"
+                                        value={formData.pinterest}
+                                        onChange={handleInputChange}
+                                        className="input-glass w-full px-4 py-2 rounded-lg transition-all text-sm sm:text-base"
+                                        placeholder="Ссылка на Pinterest"
+                                    />
+                                </div>
+
+                                <div>
+                                    <label className="block text-sm font-medium mb-2 text-white">
+                                        Instagram
+                                    </label>
+                                    <input
+                                        type="text"
+                                        name="instagram"
+                                        value={formData.instagram}
+                                        onChange={handleInputChange}
+                                        className="input-glass w-full px-4 py-2 rounded-lg transition-all text-sm sm:text-base"
+                                        placeholder="Ссылка на Instagram"
+                                    />
+                                </div>
+
+                                <div className="sm:col-span-2">
+                                    <label className="block text-sm font-medium mb-2 text-white">
+                                        Ваш сайт
+                                    </label>
+                                    <input
+                                        type="url"
+                                        name="website"
+                                        value={formData.website}
+                                        onChange={handleInputChange}
+                                        className="input-glass w-full px-4 py-2 rounded-lg transition-all text-sm sm:text-base"
+                                        placeholder="https://example.com"
+                                    />
+                                </div>
+                            </div>
+
+                            {/* Other Contacts */}
+                            <div>
+                                <label className="block text-sm font-medium mb-2 text-white">
+                                    Другое
+                                </label>
+                                {formData.other_contacts.map((contact, index) => (
+                                    <div key={index} className="flex gap-2 mb-2 mobile-stack">
+                                        <input
+                                            type="text"
+                                            value={contact}
+                                            onChange={(e) => updateOtherContact(index, e.target.value)}
+                                            className="input-glass flex-1 px-4 py-2 rounded-lg transition-all text-sm sm:text-base"
+                                            placeholder="Дополнительный контакт"
+                                        />
+                                        {formData.other_contacts.length > 1 && (
+                                            <button
+                                                type="button"
+                                                onClick={() => removeOtherContact(index)}
+                                                className="bg-glass2 px-3 py-2 rounded-lg hover:bg-opacity-80 transition-all text-red-400 text-sm sm:text-base flex-shrink-0"
+                                            >
+                                                Удалить
+                                            </button>
+                                        )}
+                                    </div>
+                                ))}
+                                <button
+                                    type="button"
+                                    onClick={addOtherContact}
+                                    className="bg-glass2 w-full px-4 py-2 rounded-lg hover:bg-opacity-80 transition-all text-sm sm:text-base"
+                                >
+                                    + Добавить контакт
+                                </button>
+                            </div>
                         </div>
 
                         {/* Service Packages Description */}
                         <div>
                             <label className="block text-sm font-medium mb-2 text-white">
-                                Описание пакетов услуг с указанием стоимости
+                                Подробное описание пакетов услуг с указанием стоимости. <span className="text-red-400">*</span>
                             </label>
+                            <p className="text-white/60 text-sm mb-2">
+                                Пропишите подробно все доступные пакеты и их стоимость (например: базовый, стандарт, премиум), а также:<br />
+                                – минимальный срок выполнения проекта для помещения площадью 40 м²,<br />
+                                – дополнительные опции, если они есть.
+                            </p>
+                            <p className="text-white/50 text-xs mb-3 italic">
+                                Например:<br />
+                                Базовый (только чертежи без визуализации) - 2000₽/м²<br />
+                                Стандартный (с визуализациями) - 4000₽/м²<br />
+                                Премиум (с авторским надзором и визуализациями) - 10000₽/м²<br /><br />
+                                Выезды за пределы г. Краснодара рассчитываются и оплачиваются отдельно.
+                            </p>
                             <textarea
                                 name="service_packages_description"
                                 value={formData.service_packages_description}
                                 onChange={handleInputChange}
-                                className="input-glass w-full px-4 py-3 rounded-lg transition-all resize-none"
-                                rows="4"
+                                className="input-glass w-full px-4 py-3 rounded-lg transition-all resize-none text-sm sm:text-base"
+                                rows="6"
                                 placeholder="Подробное описание пакетов услуг и их стоимости"
+                                required
                             />
                         </div>
 
                         {/* VAT Payment */}
                         <div>
                             <label className="block text-sm font-medium mb-3 text-white">
-                                Возможна ли оплата с учётом НДС?
+                                Возможна ли оплата с учётом НДС? <span className="text-red-400">*</span>
                             </label>
-                            <div className="flex gap-4">
-                                <label className="bg-glass2 px-6 py-3 rounded-lg cursor-pointer hover:bg-opacity-80 transition-all flex items-center gap-2">
-                                    <input
-                                        type="radio"
-                                        name="vat_payment"
-                                        value="yes"
-                                        checked={formData.vat_payment === 'yes'}
-                                        onChange={handleInputChange}
-                                        className="w-4 h-4"
-                                    />
-                                    <span className="text-white">Да</span>
-                                </label>
-                                <label className="bg-glass2 px-6 py-3 rounded-lg cursor-pointer hover:bg-opacity-80 transition-all flex items-center gap-2">
-                                    <input
-                                        type="radio"
-                                        name="vat_payment"
-                                        value="no"
-                                        checked={formData.vat_payment === 'no'}
-                                        onChange={handleInputChange}
-                                        className="w-4 h-4"
-                                    />
-                                    <span className="text-white">Нет</span>
-                                </label>
+                            <div className="flex flex-col sm:flex-row gap-3">
+                                {vatPaymentOptions.map(option => (
+                                    <label key={option.value} className="bg-glass2 px-4 py-3 rounded-lg cursor-pointer hover:bg-opacity-80 transition-all flex items-center gap-2 mobile-full">
+                                        <input
+                                            type="radio"
+                                            name="vat_payment"
+                                            value={option.value}
+                                            checked={formData.vat_payment === option.value}
+                                            onChange={handleInputChange}
+                                            className="radio-glass"
+                                            required
+                                        />
+                                        <span className="text-white text-sm sm:text-base">{option.label}</span>
+                                    </label>
+                                ))}
                             </div>
                         </div>
 
                         {/* Supplier Contractor Recommendation Terms */}
                         <div>
                             <label className="block text-sm font-medium mb-2 text-white">
-                                Условия сотрудничества по рекомендациям
+                                Условия сотрудничества по рекомендациям от поставщиков или подрядчиков. <span className="text-red-400">*</span>
                             </label>
+                            <p className="text-white/60 text-sm mb-2">
+                                Укажите:<br />
+                                – общий процент вознаграждения,<br />
+                                – все возможные варианты при разных условиях,<br />
+                                – сроки выплат при заключении договора по рекомендации Вас.
+                            </p>
+                            <p className="text-white/50 text-xs mb-3 italic">
+                                Например: Благодарность за рекомендацию 10%. Выплата через месяц после оплаты (прописывайте любые ваши условия)
+                            </p>
                             <textarea
                                 name="supplier_contractor_recommendation_terms"
                                 value={formData.supplier_contractor_recommendation_terms}
                                 onChange={handleInputChange}
-                                className="input-glass w-full px-4 py-3 rounded-lg transition-all resize-none"
-                                rows="3"
-                                placeholder="Условия сотрудничества по рекомендациям от поставщиков или подрядчиков"
+                                className="input-glass w-full px-4 py-3 rounded-lg transition-all resize-none text-sm sm:text-base"
+                                rows="4"
+                                placeholder="Условия сотрудничества по рекомендациям"
+                                required
                             />
                         </div>
 
                         {/* Additional Info */}
                         <div>
                             <label className="block text-sm font-medium mb-2 text-white">
-                                Дополнительная информация
+                                Здесь можно оставить дополнительную информацию, которую вы хотели бы нам рассказать
                             </label>
                             <textarea
                                 name="additional_info"
                                 value={formData.additional_info}
                                 onChange={handleInputChange}
-                                className="input-glass w-full px-4 py-3 rounded-lg transition-all resize-none"
+                                className="input-glass w-full px-4 py-3 rounded-lg transition-all resize-none text-sm sm:text-base"
                                 rows="3"
                                 placeholder="Любая дополнительная информация"
                             />
                         </div>
 
-                        {/* Photo Upload */}
-                        {/* <div>
-                            <label className="block text-sm font-medium mb-2 text-white flex items-center gap-2">
-                                <FaCamera /> Фото для личного кабинета
+                        {/* Data Processing Consent */}
+                        <div>
+                            <label className="block text-sm font-medium mb-2 text-white">
+                                Согласие на обработку данных. <span className="text-red-400">*</span>
                             </label>
-                            <div className="photo-upload-area bg-glass2 rounded-lg p-6 text-center">
+                            <p className="text-white/60 text-sm mb-3">
+                                При заполнении данной формы вы подтверждаете согласие на хранение, использование и передачу предоставленных данных в рамках проекта.<br />
+                                Ознакомиться с информацией можно по ссылке{' '}
+                                <a
+                                    href="https://reiting-profi-info.taplink.ws/"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="text-blue-300 hover:text-blue-200 underline"
+                                >
+                                    https://reiting-profi-info.taplink.ws/
+                                </a>
+                            </p>
+                            <label className="bg-glass2 px-4 py-3 sm:py-4 rounded-lg cursor-pointer hover:bg-opacity-80 transition-all flex items-start gap-3">
+                                <input
+                                    type="checkbox"
+                                    name="data_processing_consent"
+                                    checked={formData.data_processing_consent}
+                                    onChange={handleInputChange}
+                                    className="checkbox-glass mt-1"
+                                    required
+                                />
+                                <span className="text-xs sm:text-sm text-white">
+                                    Я согласен(на) на обработку моих персональных данных
+                                </span>
+                            </label>
+                        </div>
+
+                        {/* Photo Upload */}
+                        <div>
+                            <label className="block text-sm font-medium mb-2 text-white">
+                                Прикрепите ваше фото для личного кабинета. <span className="text-red-400">*</span>
+                            </label>
+                            <p className="text-white/60 text-sm mb-3">
+                                До 5 файлов, допустимый общий размер файлов — 5 МБ.
+                            </p>
+                            <div className="file-upload-area bg-glass2 rounded-lg p-4 sm:p-6 text-center">
                                 {photoPreview ? (
                                     <div className="space-y-4">
                                         <img
                                             src={photoPreview}
-                                            alt="Preview"
-                                            className="mx-auto w-32 h-32 object-cover rounded-full border-2 border-white/30"
+                                            alt="Photo Preview"
+                                            className="mx-auto max-w-full sm:max-w-xs max-h-48 object-cover rounded-lg border-2 border-white/30"
                                         />
                                         <button
                                             type="button"
@@ -840,46 +1057,29 @@ export default function DesignBox() {
                                             accept="image/*"
                                             onChange={handlePhotoChange}
                                             className="hidden"
+                                            multiple
                                         />
-                                        <FaCamera className="mx-auto text-4xl text-white/50 mb-2" />
-                                        <p className="text-white/70">Нажмите для загрузки фото</p>
-                                        <p className="text-white/50 text-sm mt-1">Максимальный размер: 5MB</p>
+                                        <p className="text-white/70 text-sm sm:text-base">Нажмите для загрузки фото</p>
+                                        <p className="text-white/50 text-xs sm:text-sm mt-1">Максимальный размер файла: 5MB</p>
                                     </label>
                                 )}
                             </div>
-                        </div> */}
-
-                        {/* Data Processing Consent */}
-                        <div>
-                            <label className="bg-glass2 px-4 py-4 rounded-lg cursor-pointer hover:bg-opacity-80 transition-all flex items-start gap-3">
-                                <input
-                                    type="checkbox"
-                                    name="data_processing_consent"
-                                    checked={formData.data_processing_consent}
-                                    onChange={handleInputChange}
-                                    className="checkbox-glass mt-1"
-                                    required
-                                />
-                                <span className="text-sm text-white">
-                                    Я согласен(на) на обработку моих персональных данных <span className="text-red-400">*</span>
-                                </span>
-                            </label>
                         </div>
 
                         {/* Submit Button */}
                         <button
                             type="submit"
                             disabled={isSubmitting}
-                            className="bg-glass1 w-full px-8 py-4 rounded-lg font-semibold text-lg hover:bg-opacity-90 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                            className="bg-glass1 w-full px-6 py-3 sm:px-8 sm:py-4 rounded-lg font-semibold text-base sm:text-lg hover:bg-opacity-90 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 mt-8"
                         >
                             {isSubmitting ? (
                                 <>
-                                    <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
-                                    Отправка...
+                                    <div className="animate-spin rounded-full h-4 w-4 sm:h-5 sm:w-5 border-b-2 border-white"></div>
+                                    <span className="text-sm sm:text-base">Отправка...</span>
                                 </>
                             ) : (
                                 <>
-                                    <FaCheck /> Отправить анкету
+                                    <span className="text-sm sm:text-base">Присоединится к клубу</span>
                                 </>
                             )}
                         </button>
@@ -889,21 +1089,21 @@ export default function DesignBox() {
 
             {/* Success Modal */}
             {showModal && (
-                <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 px-4">
-                    <div className="bg-glass1 rounded-2xl p-8 max-w-md w-full shadow-2xl animate-fade-in">
+                <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 px-4 py-4">
+                    <div className="bg-glass1 rounded-2xl p-6 sm:p-8 max-w-md w-full shadow-2xl animate-fade-in">
                         <div className="text-center">
-                            <div className="mx-auto w-16 h-16 bg-green-500/20 rounded-full flex items-center justify-center mb-4">
-                                <FaCheck className="text-green-400 text-3xl" />
+                            <div className="mx-auto w-12 h-12 sm:w-16 sm:h-16 bg-green-500/20 rounded-full flex items-center justify-center mb-4">
+                                <div className="text-green-400 text-xl sm:text-3xl">✓</div>
                             </div>
-                            <h2 className="text-2xl font-bold text-white mb-2">
+                            <h2 className="text-xl sm:text-2xl font-bold text-white mb-2">
                                 Успешно отправлено!
                             </h2>
-                            <p className="text-white/70 mb-6">
+                            <p className="text-white/70 mb-4 sm:mb-6 text-sm sm:text-base">
                                 Ваша анкета успешно отправлена. Мы свяжемся с вами в ближайшее время.
                             </p>
                             <button
                                 onClick={closeModal}
-                                className="bg-glass2 w-full px-6 py-3 rounded-lg hover:bg-opacity-80 transition-all font-medium"
+                                className="bg-glass2 w-full px-4 py-2 sm:px-6 sm:py-3 rounded-lg hover:bg-opacity-80 transition-all font-medium text-sm sm:text-base"
                             >
                                 Закрыть
                             </button>
