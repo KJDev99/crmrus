@@ -1,17 +1,17 @@
 'use client'
 import { useState, useEffect, useCallback } from "react"
 import axios from "axios"
-import { BiSortAlt2 } from "react-icons/bi"
-import { FaSearch } from "react-icons/fa"
-import { BsChevronLeft } from "react-icons/bs"
+import { FaSearch, FaPhone, FaEnvelope } from "react-icons/fa"
+import { IoIosArrowDown, IoIosArrowUp } from "react-icons/io"
+import { RiGroupFill } from "react-icons/ri"
 import toast, { Toaster } from "react-hot-toast"
 import debounce from "lodash/debounce"
-import { IoIosArrowUp } from "react-icons/io"
 
 export default function Users() {
     const [data, setData] = useState([])
     const [loading, setLoading] = useState(true)
     const [error, setError] = useState(null)
+    const [expandedRows, setExpandedRows] = useState([])
     const [pagination, setPagination] = useState({
         count: 0,
         next: null,
@@ -20,16 +20,9 @@ export default function Users() {
 
     const [filters, setFilters] = useState({
         search: '',
-        role: '',
-        city: '',
-        is_active_profile: 'true',
         limit: 10,
         offset: 0,
     })
-
-    const [sortBy, setSortBy] = useState('created_at')
-    const [sortOrder, setSortOrder] = useState('desc')
-    const [roleFilterOpen, setRoleFilterOpen] = useState(false)
 
     // Debounce qidiruv funksiyasi
     const debouncedFetch = useCallback(
@@ -44,15 +37,10 @@ export default function Users() {
         fetchUsers(filters)
     }, [])
 
-    // Filter o'zgarganida qidiruv
+    // Search filter o'zgarganida
     useEffect(() => {
         debouncedFetch({ ...filters, offset: 0 })
-    }, [filters.search, filters.role, filters.city, filters.is_active_profile, filters.limit])
-
-    // Sort o'zgarganida
-    useEffect(() => {
-        fetchUsers(filters)
-    }, [sortBy, sortOrder])
+    }, [filters.search, filters.limit])
 
     const fetchUsers = async (currentFilters) => {
         try {
@@ -67,21 +55,11 @@ export default function Users() {
             const params = {
                 limit: currentFilters.limit || 10,
                 offset: currentFilters.offset || 0,
-                ordering: sortOrder === 'desc' ? `-${sortBy}` : sortBy,
-                is_active_profile: currentFilters.is_active_profile || 'true'
             }
 
-            // Qo'shimcha filtrlarni qo'shamiz
+            // Qidiruv qo'shamiz
             if (currentFilters.search) {
                 params.search = currentFilters.search
-            }
-
-            if (currentFilters.role) {
-                params.role = currentFilters.role
-            }
-
-            if (currentFilters.city) {
-                params.city = currentFilters.city
             }
 
             const response = await axios.get(
@@ -119,6 +97,15 @@ export default function Users() {
         }
     }
 
+    // Row ni kengaytirish/yiqish
+    const toggleRow = (id) => {
+        setExpandedRows(prev =>
+            prev.includes(id)
+                ? prev.filter(rowId => rowId !== id)
+                : [...prev, id]
+        )
+    }
+
     // Filter o'zgartirish
     const handleFilterChange = (key, value) => {
         setFilters(prev => ({ ...prev, [key]: value }))
@@ -127,40 +114,6 @@ export default function Users() {
     // Search input handler
     const handleSearchChange = (e) => {
         handleFilterChange('search', e.target.value)
-    }
-
-    // Role filter handler
-    const handleRoleChange = (role) => {
-        handleFilterChange('role', role)
-        setRoleFilterOpen(false)
-    }
-
-    // City filter handler
-    const handleCityChange = (e) => {
-        handleFilterChange('city', e.target.value)
-    }
-
-    // Active profile filter handler
-    const handleActiveProfileChange = (e) => {
-        handleFilterChange('is_active_profile', e.target.value)
-    }
-
-    // Clear role filter
-    const clearRoleFilter = () => {
-        setFilters(prev => ({
-            ...prev,
-            role: ''
-        }))
-    }
-
-    // Sort funksiyasi
-    const handleSort = (column) => {
-        if (sortBy === column) {
-            setSortOrder(sortOrder === 'desc' ? 'asc' : 'desc')
-        } else {
-            setSortBy(column)
-            setSortOrder('desc')
-        }
     }
 
     // Pagination handlerlari
@@ -189,45 +142,17 @@ export default function Users() {
         fetchUsers(newFilters)
     }
 
-    // Sort icon olish
-    const getSortIcon = (column) => {
-        if (sortBy !== column) return null
-        return sortOrder === 'desc' ? <IoIosArrowUp className="rotate-180" /> : <IoIosArrowUp />
+    // Format phone number
+    const formatPhone = (phone) => {
+        if (!phone) return "Не указано"
+        // Format: +998 (XX) XXX-XX-XX
+        return phone.replace(/(\d{3})(\d{2})(\d{3})(\d{2})(\d{2})/, '+$1 ($2) $3-$4-$5')
     }
 
-    // Format date function
-    const formatDate = (dateString) => {
-        if (!dateString) return "Не указано"
-        const date = new Date(dateString)
-        return date.toLocaleDateString('ru-RU', {
-            day: '2-digit',
-            month: '2-digit',
-            year: 'numeric',
-            hour: '2-digit',
-            minute: '2-digit'
-        })
-    }
-
-    // Role label olish
-    const getRoleLabel = (role) => {
-        switch (role) {
-            case 'designer': return 'Дизайнер'
-            case 'repair': return 'Ремонт'
-            case 'supplier': return 'Поставщик'
-            case 'media': return 'Медиа'
-            default: return role || "Не указано"
-        }
-    }
-
-    // Role color olish
-    const getRoleColor = (role) => {
-        switch (role) {
-            case 'designer': return 'bg-blue-900/30 text-blue-300'
-            case 'repair': return 'bg-green-900/30 text-green-300'
-            case 'supplier': return 'bg-purple-900/30 text-purple-300'
-            case 'media': return 'bg-yellow-900/30 text-yellow-300'
-            default: return 'bg-gray-900/30 text-gray-300'
-        }
+    // Groups ni format qilish
+    const formatGroups = (groups) => {
+        if (!groups || groups.length === 0) return "Не указано"
+        return groups.join(", ")
     }
 
     // Pagination sahifalarini hisoblash
@@ -273,152 +198,33 @@ export default function Users() {
             />
 
             {/* Sarlavha */}
-            <div className="ml-20 mt-14 mb-8">
+            <div className="ml-20 mt-14 mb-8 flex justify-between items-center">
                 <h1 className="font-normal not-italic text-[37px] leading-[100%] tracking-normal text-white">
                     ПОЛЬЗОВАТЕЛИ
                 </h1>
-            </div>
 
-            {/* Search va filtrlari */}
-            {/* <div className="px-4 py-3 flex items-center gap-7 ml-20">
-                <div className='relative grow flex h-9.25 bg-[#B7B2B299] rounded-2xl px-5 flex items-center'>
+                {/* Search Input */}
+                <div className="relative mr-20">
+                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <FaSearch className="text-gray-400" />
+                    </div>
                     <input
                         type="text"
-                        placeholder="Поиск по имени, описанию, названию компании"
-                        className="w-full outline-none text-[#FFF] font-normal not-italic text-[16px] leading-[100%] tracking-normal bg-transparent"
                         value={filters.search}
                         onChange={handleSearchChange}
+                        placeholder="Поиск пользователей..."
+                        className="bg-[#56505080] text-white pl-10 pr-4 py-2 rounded-lg w-64 focus:outline-none focus:ring-2 focus:ring-yellow-400"
                     />
-                    <FaSearch size={20} className='text-black font-thin' />
                 </div>
-
-                <div className="relative">
-                    <button
-                        onClick={() => setRoleFilterOpen(!roleFilterOpen)}
-                        className="flex items-center gap-2 px-4 py-2 bg-[#B7B2B299] rounded-2xl text-white hover:bg-[#A09A9A99] transition-colors"
-                    >
-                        <span>Роль</span>
-                        {filters.role && (
-                            <span className="w-2 h-2 bg-yellow-400 rounded-full"></span>
-                        )}
-                    </button>
-
-                    {roleFilterOpen && (
-                        <div className="absolute top-full right-0 mt-2 p-4 bg-[#2D2D2D] rounded-xl shadow-lg z-10 min-w-[200px]">
-                            <div className="space-y-2">
-                                <button
-                                    onClick={() => handleRoleChange('designer')}
-                                    className="block w-full text-left px-3 py-2 hover:bg-[#B7B2B299] rounded-lg transition-colors"
-                                >
-                                    Дизайнер
-                                </button>
-                                <button
-                                    onClick={() => handleRoleChange('repair')}
-                                    className="block w-full text-left px-3 py-2 hover:bg-[#B7B2B299] rounded-lg transition-colors"
-                                >
-                                    Ремонт
-                                </button>
-                                <button
-                                    onClick={() => handleRoleChange('supplier')}
-                                    className="block w-full text-left px-3 py-2 hover:bg-[#B7B2B299] rounded-lg transition-colors"
-                                >
-                                    Поставщик
-                                </button>
-                                <button
-                                    onClick={() => handleRoleChange('media')}
-                                    className="block w-full text-left px-3 py-2 hover:bg-[#B7B2B299] rounded-lg transition-colors"
-                                >
-                                    Медиа
-                                </button>
-                                <div className="pt-2 border-t border-gray-600">
-                                    <button
-                                        onClick={clearRoleFilter}
-                                        className="block w-full text-left px-3 py-2 text-yellow-400 hover:text-yellow-300 transition-colors"
-                                    >
-                                        Все роли
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    )}
-                </div>
-
-                <input
-                    type="text"
-                    placeholder="Город"
-                    className="px-4 py-2 bg-[#B7B2B299] rounded-2xl text-white placeholder-gray-300 outline-none"
-                    value={filters.city}
-                    onChange={handleCityChange}
-                />
-
-                <select
-                    value={filters.is_active_profile}
-                    onChange={handleActiveProfileChange}
-                    className="px-4 py-2 bg-[#B7B2B299] rounded-2xl text-white outline-none"
-                >
-                    <option value="true">Активные</option>
-                    <option value="false">Неактивные</option>
-                    <option value="">Все</option>
-                </select>
-
-                <button
-                    className="text-gray-400 hover:text-white"
-                    onClick={() => handleSort('created_at')}
-                    title="Сортировать по дате создания"
-                >
-                    <BiSortAlt2 size={32} className={`text-white ${sortBy === 'created_at' && sortOrder === 'desc' ? 'rotate-180' : ''}`} />
-                </button>
-            </div> */}
-
-            {/* Filter ko'rsatish */}
-            {(filters.role || filters.city || filters.is_active_profile !== 'true') && (
-                <div className="ml-20 mt-4 flex items-center gap-4 text-sm text-gray-300">
-                    <span>Фильтры:</span>
-                    {filters.role && (
-                        <span className="px-3 py-1 bg-[#B7B2B299] rounded-lg">
-                            Роль: {getRoleLabel(filters.role)}
-                        </span>
-                    )}
-                    {filters.city && (
-                        <span className="px-3 py-1 bg-[#B7B2B299] rounded-lg">
-                            Город: {filters.city}
-                        </span>
-                    )}
-                    {filters.is_active_profile === 'false' && (
-                        <span className="px-3 py-1 bg-[#B7B2B299] rounded-lg">
-                            Неактивные
-                        </span>
-                    )}
-                    {filters.is_active_profile === '' && (
-                        <span className="px-3 py-1 bg-[#B7B2B299] rounded-lg">
-                            Все профили
-                        </span>
-                    )}
-                    <button
-                        onClick={() => {
-                            setFilters(prev => ({
-                                ...prev,
-                                role: '',
-                                city: '',
-                                is_active_profile: 'true'
-                            }))
-                        }}
-                        className="text-yellow-400 hover:text-yellow-300"
-                    >
-                        × Очистить все
-                    </button>
-                </div>
-            )}
-
-            {error && (
-                <div className="ml-20 mb-5 p-4 bg-red-900/30 border border-red-700 rounded-xl text-xl text-red-400">
-                    Ошибка: {error}
-                </div>
-            )}
+            </div>
 
             {loading ? (
                 <div className="flex justify-center items-center h-64">
                     <div className="text-2xl text-yellow-400">Загрузка пользователей...</div>
+                </div>
+            ) : error ? (
+                <div className="flex justify-center items-center h-64">
+                    <div className="text-2xl text-red-400">{error}</div>
                 </div>
             ) : (
                 <>
@@ -426,50 +232,20 @@ export default function Users() {
                         <table className="w-full border-collapse">
                             <thead>
                                 <tr className="border-b border-line text-left text-[18px]">
-                                    <th className="py-4 font-normal text-[20px] leading-[1] tracking-normal px-6">
-                                        <button
-                                            onClick={() => handleSort('full_name')}
-                                            className="flex items-center gap-1 hover:text-yellow-400 transition-colors"
-                                        >
-                                            ФИО / Название компании
-                                            {getSortIcon('full_name')}
-                                        </button>
+                                    <th className="py-4 font-normal text-[20px] leading-[1] tracking-normal px-6 w-2/5">
+                                        ФИО
                                     </th>
-                                    <th className="py-4 font-normal text-[20px] leading-[1] tracking-normal px-6">
-                                        <button
-                                            onClick={() => handleSort('role')}
-                                            className="flex items-center gap-1 hover:text-yellow-400 transition-colors"
-                                        >
-                                            Роль
-                                            {getSortIcon('role')}
-                                        </button>
+                                    <th className="py-4 font-normal text-[20px] leading-[1] tracking-normal px-6 w-1/5">
+                                        Группы
                                     </th>
-                                    <th className="py-4 font-normal text-[20px] leading-[1] tracking-normal px-6">
-                                        <button
-                                            onClick={() => handleSort('email')}
-                                            className="flex items-center gap-1 hover:text-yellow-400 transition-colors"
-                                        >
-                                            Email
-                                            {getSortIcon('email')}
-                                        </button>
+                                    <th className="py-4 font-normal text-[20px] leading-[1] tracking-normal px-6 w-1/5">
+                                        Телефон
                                     </th>
-                                    <th className="py-4 font-normal text-[20px] leading-[1] tracking-normal px-6">
-                                        <button
-                                            onClick={() => handleSort('created_at')}
-                                            className="flex items-center gap-1 hover:text-yellow-400 transition-colors"
-                                        >
-                                            Дата создания
-                                            {getSortIcon('created_at')}
-                                        </button>
+                                    <th className="py-4 font-normal text-[20px] leading-[1] tracking-normal px-6 w-1/5">
+                                        Email
                                     </th>
-                                    <th className="py-4 font-normal text-[20px] leading-[1] tracking-normal px-6">
-                                        <button
-                                            onClick={() => handleSort('is_active_profile')}
-                                            className="flex items-center gap-1 hover:text-yellow-400 transition-colors"
-                                        >
-                                            Статус
-                                            {getSortIcon('is_active_profile')}
-                                        </button>
+                                    <th className="py-4 font-normal text-[20px] leading-[1] tracking-normal px-6 w-20">
+                                        Детали
                                     </th>
                                 </tr>
                             </thead>
@@ -482,84 +258,208 @@ export default function Users() {
                                         </td>
                                     </tr>
                                 ) : (
-                                    data.map((user, i) => (
-                                        <tr key={`${user.id}-${i}`} className="border-b border-line text-[22px] hover:bg-white/5">
-                                            <td className="py-6 px-6 font-normal text-[20px] leading-[1] tracking-normal">
-                                                <div>
-                                                    <div className="font-medium">{user.full_name || "Не указано"}</div>
-                                                    {user.company_name && (
-                                                        <div className="text-sm text-gray-400 mt-1">{user.company_name}</div>
-                                                    )}
-                                                </div>
-                                            </td>
+                                    data.map((user, index) => (
+                                        <>
+                                            <tr
+                                                key={index}
+                                                className="border-b border-line text-[22px] hover:bg-white/5 cursor-pointer"
+                                                onClick={() => toggleRow(user.id)}
+                                            >
+                                                <td className="py-6 px-6 font-normal text-[20px] leading-[1] tracking-normal">
+                                                    <div className="flex items-center">
 
-                                            <td className="py-6 px-6 font-normal text-[20px] leading-[1] tracking-normal">
-                                                <span className={`px-3 py-1 rounded-full text-sm ${getRoleColor(user.role)}`}>
-                                                    {getRoleLabel(user.role)}
-                                                </span>
-                                            </td>
+                                                        <div>
+                                                            <div className="font-medium">{user.full_name || "Не указано"}</div>
+                                                            {user.company_name && (
+                                                                <div className="text-sm text-gray-400 mt-1">{user.company_name}</div>
+                                                            )}
+                                                        </div>
+                                                    </div>
+                                                </td>
 
-                                            <td className="py-6 px-6 font-normal text-[20px] leading-[1] tracking-normal">
-                                                {user.email || "Не указано"}
-                                            </td>
+                                                <td className="py-6 px-6 font-normal text-[20px] leading-[1] tracking-normal">
+                                                    <div className="flex items-center">
 
-                                            <td className="py-6 px-6 font-normal text-[20px] leading-[1] tracking-normal">
-                                                {formatDate(user.created_at)}
-                                            </td>
+                                                        {formatGroups(user.groups)}
+                                                    </div>
+                                                </td>
 
-                                            <td className="py-6 px-6 font-normal text-[20px] leading-[1] tracking-normal">
-                                                <span className={`px-3 py-1 rounded-full text-sm ${user.is_active_profile ? 'bg-green-900/30 text-green-300' : 'bg-red-900/30 text-red-300'}`}>
-                                                    {user.is_active_profile ? 'Активен' : 'Неактивен'}
-                                                </span>
-                                            </td>
-                                        </tr>
+                                                <td className="py-6 px-6 font-normal text-[20px] leading-[1] tracking-normal">
+                                                    <div className="flex items-center">
+                                                        {formatPhone(user.phone)}
+                                                    </div>
+                                                </td>
+
+                                                <td className="py-6 px-6 font-normal text-[20px] leading-[1] tracking-normal">
+                                                    <div className="flex items-center">
+                                                        <FaEnvelope className="mr-2 text-gray-400" />
+                                                        {user.email || "Не указано"}
+                                                    </div>
+                                                </td>
+
+                                                <td className="py-6 px-6 font-normal text-[20px] leading-[1] tracking-normal text-center">
+                                                    <button
+                                                        onClick={(e) => {
+                                                            e.stopPropagation()
+                                                            toggleRow(user.id)
+                                                        }}
+                                                        className="text-yellow-400 hover:text-yellow-300 transition-colors"
+                                                    >
+                                                        {expandedRows.includes(user.id) ? "Скрыть" : "Показать"}
+                                                    </button>
+                                                </td>
+                                            </tr>
+
+                                            {/* Expanded details row */}
+                                            {expandedRows.includes(user.id) && (
+                                                <tr className="border-b border-line bg-white/5">
+                                                    <td colSpan="5" className="p-6">
+                                                        <div className="grid grid-cols-2 md:grid-cols-3 gap-6">
+                                                            {/* Role information */}
+                                                            <div>
+                                                                <h4 className="text-yellow-400 mb-2 font-semibold">Роль</h4>
+                                                                <p className="text-gray-300">
+                                                                    {user.role_display || user.role || "Не указано"}
+                                                                </p>
+                                                            </div>
+
+                                                            {/* City */}
+                                                            <div>
+                                                                <h4 className="text-yellow-400 mb-2 font-semibold">Город</h4>
+                                                                <p className="text-gray-300">
+                                                                    {user.city || "Не указано"}
+                                                                </p>
+                                                            </div>
+
+                                                            {/* Description */}
+                                                            <div className="col-span-2 md:col-span-3">
+                                                                <h4 className="text-yellow-400 mb-2 font-semibold">Описание</h4>
+                                                                <p className="text-gray-300">
+                                                                    {user.description || "Не указано"}
+                                                                </p>
+                                                            </div>
+
+                                                            {/* Social links */}
+                                                            {(user.website || user.telegram || user.instagram || user.vk) && (
+                                                                <div className="col-span-2 md:col-span-3">
+                                                                    <h4 className="text-yellow-400 mb-2 font-semibold">Социальные сети</h4>
+                                                                    <div className="flex flex-wrap gap-4">
+                                                                        {user.website && (
+                                                                            <a
+                                                                                href={user.website}
+                                                                                target="_blank"
+                                                                                rel="noopener noreferrer"
+                                                                                className="text-blue-400 hover:text-blue-300 transition-colors"
+                                                                            >
+                                                                                Вебсайт
+                                                                            </a>
+                                                                        )}
+                                                                        {user.telegram && (
+                                                                            <a
+                                                                                href={user.telegram}
+                                                                                target="_blank"
+                                                                                rel="noopener noreferrer"
+                                                                                className="text-blue-400 hover:text-blue-300 transition-colors"
+                                                                            >
+                                                                                Telegram
+                                                                            </a>
+                                                                        )}
+                                                                        {user.instagram && (
+                                                                            <a
+                                                                                href={user.instagram}
+                                                                                target="_blank"
+                                                                                rel="noopener noreferrer"
+                                                                                className="text-pink-400 hover:text-pink-300 transition-colors"
+                                                                            >
+                                                                                Instagram
+                                                                            </a>
+                                                                        )}
+                                                                        {user.vk && (
+                                                                            <a
+                                                                                href={user.vk}
+                                                                                target="_blank"
+                                                                                rel="noopener noreferrer"
+                                                                                className="text-blue-600 hover:text-blue-500 transition-colors"
+                                                                            >
+                                                                                VK
+                                                                            </a>
+                                                                        )}
+                                                                    </div>
+                                                                </div>
+                                                            )}
+
+                                                            {/* Team and share URL */}
+                                                            <div className="col-span-2 md:col-span-3 flex justify-between items-center pt-4 border-t border-gray-700">
+                                                                <div>
+                                                                    <h4 className="text-yellow-400 mb-2 font-semibold">Команда</h4>
+                                                                    <p className="text-gray-300">
+                                                                        {user.team_name || "Не указано"}
+                                                                    </p>
+                                                                </div>
+
+                                                                {user.share_url && (
+                                                                    <a
+                                                                        href={user.share_url}
+                                                                        target="_blank"
+                                                                        rel="noopener noreferrer"
+                                                                        className="px-4 py-2 bg-yellow-600 hover:bg-yellow-700 text-white rounded-lg transition-colors"
+                                                                    >
+                                                                        Поделиться профилем
+                                                                    </a>
+                                                                )}
+                                                            </div>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            )}
+                                        </>
                                     ))
                                 )}
                             </tbody>
                         </table>
                     </div>
 
-                    {/* Pagination */}
-                    {totalPages > 1 && (
-                        <div className="flex justify-end gap-px mt-6 mr-20 mb-10">
-                            {/* Oldingi sahifaga */}
-                            <button
-                                onClick={handlePrevPage}
-                                disabled={!pagination.previous}
-                                className={`flex h-10 w-10 rounded-full ${pagination.previous ? 'bg-[#56505080] hover:bg-[#746E6E80]' : 'bg-[#56505040] cursor-not-allowed'} text-[26px] items-center justify-center text-[#D7B706]`}
-                            >
-                                <BsChevronLeft />
-                            </button>
+                    {/* Pagination Controls */}
+                    <div className="flex justify-between items-center mt-6 mb-10 mx-20">
+                        {/* Pagination info */}
+                        {pagination.count > 0 && (
+                            <div className="text-gray-400">
+                                Показано {Math.min(filters.offset + 1, pagination.count)}-
+                                {Math.min(filters.offset + filters.limit, pagination.count)} из {pagination.count}
+                            </div>
+                        )}
 
-                            {/* Sahifa raqamlari */}
-                            {getPageNumbers().map(page => (
+                        {/* Pagination buttons */}
+                        {totalPages > 1 && (
+                            <div className="flex gap-2">
                                 <button
-                                    key={page}
-                                    onClick={() => handlePageClick(page)}
-                                    className={`flex h-10 w-10 rounded-full ${currentPage === page ? 'bg-[#746E6E80]' : 'bg-[#56505080] hover:bg-[#746E6E80]'} text-[26px] items-center justify-center text-[#D7B706]`}
+                                    onClick={handlePrevPage}
+                                    disabled={!pagination.previous}
+                                    className={`px-4 py-2 rounded-lg ${pagination.previous ? 'bg-[#56505080] hover:bg-[#746E6E80]' : 'bg-[#56505040] cursor-not-allowed'} text-yellow-400 transition-colors`}
                                 >
-                                    {page}
+                                    Назад
                                 </button>
-                            ))}
 
-                            {/* Keyingi sahifaga */}
-                            <button
-                                onClick={handleNextPage}
-                                disabled={!pagination.next}
-                                className={`flex h-10 w-10 rounded-full rotate-180 ${pagination.next ? 'bg-[#56505080] hover:bg-[#746E6E80]' : 'bg-[#56505040] cursor-not-allowed'} text-[26px] items-center justify-center text-[#D7B706]`}
-                            >
-                                <BsChevronLeft />
-                            </button>
-                        </div>
-                    )}
+                                {getPageNumbers().map(page => (
+                                    <button
+                                        key={page}
+                                        onClick={() => handlePageClick(page)}
+                                        className={`px-4 py-2 rounded-lg ${currentPage === page ? 'bg-yellow-600 text-white' : 'bg-[#56505080] hover:bg-[#746E6E80] text-yellow-400'} transition-colors`}
+                                    >
+                                        {page}
+                                    </button>
+                                ))}
 
-                    {/* Pagination info */}
-                    {pagination.count > 0 && (
-                        <div className="ml-20 mt-4 text-gray-400 mb-10">
-                            Показано {Math.min(filters.offset + 1, pagination.count)}-
-                            {Math.min(filters.offset + filters.limit, pagination.count)} из {pagination.count}
-                        </div>
-                    )}
+                                <button
+                                    onClick={handleNextPage}
+                                    disabled={!pagination.next}
+                                    className={`px-4 py-2 rounded-lg ${pagination.next ? 'bg-[#56505080] hover:bg-[#746E6E80]' : 'bg-[#56505040] cursor-not-allowed'} text-yellow-400 transition-colors`}
+                                >
+                                    Вперед
+                                </button>
+                            </div>
+                        )}
+                    </div>
                 </>
             )}
         </div>
