@@ -34,58 +34,57 @@ export default function PasswordCreate({ onSubmit, error, loading, isNewUser }) 
     }
 
     return (
-        <div>
-            <div className='max-w-7xl m-auto'>
-                <div className="relative flex flex-col items-center text-white px-8">
-                    <p className="font-[JejuMyeongjo] mb-20 text-[24px] leading-[24px] tracking-normal text-center">
-                        {isNewUser ? 'Создайте пароль' : 'Введите пароль'}
-                    </p>
+        <div className='max-w-7xl m-auto px-4 sm:px-6 md:px-8 max-md:w-full'>
+            <div className="relative flex flex-col items-center text-white px-4 sm:px-8">
+                <p className="font-[JejuMyeongjo] mb-12 sm:mb-20 text-lg sm:text-2xl md:text-[24px] leading-tight sm:leading-[24px] tracking-normal text-center">
+                    {isNewUser ? 'Создайте пароль' : 'Введите пароль'}
+                </p>
 
-                    <PhoneInput
-                        text={isNewUser ? 'Придумайте пароль' : 'Пароль'}
-                        value={password}
-                        onChange={setPassword}
-                    />
+                <PhoneInput
+                    text={isNewUser ? 'Придумайте пароль' : 'Пароль'}
+                    value={password}
+                    onChange={setPassword}
+                />
 
-                    {isNewUser && (
-                        <div className="mt-6">
-                            <PhoneInput
-                                text={'Повторите пароль'}
-                                value={confirmPassword}
-                                onChange={setConfirmPassword}
-                            />
-                        </div>
-                    )}
-
-                    {(error || localError) && (
-                        <p className="text-red-400 text-center mt-4 text-[18px]">
-                            {error || localError}
-                        </p>
-                    )}
-
-                    <div className="mt-10">
-                        <GlassButton
-                            text={loading ? 'ЗАГРУЗКА...' : (isNewUser ? 'СОЗДАТЬ' : 'ВОЙТИ')}
-                            click={handleSubmit}
-                            disabled={loading || !password || (isNewUser && !confirmPassword)}
+                {isNewUser && (
+                    <div className="mt-4 sm:mt-6">
+                        <PhoneInput
+                            text={'Повторите пароль'}
+                            value={confirmPassword}
+                            onChange={setConfirmPassword}
                         />
                     </div>
+                )}
 
-                    {!isNewUser && (
-                        <p className="font-[JejuMyeongjo] text-[18px] leading-[22px] text-center mt-8 opacity-80">
-                            Забыли пароль?<br />
-                            <a
-                                href="https://r-profi.taplink.ws"
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="underline"
-                            >
-                                Свяжитесь с нами
-                            </a>
-                        </p>
-                    )}
+                {(error || localError) && (
+                    <p className="text-red-400 text-center mt-3 sm:mt-4 text-base sm:text-[18px]">
+                        {error || localError}
+                    </p>
+                )}
+
+                <div className="mt-6 sm:mt-10">
+                    <GlassButton
+                        text={loading ? 'ЗАГРУЗКА...' : (isNewUser ? 'СОЗДАТЬ' : 'ВОЙТИ')}
+                        click={handleSubmit}
+                        disabled={loading || !password || (isNewUser && !confirmPassword)}
+                    />
                 </div>
+
+                {!isNewUser && (
+                    <p className="font-[JejuMyeongjo] text-base sm:text-[18px] leading-6 sm:leading-[22px] text-center mt-6 sm:mt-8 opacity-80">
+                        Забыли пароль?<br />
+                        <a
+                            href="https://r-profi.taplink.ws"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="underline"
+                        >
+                            Свяжитесь с нами
+                        </a>
+                    </p>
+                )}
             </div>
         </div>
+
     )
 }

@@ -3,10 +3,10 @@ export default function GlassButton({ text = "далее", w, h, textsize, click
     <button
       onClick={click}
       className={`
-       ${w ? w : 'w-[182px]'}
-       ${h ? h : 'h-[37px]'}
-       ${textsize ? textsize : 'text-base'}
-        rounded-[18px]
+       ${w ? w : 'w-32 sm:w-[182px]'}
+       ${h ? h : 'h-8 sm:h-[37px]'}
+       ${textsize ? textsize : 'text-xs sm:text-base'}
+        rounded-lg sm:rounded-[18px]
         text-white tracking-widest
         bg-white/10
         backdrop-blur-[70px]

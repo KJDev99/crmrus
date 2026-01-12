@@ -49,16 +49,16 @@ export default function SupplierItem({
     };
 
     return (
-        <div>
-            <div className="text-white flex justify-between items-center mt-[0px]">
-                <button onClick={onResetFilter} className="cursor-pointer">
-                    <IoIosArrowBack size={40} />
+        <div className='max-md:px-4'>
+            <div className="text-white flex justify-between items-center mt-[0px] max-md:px-0">
+                <button onClick={onResetFilter} className="cursor-pointer max-md:w-8 max-md:h-8">
+                    <IoIosArrowBack size={40} className='max-md:w-6 max-md:h-6' />
                 </button>
-                <img src="/icons/logo.svg" alt="a" />
+                <img src="/icons/logo.svg" alt="a" className='max-md:w-20 max-md:h-20' />
                 <div></div>
             </div>
-            <div className='mt-[0]'>
-                <div className="max-w-xl mx-auto space-y-6">
+            <div className='mt-[0] max-md:mt-2'>
+                <div className="max-w-xl mx-auto space-y-4 max-md:space-y-3">
                     {questionnaires.length === 0 && !loading ? (
                         <div className="text-center text-white py-10">
                             <p>Результаты не найдены</p>

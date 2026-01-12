@@ -198,7 +198,7 @@ export default function RepairBox() {
     };
 
     return (
-        <div className=''>
+        <div className='max-md:px-4'>
             {step === 'select' && (
                 <RepairSelect
                     filterChoices={filterChoices}

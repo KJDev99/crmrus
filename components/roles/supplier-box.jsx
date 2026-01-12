@@ -198,7 +198,7 @@ export default function SupplierBox() {
     };
 
     return (
-        <div className=''>
+        <div className='max-md:px-4'>
             {step === 'select' && (
                 <SupplierSelect
                     filterChoices={filterChoices}

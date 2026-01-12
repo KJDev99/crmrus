@@ -5,18 +5,18 @@ import { IoIosArrowBack } from 'react-icons/io'
 export default function SupplierDetail({ questionnaire, onBack }) {
     if (!questionnaire) {
         return (
-            <div>
-                <div className="text-white flex justify-between items-center mt-[0px]">
-                    <button onClick={onBack} className="cursor-pointer">
-                        <IoIosArrowBack size={40} />
+            <div className='max-md:px-4'>
+                <div className="text-white flex justify-between items-center mt-[0px] max-md:px-0">
+                    <button onClick={onBack} className="cursor-pointer max-md:w-8 max-md:h-8">
+                        <IoIosArrowBack size={40} className='max-md:w-6 max-md:h-6' />
                     </button>
-                    <img src="/icons/logo.svg" alt="a" />
-                    <div>
-                        <img src="/icons/share.svg" alt="a" />
+                    <img src="/icons/logo.svg" alt="a" className='max-md:w-20 max-md:h-20' />
+                    <div className='max-md:w-8 max-md:h-8'>
+                        <img src="/icons/share.svg" alt="a" className='max-md:w-6 max-md:h-6' />
                     </div>
                 </div>
-                <div className="text-center text-white py-10">
-                    <p>Загрузка...</p>
+                <div className="text-center text-white py-10 max-md:py-6">
+                    <p className='max-md:text-sm'>Загрузка...</p>
                 </div>
             </div>
         );
@@ -77,14 +77,14 @@ export default function SupplierDetail({ questionnaire, onBack }) {
     };
 
     return (
-        <div>
-            <div className="text-white flex justify-between items-center mt-[0px]">
-                <button onClick={onBack} className="cursor-pointer">
-                    <IoIosArrowBack size={40} />
+        <div className='max-md:px-4'>
+            <div className="text-white flex justify-between items-center mt-[0px] max-md:px-0">
+                <button onClick={onBack} className="cursor-pointer max-md:w-8 max-md:h-8">
+                    <IoIosArrowBack size={40} className='max-md:w-6 max-md:h-6' />
                 </button>
-                <img src="/icons/logo.svg" alt="a" />
-                <div>
-                    <img src="/icons/share.svg" alt="a" />
+                <img src="/icons/logo.svg" alt="a" className='max-md:w-20 max-md:h-20' />
+                <div className='max-md:w-8 max-md:h-8'>
+                    <img src="/icons/share.svg" alt="a" className='max-md:w-6 max-md:h-6' />
                 </div>
             </div>
             <div className="max-w-xl mx-auto space-y-6">

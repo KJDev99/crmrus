@@ -49,16 +49,16 @@ export default function DesignItem({
     };
 
     return (
-        <div>
-            <div className="text-white flex justify-between items-center mt-[0px]">
-                <button onClick={onResetFilter} className="cursor-pointer">
-                    <IoIosArrowBack size={40} />
+        <div className='max-md:px-4'>
+            <div className="text-white flex justify-between items-center mt-[0px] max-md:px-0">
+                <button onClick={onResetFilter} className="cursor-pointer max-md:w-8 max-md:h-8">
+                    <IoIosArrowBack size={40} className='max-md:w-6 max-md:h-6' />
                 </button>
-                <img src="/icons/logo.svg" alt="a" />
+                <img src="/icons/logo.svg" alt="a" className='max-md:w-20 max-md:h-20' />
                 <div></div>
             </div>
-            <div className='mt-[0]'>
-                <div className="max-w-xl mx-auto space-y-6">
+            <div className='mt-[0] max-md:mt-2'>
+                <div className="max-w-xl mx-auto space-y-4 max-md:space-y-3">
                     {questionnaires.length === 0 && !loading ? (
                         <div className="text-center text-white py-10">
                             <p>Результаты не найдены</p>
@@ -68,10 +68,10 @@ export default function DesignItem({
                             {questionnaires.map((questionnaire) => (
                                 <div
                                     key={questionnaire.id}
-                                    className="flex mb-6 cursor-pointer hover:opacity-80 transition-opacity"
+                                    className="flex mb-4 max-md:mb-3 cursor-pointer hover:opacity-80 transition-opacity max-md:flex-col"
                                     onClick={() => onSelectQuestionnaire(questionnaire.id)}
                                 >
-                                    <div className='w-[120px] h-[100px] card_img flex-shrink-0'>
+                                    <div className='w-[120px] h-[100px] card_img flex-shrink-0 max-md:w-full max-md:h-20'>
                                         {questionnaire.photo ? (
                                             <img
                                                 src={questionnaire.photo}
@@ -80,21 +80,21 @@ export default function DesignItem({
                                             />
                                         ) : (
                                             <div className="w-full h-full card_img rounded-lg flex items-center justify-center">
-                                                <span className="text-white text-2xl uppercase">{questionnaire.full_name ? questionnaire.full_name.charAt(0) : '?'}</span>
+                                                <span className="text-white text-2xl max-md:text-lg uppercase">{questionnaire.full_name ? questionnaire.full_name.charAt(0) : '?'}</span>
                                             </div>
                                         )}
                                     </div>
-                                    <div className="flex flex-col border-b border-b-[#FFFFFF91] pl-6 ml-4 flex-grow">
-                                        <h2 className='mb-0.5 text-[#FFFFFF] text-[22px]'>
+                                    <div className="flex flex-col border-b border-b-[#FFFFFF91] pl-6 ml-4 flex-grow max-md:pl-3 max-md:ml-0 max-md:border-b-0 max-md:border-t max-md:pt-3 max-md:mt-2">
+                                        <h2 className='mb-0.5 text-[#FFFFFF] text-[22px] max-md:text-base'>
                                             {questionnaire.full_name || 'Название организации'}
                                         </h2>
-                                        <p className='text-sm text-[#FFFFFF] mt-1'>
+                                        <p className='text-sm max-md:text-xs text-[#FFFFFF] mt-1'>
                                             {questionnaire.city || 'Город не указан'}
                                         </p>
-                                        <p className='text-[#FFFFFF] uppercase text-sm leading-[100%] mt-2'>
+                                        <p className='text-[#FFFFFF] uppercase text-sm max-md:text-xs leading-[100%] mt-2'>
                                             {getServiceDisplay(questionnaire.services)}
                                         </p>
-                                        <p className='text-[#FFFFFF] text-sm mt-1'>
+                                        <p className='text-[#FFFFFF] text-sm max-md:text-xs mt-1'>
                                             {getSegmentDisplay(questionnaire.segments)}
                                         </p>
                                     </div>

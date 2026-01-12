@@ -164,21 +164,22 @@ export default function LoginBox() {
         <div className='relative flex flex-col items-center text-white'>
             {
                 step !== 0 &&
-                <div className="absolute top-26 left-[120px] text-3xl cursor-pointer">
+                <div className="absolute top-20 sm:top-26 left-4 sm:left-[120px] text-2xl sm:text-3xl cursor-pointer z-10">
                     <IoIosArrowBack
-                        size={40}
+                        size={32}
+                        className='sm:w-10 sm:h-10'
                         onClick={handleBack}
                     />
                 </div>
             }
 
-            <Image width={308} height={308} src="/icons/logo.svg" alt="logo" />
+            <Image width={200} height={200} className='sm:w-[308px] sm:h-[308px] w-48 h-48' src="/icons/logo.svg" alt="logo" />
 
             {content}
 
             {
                 step === 0 &&
-                <div className="fixed right-[112px] bottom-[80px] text-white">
+                <div className="fixed right-4 sm:right-[112px] bottom-16 sm:bottom-[80px] text-white z-10">
                     <GlassButton
                         text={loading ? 'ЗАГРУЗКА...' : 'ДАЛЕЕ'}
                         click={handlePhoneSubmit}

@@ -464,30 +464,30 @@ export default function DetailUsers() {
 
     if (!requestName) {
         return (
-            <div className="flex justify-center items-center h-screen">
-                <div className="text-2xl text-white">Загрузка типа анкеты...</div>
+            <div className="flex justify-center items-center h-screen max-md:h-48">
+                <div className="text-2xl max-md:text-base text-white">Загрузка типа анкеты...</div>
             </div>
         )
     }
 
     if (loading) {
         return (
-            <div className="flex justify-center items-center h-screen">
-                <div className="text-2xl text-white">Загрузка данных...</div>
+            <div className="flex justify-center items-center h-screen max-md:h-48">
+                <div className="text-2xl max-md:text-base text-white">Загрузка данных...</div>
             </div>
         )
     }
 
     if (!data) {
         return (
-            <div className="flex justify-center items-center h-screen">
-                <div className="text-2xl text-white">Данные не найдены</div>
+            <div className="flex justify-center items-center h-screen max-md:h-48">
+                <div className="text-2xl max-md:text-base text-white">Данные не найдены</div>
             </div>
         )
     }
 
     return (
-        <div className="min-h-screen bg-[#122161] text-white">
+        <div className="min-h-screen bg-[#122161] text-white max-md:px-4">
             <Toaster
                 position="top-right"
                 toastOptions={{
@@ -528,75 +528,75 @@ export default function DetailUsers() {
                 />
             )}
 
-            <div className="px-4 py-3 flex items-center gap-7 mt-14 ml-20">
-                <div className='relative grow h-9.25 bg-[#B7B2B299] rounded-2xl px-5 flex items-center'>
+            <div className="px-4 py-3 flex items-center gap-7 mt-14 max-md:mt-4 ml-20 max-md:ml-4 max-md:gap-2">
+                <div className='relative grow h-9.25 max-md:h-8 bg-[#B7B2B299] rounded-2xl px-5 max-md:px-3 flex items-center'>
                     <input
                         type="text"
                         placeholder="Найти анкету по ID, телефон, название организации, ФИ человека"
-                        className="w-full outline-none text-white font-normal not-italic text-[16px] leading-[100%] tracking-normal bg-transparent placeholder-white/70"
+                        className="w-full outline-none text-white font-normal not-italic text-[16px] max-md:text-xs leading-[100%] tracking-normal bg-transparent placeholder-white/70"
                         value={searchText}
                         onChange={(e) => setSearchText(e.target.value)}
                     />
                     <button className="text-white">
-                        <FaSearch size={20} className='text-white font-thin' />
+                        <FaSearch size={20} className='text-white font-thin max-md:w-4 max-md:h-4' />
                     </button>
                 </div>
-                <button className="text-gray-400 hover:text-white">
+                <button className="text-gray-400 hover:text-white max-md:hidden">
                     <BiSortAlt2 size={32} className='text-white' />
                 </button>
             </div>
 
-            <div className="ml-20 mt-5 mb-14">
-                <h1 className="font-normal not-italic text-[37px] leading-[100%] tracking-normal text-white">
+            <div className="ml-20 max-md:ml-4 mt-5 max-md:mt-3 mb-14 max-md:mb-6">
+                <h1 className="font-normal not-italic text-[37px] max-md:text-xl leading-[100%] tracking-normal text-white">
                     АНКЕТЫ
                 </h1>
             </div>
 
             <div className="text-white">
                 <div className='w-full'>
-                    <div className="overflow-x-auto">
+                    <div className="overflow-x-auto max-md:overflow-x-scroll">
                         {/* Header */}
-                        <div className="text-left text-white text-sm grid grid-cols-12">
-                            <div className="col-span-1 pb-4 px-4 text-[20px] font-normal leading-[100%] border-b border-white/30 tracking-normal">ID</div>
-                            <div className="col-span-3 pb-4 px-4 text-[20px] font-normal leading-[100%] border-b border-white/30 tracking-normal">Название организации / ФИ</div>
-                            <div className="col-span-2 pb-4 px-4 text-[20px] font-normal leading-[100%] border-b border-white/30 tracking-normal">Группа</div>
-                            <div className="col-span-2 pb-4 px-4 text-[20px] font-normal leading-[100%] border-b border-white/30 tracking-normal">Телефон</div>
-                            <div className="col-span-2 pb-4 px-4 text-[20px] font-normal leading-[100%] border-b border-white/30 tracking-normal">Дата заявки</div>
-                            <div className="col-span-2 pb-4 px-4 text-[20px] font-normal leading-[100%] border-b border-white/30 tracking-normal"></div>
+                        <div className="text-left text-white text-sm grid grid-cols-12 max-md:min-w-[800px]">
+                            <div className="col-span-1 pb-4 max-md:pb-2 px-4 max-md:px-2 text-[20px] max-md:text-xs font-normal leading-[100%] border-b border-white/30 tracking-normal">ID</div>
+                            <div className="col-span-3 pb-4 max-md:pb-2 px-4 max-md:px-2 text-[20px] max-md:text-xs font-normal leading-[100%] border-b border-white/30 tracking-normal">Название организации / ФИ</div>
+                            <div className="col-span-2 pb-4 max-md:pb-2 px-4 max-md:px-2 text-[20px] max-md:text-xs font-normal leading-[100%] border-b border-white/30 tracking-normal">Группа</div>
+                            <div className="col-span-2 pb-4 max-md:pb-2 px-4 max-md:px-2 text-[20px] max-md:text-xs font-normal leading-[100%] border-b border-white/30 tracking-normal">Телефон</div>
+                            <div className="col-span-2 pb-4 max-md:pb-2 px-4 max-md:px-2 text-[20px] max-md:text-xs font-normal leading-[100%] border-b border-white/30 tracking-normal">Дата заявки</div>
+                            <div className="col-span-2 pb-4 max-md:pb-2 px-4 max-md:px-2 text-[20px] max-md:text-xs font-normal leading-[100%] border-b border-white/30 tracking-normal"></div>
                         </div>
 
                         {/* Content */}
-                        <div className="text-white grid grid-cols-12 items-start">
-                            <div className="col-span-10 grid grid-cols-10">
+                        <div className="text-white grid grid-cols-12 items-start max-md:min-w-[800px]">
+                            <div className="col-span-10 grid grid-cols-10 max-md:col-span-12">
                                 {/* Row data */}
-                                <div className="col-span-1 h-20 flex items-center px-4 font-normal text-[20px] leading-[100%] tracking-normal">
+                                <div className="col-span-1 h-20 max-md:h-16 flex items-center px-4 max-md:px-2 font-normal text-[20px] max-md:text-xs leading-[100%] tracking-normal">
                                     {editMode ? (
                                         <input
                                             type="text"
                                             value={editData.id || ''}
                                             disabled
-                                            className="bg-white/10 border border-white/30 rounded px-2 py-1 w-full text-white"
+                                            className="bg-white/10 border border-white/30 rounded px-2 py-1 w-full text-white text-xs"
                                         />
                                     ) : data.id}
                                 </div>
 
-                                <div className="col-span-3 h-20 flex items-center px-4 font-normal text-[20px] leading-[100%] tracking-normal">
+                                <div className="col-span-3 h-20 max-md:h-16 flex items-center px-4 max-md:px-2 font-normal text-[20px] max-md:text-xs leading-[100%] tracking-normal">
                                     {editMode ? (
                                         <input
                                             type="text"
                                             value={editData.full_name || ''}
                                             onChange={(e) => handleEditChange('full_name', e.target.value)}
-                                            className="bg-white/10 border border-white/30 rounded px-2 py-1 w-full text-white"
+                                            className="bg-white/10 border border-white/30 rounded px-2 py-1 w-full text-white text-xs"
                                         />
                                     ) : data.full_name || 'Не указано'}
                                 </div>
 
-                                <div className="col-span-2 h-20 flex items-center px-4 font-normal text-[20px] leading-[100%] tracking-normal not-italic">
+                                <div className="col-span-2 h-20 max-md:h-16 flex items-center px-4 max-md:px-2 font-normal text-[20px] max-md:text-xs leading-[100%] tracking-normal not-italic">
                                     {editMode ? (
                                         <select
                                             value={editData.group || ''}
                                             onChange={(e) => handleEditChange('group', e.target.value)}
-                                            className="bg-white/10 border border-white/30 rounded px-2 py-1 w-full text-white"
+                                            className="bg-white/10 border border-white/30 rounded px-2 py-1 w-full text-white text-xs"
                                         >
                                             <option value="design">Дизайн</option>
                                             <option value="repair">Ремонт</option>
@@ -606,24 +606,24 @@ export default function DetailUsers() {
                                     ) : data.group_display || data.group || 'Не указано'}
                                 </div>
 
-                                <div className="col-span-2 h-20 flex items-center px-4 font-normal text-[20px] leading-[100%] tracking-normal not-italic">
+                                <div className="col-span-2 h-20 max-md:h-16 flex items-center px-4 max-md:px-2 font-normal text-[20px] max-md:text-xs leading-[100%] tracking-normal not-italic">
                                     {editMode ? (
                                         <input
                                             type="text"
                                             value={editData.phone || ''}
                                             onChange={(e) => handleEditChange('phone', e.target.value)}
-                                            className="bg-white/10 border border-white/30 rounded px-2 py-1 w-full text-white"
+                                            className="bg-white/10 border border-white/30 rounded px-2 py-1 w-full text-white text-xs"
                                         />
                                     ) : formatPhone(data.phone)}
                                 </div>
 
-                                <div className="col-span-2 h-20 flex items-center px-4 font-normal not-italic text-[20px] leading-[100%] tracking-normal">
+                                <div className="col-span-2 h-20 max-md:h-16 flex items-center px-4 max-md:px-2 font-normal not-italic text-[20px] max-md:text-xs leading-[100%] tracking-normal">
                                     {formatDate(data.created_at)}
                                 </div>
 
                                 {/* Info textarea - To'g'rilangan */}
                                 <textarea
-                                    className='col-span-10 bg-white/10 outline-none h-[438px] p-4.5 text-white mt-4 resize-none border border-white/20 rounded-lg'
+                                    className='col-span-10 max-md:col-span-12 bg-white/10 outline-none h-[438px] max-md:h-40 p-4.5 max-md:p-2 text-white max-md:text-xs mt-4 max-md:mt-2 resize-none border border-white/20 rounded-lg'
                                     value={editMode ? getEditTextareaValue() : generateInfoText()}
                                     onChange={editMode ? handleTextareaChange : undefined}
                                     readOnly={!editMode}
@@ -633,14 +633,14 @@ export default function DetailUsers() {
                             </div>
 
                             {/* Action buttons */}
-                            <div className='col-span-2'>
-                                <div className="col-span-2 flex flex-col items-start px-4 text-right gap-y-3 mt-4">
+                            <div className='col-span-2 max-md:col-span-12'>
+                                <div className="col-span-2 flex flex-col max-md:flex-row max-md:flex-wrap items-start max-md:justify-between px-4 max-md:px-2 text-right gap-y-3 max-md:gap-1 mt-4 max-md:mt-2">
                                     {editMode ? (
                                         <>
                                             <button
                                                 onClick={handleSave}
                                                 disabled={saving}
-                                                className="font-normal not-italic text-base leading-[100%] tracking-normal bg-green-600 hover:bg-green-700 w-40 h-11 rounded-[25px] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                                                className="font-normal not-italic text-base max-md:text-xs leading-[100%] tracking-normal bg-green-600 hover:bg-green-700 w-40 max-md:w-20 h-11 max-md:h-8 rounded-[25px] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                                             >
                                                 {saving ? 'СОХРАНЕНИЕ...' : 'СОХРАНИТЬ'}
                                             </button>
@@ -649,7 +649,7 @@ export default function DetailUsers() {
                                                     setEditMode(false)
                                                     setEditData(data)
                                                 }}
-                                                className="font-normal not-italic text-base leading-[100%] tracking-normal bg-red-600 hover:bg-red-700 w-40 h-11 rounded-[25px] transition-colors"
+                                                className="font-normal not-italic text-base max-md:text-xs leading-[100%] tracking-normal bg-red-600 hover:bg-red-700 w-40 max-md:w-20 h-11 max-md:h-8 rounded-[25px] transition-colors"
                                             >
                                                 ОТМЕНИТЬ
                                             </button>
@@ -658,7 +658,7 @@ export default function DetailUsers() {
                                         <>
                                             <button
                                                 onClick={() => setEditMode(true)}
-                                                className="font-normal not-italic text-base leading-[100%] tracking-normal bg-white/10 hover:bg-white/20 w-40 h-11 rounded-[25px] transition-colors border border-white/30"
+                                                className="font-normal not-italic text-base max-md:text-xs leading-[100%] tracking-normal bg-white/10 hover:bg-white/20 w-40 max-md:w-20 h-11 max-md:h-8 rounded-[25px] transition-colors border border-white/30"
                                             >
                                                 редактировать
                                             </button>
@@ -666,7 +666,7 @@ export default function DetailUsers() {
                                             {data.status !== 'published' && (
                                                 <button
                                                     onClick={() => openModal('publish')}
-                                                    className="font-normal not-italic text-base leading-[100%] tracking-normal bg-blue-600 hover:bg-blue-700 w-40 h-11 rounded-[25px] transition-colors"
+                                                    className="font-normal not-italic text-base max-md:text-xs leading-[100%] tracking-normal bg-blue-600 hover:bg-blue-700 w-40 max-md:w-20 h-11 max-md:h-8 rounded-[25px] transition-colors"
                                                 >
                                                     опубликовать
                                                 </button>
@@ -675,7 +675,7 @@ export default function DetailUsers() {
                                             {data.status !== 'rejected' && (
                                                 <button
                                                     onClick={() => openModal('reject')}
-                                                    className="font-normal not-italic text-base leading-[100%] tracking-normal bg-yellow-600 hover:bg-yellow-700 w-40 h-11 rounded-[25px] transition-colors"
+                                                    className="font-normal not-italic text-base max-md:text-xs leading-[100%] tracking-normal bg-yellow-600 hover:bg-yellow-700 w-40 max-md:w-20 h-11 max-md:h-8 rounded-[25px] transition-colors"
                                                 >
                                                     отклонить
                                                 </button>
@@ -683,7 +683,7 @@ export default function DetailUsers() {
 
                                             <button
                                                 onClick={() => openModal('delete')}
-                                                className="font-normal not-italic text-base leading-[100%] tracking-normal bg-[#D7B706] hover:bg-[#C0A205] w-40 h-11 rounded-[25px] transition-colors"
+                                                className="font-normal not-italic text-base max-md:text-xs leading-[100%] tracking-normal bg-[#D7B706] hover:bg-[#C0A205] w-40 max-md:w-20 h-11 max-md:h-8 rounded-[25px] transition-colors"
                                             >
                                                 в архив
                                             </button>

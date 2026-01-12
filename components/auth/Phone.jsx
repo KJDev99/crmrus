@@ -3,9 +3,9 @@ import PhoneInput from '../ui/input'
 
 export default function Enter({ phone, setPhone, error }) {
   return (
-    <div className=''>
-      <div className="relative flex flex-col items-center text-white px-8">
-        <p className="font-[JejuMyeongjo] mb-20 text-[24px] leading-[24px] tracking-normal text-center">
+    <div className='px-4 sm:px-0 w-full'>
+      <div className="relative flex flex-col items-center text-white px-4 sm:px-8">
+        <p className="font-[JejuMyeongjo] mb-12 sm:mb-20 text-lg sm:text-2xl md:text-[24px] leading-tight sm:leading-[24px] tracking-normal text-center">
           Вход в личный кабинет<br />
           <span className="font-semibold">только</span><br />
           для членов Сообществa
@@ -19,7 +19,7 @@ export default function Enter({ phone, setPhone, error }) {
         />
 
         {error && (
-          <p className="text-red-400 text-center mt-4 text-[18px]">
+          <p className="text-red-400 text-center mt-3 sm:mt-4 text-base sm:text-[18px]">
             {error}
           </p>
         )}
@@ -27,7 +27,7 @@ export default function Enter({ phone, setPhone, error }) {
         <a
           target='_blank'
           href='https://r-profi.taplink.ws'
-          className="font-jeju font-normal text-[24px] mb-30 leading-[100%] tracking-[0%] text-center mt-[136px]"
+          className="font-jeju font-normal text-lg sm:text-2xl md:text-[24px] mb-30 leading-[100%] tracking-[0%] text-center mt-24 sm:mt-[136px]"
         >
           Если вы хотите стать<br />
           членом Сообществa —<br />

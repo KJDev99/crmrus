@@ -107,8 +107,8 @@ export default function SupplierSelect({ filterChoices, selectedFilters, onFilte
 
     if (!filterChoices) {
         return (
-            <div className='max-w-7xl m-auto'>
-                <div className="text-white flex justify-between items-center mt-[0px]">
+            <div className='max-w-7xl m-auto max-md:px-4'>
+                <div className="text-white flex justify-between items-center mt-[0px] max-md:px-0">
                     <Link href={'/role'} className="cursor-pointer">
                         <IoIosArrowBack size={40} className='' />
                     </Link>
