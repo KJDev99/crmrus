@@ -1,14 +1,16 @@
 'use client'
-import React from 'react'
-import { IoIosArrowBack } from 'react-icons/io'
+import React, { useEffect, useState } from 'react'
+import { IoIosArrowBack, IoMdExit } from 'react-icons/io'
 import GlassButton1 from '../ui/GlassButton1'
 import Image from 'next/image'
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
+import toast from 'react-hot-toast'
 
 export default function LeftPanel({ }) {
   const pathname = usePathname()
   const router = useRouter()
+  const [userData, setUserData] = useState({ name: 'Username', email: 'info@mail.ru' })
 
   // Buttonlar va ularning linklari
   const menuItems = [
@@ -41,21 +43,87 @@ export default function LeftPanel({ }) {
       name: 'ПОЛЬЗОВАТЕЛИ',
       path: '/users',
       icon: null
+    },
+    {
+      name: 'События',
+      path: '/all-events',
+      icon: null
     }
   ]
+
+  // Component yuklanganda foydalanuvchi ma'lumotlarini o'qish
+  useEffect(() => {
+    const loadUserData = () => {
+      try {
+        const storedUserData = localStorage.getItem('userData')
+        if (storedUserData) {
+          const parsedData = JSON.parse(storedUserData)
+          setUserData({
+            name: parsedData.full_name || parsedData.username || 'Пользователь',
+            email: parsedData.email || 'info@mail.ru'
+          })
+        }
+      } catch (error) {
+        console.error('Ошибка при загрузке данных пользователя:', error)
+      }
+    }
+
+    loadUserData()
+  }, [])
 
   // Orqaga qaytish funksiyasi
   const handleBack = () => {
     router.back()
   }
 
-  // Hozirgi sahifani aniqlash - to'g'rilangan versiya
+  // Chiqish funksiyasi - yangilangan
+  const handleLogout = () => {
+
+    try {
+      // Barcha token va ma'lumotlarni o'chirish
+      localStorage.removeItem('accessToken')
+      localStorage.removeItem('refreshToken')
+      localStorage.removeItem('userData')
+
+      // Session storage ni tozalash
+      sessionStorage.clear()
+
+      // Cookies larni o'chirish (agar mavjud bo'lsa)
+      const cookies = document.cookie.split(";")
+      for (let i = 0; i < cookies.length; i++) {
+        const cookie = cookies[i]
+        const eqPos = cookie.indexOf("=")
+        const name = eqPos > -1 ? cookie.substr(0, eqPos) : cookie
+        document.cookie = name + "=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/"
+      }
+
+      // Xabar berish
+      toast.success('Вы успешно вышли из системы', {
+        duration: 2000,
+        position: 'top-center'
+      })
+
+      // Login sahifasiga yo'naltirish
+      setTimeout(() => {
+        router.push('/login')
+      }, 1000)
+
+    } catch (error) {
+      console.error('Ошибка при выходе из системы:', error)
+      toast.error('Ошибка при выходе из системы')
+
+      // Xato bo'lsa ham login sahifasiga yo'naltirish
+      setTimeout(() => {
+        router.push('/login')
+      }, 1000)
+    }
+  }
+
+  // Hozirgi sahifani aniqlash
   const isActive = (itemPath) => {
     if (itemPath === '/') {
-      // Asosiy sahifa faqat "/" bo'lsa active bo'lsin
       return pathname === '/'
     }
-    // Boshqa sahifalar uchun pathname shu path bilan boshlansa
     return pathname.startsWith(itemPath)
   }
 
@@ -63,19 +131,33 @@ export default function LeftPanel({ }) {
     <div className="relative min-h-screen max-h-full flex flex-col justify-between w-full text-white">
       {/* Orqaga tugmasi */}
       <div
-        className="absolute top-10 left-[30px] cursor-pointer hover:opacity-80 transition-opacity"
+        className="absolute top-10 left-[30px] cursor-pointer hover:opacity-80 transition-opacity group"
         onClick={handleBack}
+        title="Назад"
       >
-        <IoIosArrowBack size={36} />
+        <IoIosArrowBack size={36} className="group-hover:scale-110 transition-transform" />
+      </div>
+
+      {/* Chiqish tugmasi */}
+      <div
+        className="absolute top-10 right-[30px] cursor-pointer hover:opacity-80 transition-opacity group"
+        onClick={handleLogout}
+        title="Выйти из системы"
+      >
+        <IoMdExit size={36} className="group-hover:scale-110 transition-transform" />
       </div>
 
       {/* User profili */}
       <div className="flex flex-col items-center pt-[54px]">
-        <div className="w-[65px] h-[65px] rounded-full bg-[#D9D9D9] mb-[14px]" >
-          {/* Bu yerga user avatar qo'yishingiz mumkin */}
+        <div className="w-[65px] h-[65px] rounded-full bg-gradient-to-br from-yellow-500 to-orange-500 mb-[14px] flex items-center justify-center text-white font-bold text-xl">
+          {userData.name.charAt(0).toUpperCase()}
         </div>
-        <h2 className="text-[22px] font-normal leading-none">Username</h2>
-        <p className="text-[18px] opacity-80">info@mail.ru</p>
+        <h2 className="text-[22px] font-normal leading-none max-w-[200px] truncate">
+          {userData.name}
+        </h2>
+        <p className="text-[18px] opacity-80 max-w-[200px] truncate">
+          {userData.email}
+        </p>
       </div>
 
       {/* Menu buttonlari */}
@@ -105,6 +187,7 @@ export default function LeftPanel({ }) {
           height={190}
           alt="logo"
           priority
+          className="hover:opacity-90 transition-opacity"
         />
       </div>
     </div>

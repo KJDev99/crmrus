@@ -1,11 +1,12 @@
 'use client';
 import React, { useEffect, useState } from 'react'
-import { IoIosArrowBack } from "react-icons/io";
+import { IoIosArrowBack, IoMdExit } from "react-icons/io";
 import { CiLock } from "react-icons/ci";
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import axios from 'axios';
 import { FaRegUserCircle } from 'react-icons/fa';
+import toast from 'react-hot-toast';
 
 
 export default function HomeRestriction() {
@@ -79,6 +80,38 @@ export default function HomeRestriction() {
     }
   };
 
+  const handleLogout = () => {
+
+    try {
+      // Barcha token va ma'lumotlarni o'chirish
+      localStorage.removeItem('access_token')
+      localStorage.removeItem('refresh_token')
+
+      // Session storage ni tozalash
+      sessionStorage.clear()
+
+      // Xabar berish
+      toast.success('Вы успешно вышли из системы', {
+        duration: 2000,
+        position: 'top-center'
+      })
+
+      // Login sahifasiga yo'naltirish
+      setTimeout(() => {
+        router.push('/login')
+      }, 1000)
+
+    } catch (error) {
+      console.error('Ошибка при выходе из системы:', error)
+      toast.error('Ошибка при выходе из системы')
+
+      // Xato bo'lsa ham login sahifasiga yo'naltirish
+      setTimeout(() => {
+        router.push('/login')
+      }, 1000)
+    }
+  }
+
   if (loading) {
     return (
       <div className='max-w-7xl m-auto px-4 sm:px-6 md:px-8 max-md:w-full'>
@@ -114,6 +147,13 @@ export default function HomeRestriction() {
           <Link href={'/role/settings'}>
             <FaRegUserCircle size={28} className='sm:w-9 sm:h-9' />
           </Link>
+          <div
+            className="cursor-pointer hover:opacity-80 transition-opacity group"
+            onClick={handleLogout}
+            title="Выйти из системы"
+          >
+            <IoMdExit size={36} className="group-hover:scale-110 transition-transform" />
+          </div>
 
         </div>
       </div>

@@ -307,7 +307,7 @@ export default function Anketa() {
                         <td className="col-span-2 h-20 flex items-center px-4 font-normal text-[20px] leading-[100%] tracking-normal not-italic border-b border-white/30">
                           {formatPhone(row.phone)}
                         </td>
-                        <td className="col-span-2 h-20 flex items-center px-4 font-normal text-[20px] leading-[100%] tracking-normal not-italic border-b border-white/30">
+                        <td className="col-span-2 overflow-hidden h-20 flex items-center px-4 font-normal text-[20px] leading-[100%] tracking-normal not-italic border-b border-white/30">
                           {row.brand_name || "Не указано"}
                         </td>
                         <td className="col-span-2 h-20 flex items-center px-4 font-normal not-italic text-[20px] leading-[100%] tracking-normal border-b border-white/30">

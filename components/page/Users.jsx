@@ -1,5 +1,5 @@
 'use client'
-import { useState, useEffect, useCallback } from "react"
+import React, { useState, useEffect, useCallback } from "react"
 import axios from "axios"
 import { FaSearch, FaPhone, FaEnvelope } from "react-icons/fa"
 import { IoIosArrowDown, IoIosArrowUp } from "react-icons/io"
@@ -259,9 +259,8 @@ export default function Users() {
                                     </tr>
                                 ) : (
                                     data.map((user, index) => (
-                                        <>
+                                        <React.Fragment key={user.id}>
                                             <tr
-                                                key={index}
                                                 className="border-b border-line text-[22px] hover:bg-white/5 cursor-pointer"
                                                 onClick={() => toggleRow(user.id)}
                                             >
@@ -412,7 +411,7 @@ export default function Users() {
                                                     </td>
                                                 </tr>
                                             )}
-                                        </>
+                                        </React.Fragment>
                                     ))
                                 )}
                             </tbody>

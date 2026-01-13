@@ -89,20 +89,14 @@ export default function RepairItem({
                                         )}
                                     </div>
                                     <div className="flex flex-col border-b border-b-[#FFFFFF91] pl-6 ml-4 flex-grow max-md:pl-3 max-md:ml-0 max-md:border-b-0 max-md:border-t max-md:pt-3 max-md:mt-2">
-                                        <h2 className='mb-0.5 text-[#FFFFFF] text-[22px] max-md:text-base'>
+                                        <h2 className='mb-0.5 text-[#FFFFFF] text-[22px] max-md:text-base line-clamp-1'>
                                             {questionnaire.brand_name || questionnaire.full_name || 'Название организации'}
                                         </h2>
-                                        <p className='text-sm max-md:text-xs text-[#FFFFFF] mt-1'>
-                                            {getCategoryDisplay(questionnaire.group)}
+                                        <p className='text-[#FFFFFF] text-sm max-md:text-xs line-clamp-1'>
+                                            {questionnaire?.about_company[2]?.value.join(', ') || ""} 
                                         </p>
-                                        <p className='text-[#FFFFFF] uppercase text-sm max-md:text-xs leading-[100%] mt-2'>
-                                            {questionnaire.vat_payment_display ? `НДС: ${questionnaire.vat_payment_display}` : ''}
-                                        </p>
-                                        <p className='text-[#FFFFFF] text-sm max-md:text-xs mt-1'>
-                                            {getSegmentDisplay(questionnaire.segments)}
-                                        </p>
-                                        <p className='text-[#FFFFFF] text-sm max-md:text-xs mt-1'>
-                                            {getBusinessFormDisplay(questionnaire.business_form)}
+                                        <p className='text-[#FFFFFF] text-sm max-md:text-xs mt-1 line-clamp-2'>
+                                            {questionnaire?.about_company[0]?.value || ""}
                                         </p>
                                     </div>
                                 </div>
