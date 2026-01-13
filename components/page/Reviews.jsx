@@ -88,8 +88,8 @@ function ReviewItem({ review, onApprove, onReject, onStatusUpdate }) {
 
   return (
     <div className="w-full border-t border-white/60 px-6 py-5">
-      <div className="flex items-start justify-between gap-6">
-        <div className="flex">
+      <div className="grid grid-cols-12 items-start justify-between gap-6">
+        <div className="flex col-span-3">
           <div className="min-w-[160px] text-white">
             <p className="font-normal text-[20px] leading-[1] tracking-normal">
               {review.reviewer_name || review?.questionnaire?.full_name || 'Аноним'}
@@ -118,7 +118,7 @@ function ReviewItem({ review, onApprove, onReject, onStatusUpdate }) {
           </div>
         </div>
 
-        <div className="flex-1">
+        <div className="flex-1 col-span-7">
           {isEditing ? (
             <div className="flex flex-col gap-2">
               <textarea
@@ -162,7 +162,7 @@ function ReviewItem({ review, onApprove, onReject, onStatusUpdate }) {
           )} */}
         </div>
 
-        <div className="flex flex-col gap-3 min-w-[130px]">
+        <div className="flex flex-col gap-3 min-w-[130px] col-span-2">
           {review.status === 'pending' ? (
             <>
               <button

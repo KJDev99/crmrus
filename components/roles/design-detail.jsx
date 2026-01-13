@@ -1,8 +1,102 @@
 'use client';
-import React from 'react'
+import React, { useState } from 'react'
+import toast from 'react-hot-toast';
 import { IoIosArrowBack } from 'react-icons/io'
 
 export default function DesignDetail({ questionnaire, onBack }) {
+    const [activeTab, setActiveTab] = useState('company'); // 'company' or 'cooperation'
+    const [showReviewForm, setShowReviewForm] = useState(false);
+    const [reviewType, setReviewType] = useState('positive'); // 'positive' or 'constructive'
+    const [reviewText, setReviewText] = useState('');
+    const [rating, setRating] = useState(5);
+    const [expandedSections, setExpandedSections] = useState({});
+    const [showAllReviews, setShowAllReviews] = useState(false);
+
+    const toggleSection = (sectionKey) => {
+        setExpandedSections(prev => ({
+            ...prev,
+            [sectionKey]: !prev[sectionKey]
+        }));
+    };
+
+    const renderExpandableContent = (content, sectionKey, maxLength = 200) => {
+        if (!content) return null;
+
+        const contentStr = typeof content === 'object' ? JSON.stringify(content) : String(content);
+        const isExpanded = expandedSections[sectionKey];
+
+        if (contentStr.length <= maxLength) {
+            return <span>{content}</span>;
+        }
+
+        return (
+            <>
+                {isExpanded ? content : `${contentStr.substring(0, maxLength)}...`}
+                <button
+                    onClick={() => toggleSection(sectionKey)}
+                    className="ml-2 text-blue-400 hover:text-blue-300 underline"
+                >
+                    {isExpanded ? 'Скрыть' : 'Показать полностью'}
+                </button>
+            </>
+        );
+    };
+
+    const handleSubmitReview = async () => {
+        try {
+            const token = localStorage.getItem('access_token');
+
+            if (!token) {
+                alert('Токен не найден. Пожалуйста, войдите в систему.');
+                return;
+            }
+
+            const response = await fetch(`https://api.reiting-profi.ru/api/v1/ratings/questionnaire-ratings/`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`,
+                },
+                body: JSON.stringify({
+                    role: "Дизайн",
+                    id_questionnaire: questionnaire.id,
+                    is_positive: reviewType === 'positive',
+                    is_constructive: reviewType === 'constructive',
+                    text: reviewText,
+                })
+            });
+
+            console.log('Response status:', response.status);
+
+            if (response.ok) {
+                const result = await response.json();
+                console.log('Success response:', result);
+                toast.success('Отзыв отправлен на модерацию');
+                setReviewText('');
+                setRating(5);
+                setShowReviewForm(false);
+            } else {
+                const errorData = await response.json();
+                console.error('Error response:', errorData);
+
+                if (response.status === 401) {
+                    toast.error('Ошибка авторизации. Пожалуйста, войдите в систему заново.');
+                    localStorage.removeItem('access_token');
+                    localStorage.removeItem('accessToken');
+                    localStorage.removeItem('refreshToken');
+                    window.location.href = '/login';
+                } else {
+                    toast.error(`Ошибка при отправке отзыва: ${errorData.message || 'Неизвестная ошибка'}`);
+                }
+            }
+        } catch (error) {
+            console.error('Error submitting review:', error);
+            toast.error('Ошибка при отправке отзыва. Проверьте соединение с интернетом.');
+        }
+    };
+
+
+
     if (!questionnaire) {
         return (
             <div className='max-md:px-4'>
@@ -28,7 +122,15 @@ export default function DesignDetail({ questionnaire, onBack }) {
 
         if (typeof item.value === 'object') {
             if (type === 'experience_geography') {
-                return item.value.description || `${item.value.city || ''} ${item.value.work_cities?.join(', ') || ''}`.trim();
+                return (
+                    <div className="space-y-2">
+                        {item.value.description && <div>{item.value.description}</div>}
+                        {item.value.city && <div>Город: {item.value.city}</div>}
+                        {item.value.work_cities && Array.isArray(item.value.work_cities) && (
+                            <div>Города работы: {item.value.work_cities.join(', ')}</div>
+                        )}
+                    </div>
+                );
             } else if (type === 'social_networks') {
                 return (
                     <div className="space-y-1">
@@ -66,8 +168,28 @@ export default function DesignDetail({ questionnaire, onBack }) {
             'designer_horika': 'Дизайнер Хорека',
         };
 
-        return services.map(service => serviceMap[service] || service).join(' / ');
+        return services.map(service => serviceMap[service] || service).join(', ');
     };
+
+    const getSegmentDisplay = (segments) => {
+        if (!segments || !Array.isArray(segments)) return '';
+
+        const segmentMap = {
+            'economy': 'Эконом',
+            'comfort': 'Комфорт',
+            'business': 'Бизнес',
+            'premium': 'Премиум',
+            'horeca': 'Хорека',
+            'exclusive': 'Эксклюзив',
+            'medium': 'Средний',
+        };
+
+        return segments.map(segment => segmentMap[segment] || segment).join(', ');
+    };
+
+    const displayedReviews = showAllReviews
+        ? questionnaire.reviews_list
+        : questionnaire.reviews_list.slice(0, 3);
 
     return (
         <div className='max-md:px-4'>
@@ -92,100 +214,266 @@ export default function DesignDetail({ questionnaire, onBack }) {
                                 />
                             ) : (
                                 <div className="w-full h-full card_img rounded-lg flex items-center justify-center">
-                                    <span className="text-white text-2xl uppercase">{questionnaire.full_name ? questionnaire.full_name.charAt(0) : '?'}</span>
+                                    <span className="text-white text-2xl uppercase">
+                                        {questionnaire.full_name ? questionnaire.full_name.charAt(0) : '?'}
+                                    </span>
                                 </div>
                             )}
                         </div>
-                        <div className="flex flex-col border-b border-b-[#FFFFFF91] pl-6 ml-4 flex-grow">
+                        <div className="flex flex-col border-b border-b-[#FFFFFF91] pl-6 ml-4 flex-grow relative">
                             <h2 className='mb-0.5 text-[#FFFFFF] text-[22px]'>
-                                {questionnaire.full_name || 'Название организации'}
+                                {questionnaire.full_name || 'Имя не указано'}
                             </h2>
                             <div className='w-full h-0.25 bg-[#FFFFFF4F]'></div>
-                            <p className='text-[#FFFFFF] uppercase text-sm leading-[100%] mt-3'>
-                                {getServiceDisplay(questionnaire.services)}
+
+                            <p className='text-[#FFFFFF] text-sm mt-1'>
+                                Услуги: {getServiceDisplay(questionnaire.services)}
                             </p>
+                            <p className='text-[#FFFFFF] text-sm mt-1'>
+                                Сегменты: {getSegmentDisplay(questionnaire.segments)}
+                            </p>
+
+                            <div className="absolute bottom-1 right-1 text-white">
+                                <span className='text-yellow-400'>★</span> {questionnaire?.rating_count?.total || 0}
+                            </div>
                         </div>
                     </div>
 
                     <h2 className='mt-4 mb-4 text-center text-lg text-[#FFFFFF]'>Контактная информация</h2>
                     <div className='text-lg border-y border-[#FFFFFF91] px-2 py-4 text-[#FFFFFF] space-y-2'>
+                        <p><strong>ФИО:</strong> {questionnaire.full_name || 'Не указано'}</p>
+                        <p><strong>Английское имя:</strong> {questionnaire.full_name_en || 'Не указано'}</p>
                         <p><strong>Телефон:</strong> {questionnaire.phone || 'Не указан'}</p>
                         <p><strong>Email:</strong> {questionnaire.email || 'Не указан'}</p>
                         <p><strong>Город:</strong> {questionnaire.city || 'Не указан'}</p>
+                        <p><strong>Дата рождения:</strong> {questionnaire.birth_date || 'Не указана'}</p>
                     </div>
 
-                    <h2 className='mt-4 mb-4 text-center text-lg text-[#FFFFFF]'>О дизайнере</h2>
-                    <div className='space-y-4'>
-                        {getAboutValue('welcome_message') && (
-                            <div className='text-[#FFFFFF] px-2 py-2'>
-                                <strong>Приветственное сообщение:</strong><br />
-                                {getAboutValue('welcome_message')}
-                            </div>
-                        )}
+                    {/* Tabs */}
+                    <div className='mt-6'>
+                        <div className='flex border-b border-[#FFFFFF91]'>
+                            <button
+                                onClick={() => setActiveTab('company')}
+                                className={`flex-1 py-3 text-center text-[#FFFFFF] transition-all ${activeTab === 'company'
+                                    ? 'border-b-2 border-[#FFFFFF] font-semibold'
+                                    : 'opacity-60'
+                                    }`}
+                            >
+                                О дизайнере
+                            </button>
+                            <button
+                                onClick={() => setActiveTab('cooperation')}
+                                className={`flex-1 py-3 text-center text-[#FFFFFF] transition-all ${activeTab === 'cooperation'
+                                    ? 'border-b-2 border-[#FFFFFF] font-semibold'
+                                    : 'opacity-60'
+                                    }`}
+                            >
+                                Условия сотрудничества
+                            </button>
+                        </div>
 
-                        {getAboutValue('experience_geography') && (
-                            <div className='text-[#FFFFFF] px-2 py-2'>
-                                <strong>Опыт и география:</strong><br />
-                                {getAboutValue('experience_geography')}
-                            </div>
-                        )}
+                        {/* Tab Content */}
+                        <div className='mt-6'>
+                            {activeTab === 'company' && (
+                                <div className='space-y-4'>
+                                    {/* Приветственное сообщение */}
+                                    {getAboutValue('welcome_message') && (
+                                        <div className='text-[#FFFFFF] px-2 py-2 border-b border-[#FFFFFF91]'>
+                                            <strong>Приветственное сообщение:</strong><br />
+                                            {renderExpandableContent(getAboutValue('welcome_message'), 'welcome_message')}
+                                        </div>
+                                    )}
 
-                        {getAboutValue('service_packages') && (
-                            <div className='text-[#FFFFFF] px-2 py-2'>
-                                <strong>Пакеты услуг и стоимость:</strong><br />
-                                {getAboutValue('service_packages')}
-                            </div>
-                        )}
+                                    {/* Опыт и география */}
+                                    {getAboutValue('experience_geography') && (
+                                        <div className='text-[#FFFFFF] px-2 py-2 border-b border-[#FFFFFF91]'>
+                                            <strong>Опыт и география работы:</strong><br />
+                                            {getAboutValue('experience_geography')}
+                                        </div>
+                                    )}
 
-                        {getAboutValue('promotions_utp') && (
-                            <div className='text-[#FFFFFF] px-2 py-2'>
-                                <strong>Акции и УТП:</strong><br />
-                                {getAboutValue('promotions_utp')}
-                            </div>
-                        )}
+                                    {/* Пакеты услуг и стоимость */}
+                                    {getAboutValue('service_packages') && (
+                                        <div className='text-[#FFFFFF] px-2 py-2 border-b border-[#FFFFFF91]'>
+                                            <strong>Пакеты услуг и их стоимость:</strong><br />
+                                            {renderExpandableContent(getAboutValue('service_packages'), 'service_packages')}
+                                        </div>
+                                    )}
 
-                        {getAboutValue('social_networks') && (
-                            <div className='text-[#FFFFFF] px-2 py-2'>
-                                <strong>Социальные сети:</strong><br />
-                                {getAboutValue('social_networks')}
-                            </div>
-                        )}
-                    </div>
+                                    {/* Акции и УТП */}
+                                    {getAboutValue('promotions_utp') && (
+                                        <div className='text-[#FFFFFF] px-2 py-2 border-b border-[#FFFFFF91]'>
+                                            <strong>Акции и УТП:</strong><br />
+                                            {renderExpandableContent(getAboutValue('promotions_utp'), 'promotions_utp')}
+                                        </div>
+                                    )}
 
-                    <h2 className='mt-4 mb-4 text-center text-lg text-[#FFFFFF]'>Условия сотрудничества</h2>
-                    <div className='space-y-4'>
-                        {getTermValue('project_periods') && (
-                            <div className='text-[#FFFFFF] px-2 py-2'>
-                                <strong>Сроки выполнения проекта:</strong><br />
-                                {getTermValue('project_periods')}
-                            </div>
-                        )}
+                                    {/* Социальные сети */}
+                                    {getAboutValue('social_networks') && (
+                                        <div className='text-[#FFFFFF] px-2 py-2 border-b border-[#FFFFFF91]'>
+                                            <strong>Социальные сети:</strong><br />
+                                            {getAboutValue('social_networks')}
+                                        </div>
+                                    )}
+                                </div>
+                            )}
 
-                        {getTermValue('vat_payment') && (
-                            <div className='text-[#FFFFFF] px-2 py-2'>
-                                <strong>НДС:</strong> {getTermValue('vat_payment')}
-                            </div>
-                        )}
+                            {activeTab === 'cooperation' && (
+                                <div className='space-y-4'>
+                                    {/* Периоды выполнения проекта */}
+                                    {getTermValue('project_periods') && (
+                                        <div className='text-[#FFFFFF] px-2 py-2 border-b border-[#FFFFFF91]'>
+                                            <strong>Периоды выполнения проекта:</strong><br />
+                                            {renderExpandableContent(getTermValue('project_periods'), 'project_periods')}
+                                        </div>
+                                    )}
 
-                        {getTermValue('guarantees') && (
-                            <div className='text-[#FFFFFF] px-2 py-2'>
-                                <strong>Гарантии:</strong><br />
-                                {getTermValue('guarantees')}
-                            </div>
-                        )}
+                                    {/* НДС */}
+                                    {getTermValue('vat_payment') && (
+                                        <div className='text-[#FFFFFF] px-2 py-2 border-b border-[#FFFFFF91]'>
+                                            <strong>НДС:</strong> {getTermValue('vat_payment')}
+                                        </div>
+                                    )}
 
-                        {getTermValue('other_cities_terms') && (
-                            <div className='text-[#FFFFFF] px-2 py-2'>
-                                <strong>Работа с другими городами:</strong><br />
-                                {getTermValue('other_cities_terms')}
-                            </div>
-                        )}
-                    </div>
+                                    {/* Гарантии */}
+                                    {getTermValue('guarantees') && (
+                                        <div className='text-[#FFFFFF] px-2 py-2 border-b border-[#FFFFFF91]'>
+                                            <strong>Гарантии:</strong><br />
+                                            {renderExpandableContent(getTermValue('guarantees'), 'guarantees')}
+                                        </div>
+                                    )}
 
-                    <div className='mt-6 text-[#FFFFFF] px-2 py-2'>
-                        <strong>Отзывы:</strong> {questionnaire.rating_count?.total || 0}
-                        {questionnaire.rating_count?.positive > 0 && ` (${questionnaire.rating_count.positive} положительных)`}
-                        {questionnaire.rating_count?.constructive > 0 && ` (${questionnaire.rating_count.constructive} конструктивных)`}
+                                    {/* Условия работы с другими городами */}
+                                    {getTermValue('other_cities_terms') && (
+                                        <div className='text-[#FFFFFF] px-2 py-2 border-b border-[#FFFFFF91]'>
+                                            <strong>Условия работы с другими городами:</strong><br />
+                                            {renderExpandableContent(getTermValue('other_cities_terms'), 'other_cities_terms')}
+                                        </div>
+                                    )}
+
+                                    {/* Reviews Section */}
+                                    <div className='mt-8 text-[#FFFFFF] px-2 py-4 border-b border-[#FFFFFF91]'>
+                                        <div
+                                            className="flex gap-x-4 cursor-pointer hover:opacity-80"
+                                            onClick={() => setShowReviewForm(!showReviewForm)}
+                                        >
+                                            <h3 className='text-lg font-semibold'>ОТЗЫВЫ:</h3>
+                                            <div className='flex items-center gap-x-5'>
+                                                <p>
+                                                    <span className='text-yellow-400'>★</span> Положительных: {questionnaire.rating_count?.positive || 0}
+                                                </p>
+                                                <p>
+                                                    <span className='text-gray-400'>☆</span> Конструктивных: {questionnaire.rating_count?.constructive || 0}
+                                                </p>
+                                            </div>
+                                        </div>
+
+                                        {!showReviewForm && (
+                                            <>
+                                                {displayedReviews.map((review, index) => (
+                                                    <div key={index} className='mt-4 border-b border-[#FFFFFF40] pb-3'>
+                                                        <div className='flex items-center mb-2'>
+                                                            <span className='text-yellow-400 mr-2'>
+                                                                {review.is_positive ? '★' : '☆'}
+                                                            </span>
+                                                            <span className='text-sm text-[#FFFFFFCC]'>
+                                                                {review.reviewer_phone || 'Аноним'}
+                                                            </span>
+                                                            <span className='text-xs text-[#FFFFFF80] ml-2'>
+                                                                ({review.status_display})
+                                                            </span>
+                                                        </div>
+                                                        <p className='text-[#FFFFFFCC] text-sm pl-6'>
+                                                            {review.text}
+                                                        </p>
+                                                    </div>
+                                                ))}
+
+                                                {questionnaire.reviews_list.length > 3 && (
+                                                    <button
+                                                        onClick={() => setShowAllReviews(!showAllReviews)}
+                                                        className="mt-4 text-blue-400 hover:text-blue-300 underline"
+                                                    >
+                                                        {showAllReviews ? 'Скрыть' : `Показать все отзывы (${questionnaire.reviews_list.length})`}
+                                                    </button>
+                                                )}
+                                            </>
+                                        )}
+
+                                        {/* Review Form */}
+                                        {showReviewForm && (
+                                            <div className='mt-6 space-y-4 border-t border-[#FFFFFF40] pt-4'>
+                                                <h4 className='text-md font-semibold'>Оставить отзыв:</h4>
+
+                                                {/* Review Type Selection */}
+                                                <div className='flex gap-x-6'>
+                                                    <label className='flex items-center gap-x-2 cursor-pointer'>
+                                                        <input
+                                                            type='radio'
+                                                            name='reviewType'
+                                                            value='positive'
+                                                            checked={reviewType === 'positive'}
+                                                            onChange={(e) => setReviewType(e.target.value)}
+                                                            className='w-4 h-4'
+                                                        />
+                                                        <span className='text-yellow-400'>★</span>
+                                                        <span>Положительный</span>
+                                                    </label>
+                                                    <label className='flex items-center gap-x-2 cursor-pointer'>
+                                                        <input
+                                                            type='radio'
+                                                            name='reviewType'
+                                                            value='constructive'
+                                                            checked={reviewType === 'constructive'}
+                                                            onChange={(e) => setReviewType(e.target.value)}
+                                                            className='w-4 h-4'
+                                                        />
+                                                        <span className='text-gray-400'>☆</span>
+                                                        <span>Конструктивный</span>
+                                                    </label>
+                                                </div>
+
+
+
+                                                {/* Text Area */}
+                                                <textarea
+                                                    value={reviewText}
+                                                    onChange={(e) => setReviewText(e.target.value)}
+                                                    placeholder='Напишите ваш отзыв...'
+                                                    className='w-full h-32 px-4 py-2 bg-[#FFFFFF20] text-white rounded-lg border border-[#FFFFFF40] focus:outline-none focus:border-[#FFFFFF80] resize-none'
+                                                />
+
+                                                {/* Submit Button */}
+                                                <div className='flex gap-x-4'>
+                                                    <button
+                                                        onClick={handleSubmitReview}
+                                                        disabled={!reviewText.trim()}
+                                                        className='px-6 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-600 disabled:cursor-not-allowed text-white rounded-lg transition-colors'
+                                                    >
+                                                        Отправить
+                                                    </button>
+                                                    <button
+                                                        onClick={() => {
+                                                            setShowReviewForm(false);
+                                                            setReviewText('');
+                                                            setRating(5);
+                                                        }}
+                                                        className='px-6 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-lg transition-colors'
+                                                    >
+                                                        Отмена
+                                                    </button>
+                                                </div>
+
+                                                {/* Info Text */}
+                                                <p className='text-xs text-[#FFFFFF80] mt-4'>
+                                                    Кто оставил: 1 пользователь может оставить только 1 комментарий, при необходимости он может его удалить и оставить новый. Отзывы могут оставлять все рубрики.
+                                                </p>
+                                            </div>
+                                        )}
+                                    </div>
+                                </div>
+                            )}
+                        </div>
                     </div>
                 </div>
             </div>

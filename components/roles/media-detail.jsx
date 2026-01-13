@@ -1,8 +1,94 @@
 'use client';
-import React from 'react'
+import React, { useState } from 'react'
+import toast from 'react-hot-toast';
 import { IoIosArrowBack } from 'react-icons/io'
 
 export default function MediaDetail({ questionnaire, onBack }) {
+    const [showReviewForm, setShowReviewForm] = useState(false);
+    const [reviewType, setReviewType] = useState('positive');
+    const [reviewText, setReviewText] = useState('');
+    const [rating, setRating] = useState(5);
+    const [expandedSections, setExpandedSections] = useState({});
+    const [showAllReviews, setShowAllReviews] = useState(false);
+
+    const toggleSection = (sectionKey) => {
+        setExpandedSections(prev => ({
+            ...prev,
+            [sectionKey]: !prev[sectionKey]
+        }));
+    };
+
+    const renderExpandableContent = (content, sectionKey, maxLength = 200) => {
+        if (!content) return null;
+
+        const contentStr = typeof content === 'object' ? JSON.stringify(content) : String(content);
+        const isExpanded = expandedSections[sectionKey];
+
+        if (contentStr.length <= maxLength) {
+            return <span>{content}</span>;
+        }
+
+        return (
+            <>
+                {isExpanded ? content : `${contentStr.substring(0, maxLength)}...`}
+                <button
+                    onClick={() => toggleSection(sectionKey)}
+                    className="ml-2 text-blue-400 hover:text-blue-300 underline"
+                >
+                    {isExpanded ? 'Скрыть' : 'Показать полностью'}
+                </button>
+            </>
+        );
+    };
+
+    const handleSubmitReview = async () => {
+        try {
+            const token = localStorage.getItem('access_token');
+
+            if (!token) {
+                toast.error('Токен не найден. Пожалуйста, войдите в систему.');
+                return;
+            }
+
+            const response = await fetch(`https://api.reiting-profi.ru/api/v1/ratings/questionnaire-ratings/`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`,
+                },
+                body: JSON.stringify({
+                    role: "Медиа",
+                    id_questionnaire: questionnaire.id,
+                    is_positive: reviewType === 'positive',
+                    is_constructive: reviewType === 'constructive',
+                    text: reviewText,
+                })
+            });
+
+            if (response.ok) {
+                toast.success('Отзыв отправлен на модерацию');
+                setReviewText('');
+                setRating(5);
+                setShowReviewForm(false);
+            } else {
+                const errorData = await response.json();
+
+                if (response.status === 401) {
+                    toast.error('Ошибка авторизации. Пожалуйста, войдите в систему заново.');
+                    localStorage.removeItem('access_token');
+                    localStorage.removeItem('accessToken');
+                    localStorage.removeItem('refreshToken');
+                    window.location.href = '/login';
+                } else {
+                    toast.error(`Ошибка при отправке отзыва: ${errorData.message || 'Неизвестная ошибка'}`);
+                }
+            }
+        } catch (error) {
+            console.error('Error submitting review:', error);
+            toast.error('Ошибка при отправке отзыва. Проверьте соединение с интернетом.');
+        }
+    };
+
     if (!questionnaire) {
         return (
             <div className='max-md:px-4'>
@@ -108,6 +194,10 @@ export default function MediaDetail({ questionnaire, onBack }) {
         }
     };
 
+    const displayedReviews = showAllReviews
+        ? questionnaire.reviews_list
+        : questionnaire.reviews_list?.slice(0, 3) || [];
+
     return (
         <div className='max-md:px-4'>
             <div className="text-white flex justify-between items-center mt-[0px] max-md:px-0">
@@ -123,13 +213,13 @@ export default function MediaDetail({ questionnaire, onBack }) {
                 <div className="">
                     <div className="flex mb-6 max-md:mb-3 max-md:flex-col">
                         <div className='w-[125px] h-[100px] card_img flex-shrink-0 max-md:w-full max-md:h-20'>
-                            <div className="w-full h-full  rounded-lg flex items-center justify-center">
+                            <div className="w-full h-full rounded-lg flex items-center justify-center">
                                 <span className="text-white text-2xl font-bold uppercase max-md:text-lg">
                                     {questionnaire.brand_name ? questionnaire.brand_name.charAt(0) : 'M'}
                                 </span>
                             </div>
                         </div>
-                        <div className="flex flex-col border-b border-b-[#FFFFFF91] pl-6 ml-4 flex-grow max-md:pl-3 max-md:ml-0 max-md:border-b-0 max-md:border-t max-md:pt-3 max-md:mt-2">
+                        <div className="flex flex-col border-b border-b-[#FFFFFF91] pl-6 ml-4 flex-grow max-md:pl-3 max-md:ml-0 max-md:border-b-0 max-md:border-t max-md:pt-3 max-md:mt-2 relative">
                             <h2 className='mb-0.5 text-[#FFFFFF] text-[22px] max-md:text-base'>
                                 {questionnaire.brand_name || questionnaire.full_name || 'Медиа пространство'}
                             </h2>
@@ -137,7 +227,9 @@ export default function MediaDetail({ questionnaire, onBack }) {
                             <p className='text-[#FFFFFF] uppercase text-sm leading-[100%] mt-3 max-md:text-xs'>
                                 {questionnaire.group_display || 'Медиа'}
                             </p>
-
+                            <div className="absolute bottom-1 right-1 text-white">
+                                <span className='text-yellow-400'>★</span> {questionnaire?.rating_count?.total || 0}
+                            </div>
                         </div>
                     </div>
 
@@ -155,44 +247,36 @@ export default function MediaDetail({ questionnaire, onBack }) {
                     <h2 className='mt-4 mb-4 text-center text-lg text-[#FFFFFF] max-md:text-base max-md:mb-2 max-md:mt-3'>О медиа пространстве</h2>
                     <div className='space-y-4 max-md:space-y-2'>
                         {questionnaire.activity_description && (
-                            <div className='text-[#FFFFFF] px-2 py-2 max-md:px-1 max-md:text-sm'>
+                            <div className='text-[#FFFFFF] px-2 py-2 border-b border-[#FFFFFF91] max-md:px-1 max-md:text-sm'>
                                 <strong>Деятельность:</strong><br />
-                                {questionnaire.activity_description}
+                                {renderExpandableContent(questionnaire.activity_description, 'activity_description')}
                             </div>
                         )}
 
                         {questionnaire.welcome_message && (
-                            <div className='text-[#FFFFFF] px-2 py-2 max-md:px-1 max-md:text-sm'>
+                            <div className='text-[#FFFFFF] px-2 py-2 border-b border-[#FFFFFF91] max-md:px-1 max-md:text-sm'>
                                 <strong>Приветственное сообщение:</strong><br />
-                                {questionnaire.welcome_message}
+                                {renderExpandableContent(questionnaire.welcome_message, 'welcome_message')}
                             </div>
                         )}
 
                         {questionnaire.cooperation_terms && (
-                            <div className='text-[#FFFFFF] px-2 py-2 max-md:px-1 max-md:text-sm'>
+                            <div className='text-[#FFFFFF] px-2 py-2 border-b border-[#FFFFFF91] max-md:px-1 max-md:text-sm'>
                                 <strong>Условия сотрудничества:</strong><br />
-                                {questionnaire.cooperation_terms}
+                                {renderExpandableContent(questionnaire.cooperation_terms, 'cooperation_terms')}
                             </div>
                         )}
 
-                        <div className='text-[#FFFFFF] px-2 py-2 max-md:px-1 max-md:text-sm'>
+                        <div className='text-[#FFFFFF] px-2 py-2 border-b border-[#FFFFFF91] max-md:px-1 max-md:text-sm'>
                             <strong>Сегменты для публикации:</strong><br />
                             {getSegmentDisplay(questionnaire.segments)}
                         </div>
                     </div>
 
-                    {getRepresentativeCities() && (
-                        <>
-                            <h2 className='mt-4 mb-4 text-center text-lg text-[#FFFFFF] max-md:text-base max-md:mb-2 max-md:mt-3'>Города представительств</h2>
-                            <div className='text-[#FFFFFF] px-2 py-2 max-md:text-sm max-md:px-1'>
-                                {getRepresentativeCities()}
-                            </div>
-                        </>
-                    )}
 
                     <h2 className='mt-4 mb-4 text-center text-lg text-[#FFFFFF] max-md:text-base max-md:mb-2 max-md:mt-3'>Социальные сети и контакты</h2>
                     <div className='space-y-4 max-md:space-y-2'>
-                        <div className='text-[#FFFFFF] px-2 py-2 space-y-2 max-md:text-sm max-md:px-1 max-md:space-y-1'>
+                        <div className='text-[#FFFFFF] px-2 py-2 space-y-2 border-b border-[#FFFFFF91] max-md:text-sm max-md:px-1 max-md:space-y-1'>
                             {questionnaire.vk && <p className='max-md:text-sm'><strong>VK:</strong> {questionnaire.vk}</p>}
                             {questionnaire.instagram && <p className='max-md:text-sm'><strong>Instagram:</strong> {questionnaire.instagram}</p>}
                             {questionnaire.telegram_channel && <p className='max-md:text-sm'><strong>Telegram канал:</strong> {questionnaire.telegram_channel}</p>}
@@ -201,7 +285,7 @@ export default function MediaDetail({ questionnaire, onBack }) {
                         </div>
 
                         {getOtherContacts() && (
-                            <div className='text-[#FFFFFF] px-2 py-2 max-md:text-sm max-md:px-1'>
+                            <div className='text-[#FFFFFF] px-2 py-2 border-b border-[#FFFFFF91] max-md:text-sm max-md:px-1'>
                                 <strong>Другие контакты:</strong><br />
                                 {getOtherContacts()}
                             </div>
@@ -211,24 +295,132 @@ export default function MediaDetail({ questionnaire, onBack }) {
                     {questionnaire.additional_info && (
                         <>
                             <h2 className='mt-4 mb-4 text-center text-lg text-[#FFFFFF] max-md:text-base max-md:mb-2 max-md:mt-3'>Дополнительная информация</h2>
-                            <div className='text-[#FFFFFF] px-2 py-2 max-md:text-sm max-md:px-1'>
-                                {questionnaire.additional_info}
+                            <div className='text-[#FFFFFF] px-2 py-2 border-b border-[#FFFFFF91] max-md:text-sm max-md:px-1'>
+                                {renderExpandableContent(questionnaire.additional_info, 'additional_info')}
                             </div>
                         </>
                     )}
 
-                    <div className='mt-6 max-md:mt-4 text-[#FFFFFF] px-2 py-2 max-md:text-sm max-md:px-1'>
-                        <strong>Отзывы:</strong> {questionnaire.rating_count?.total || 0}
-                        {questionnaire.rating_count?.positive > 0 && ` (${questionnaire.rating_count.positive} положительных)`}
-                        {questionnaire.rating_count?.constructive > 0 && ` (${questionnaire.rating_count.constructive} конструктивных)`}
-                    </div>
+                    {/* Reviews Section */}
+                    <div className='mt-8 text-[#FFFFFF] px-2 py-4 border-b border-[#FFFFFF91] max-md:mt-4'>
+                        <div
+                            className="flex gap-x-4 cursor-pointer hover:opacity-80"
+                            onClick={() => setShowReviewForm(!showReviewForm)}
+                        >
+                            <h3 className='text-lg font-semibold max-md:text-base'>ОТЗЫВЫ:</h3>
+                            <div className='flex items-center gap-x-5 max-md:gap-x-3'>
+                                <p className='max-md:text-sm'>
+                                    <span className='text-yellow-400'>★</span> Положительных: {questionnaire.rating_count?.positive || 0}
+                                </p>
+                                <p className='max-md:text-sm'>
+                                    <span className='text-gray-400'>☆</span> Конструктивных: {questionnaire.rating_count?.constructive || 0}
+                                </p>
+                            </div>
+                        </div>
 
-                    <div className='mt-4 max-md:mt-3 text-[#FFFFFF] px-2 py-2 text-sm opacity-80 max-md:text-xs max-md:px-1'>
-                        <p>Создано: {new Date(questionnaire.created_at).toLocaleDateString('ru-RU')}</p>
-                        {questionnaire.updated_at !== questionnaire.created_at && (
-                            <p>Обновлено: {new Date(questionnaire.updated_at).toLocaleDateString('ru-RU')}</p>
+                        {!showReviewForm && displayedReviews.length > 0 && (
+                            <>
+                                {displayedReviews.map((review, index) => (
+                                    <div key={index} className='mt-4 border-b border-[#FFFFFF40] pb-3'>
+                                        <div className='flex items-center mb-2'>
+                                            <span className='text-yellow-400 mr-2'>
+                                                {review.is_positive ? '★' : '☆'}
+                                            </span>
+                                            <span className='text-sm text-[#FFFFFFCC] max-md:text-xs'>
+                                                {review.reviewer_phone || 'Аноним'}
+                                            </span>
+                                            <span className='text-xs text-[#FFFFFF80] ml-2'>
+                                                ({review.status_display})
+                                            </span>
+                                        </div>
+                                        <p className='text-[#FFFFFFCC] text-sm pl-6 max-md:text-xs max-md:pl-4'>
+                                            {review.text}
+                                        </p>
+                                    </div>
+                                ))}
+
+                                {questionnaire.reviews_list && questionnaire.reviews_list.length > 3 && (
+                                    <button
+                                        onClick={() => setShowAllReviews(!showAllReviews)}
+                                        className="mt-4 text-blue-400 hover:text-blue-300 underline max-md:text-sm"
+                                    >
+                                        {showAllReviews ? 'Скрыть' : `Показать все отзывы (${questionnaire.reviews_list.length})`}
+                                    </button>
+                                )}
+                            </>
+                        )}
+
+                        {/* Review Form */}
+                        {showReviewForm && (
+                            <div className='mt-6 space-y-4 border-t border-[#FFFFFF40] pt-4 max-md:mt-4 max-md:space-y-3'>
+                                <h4 className='text-md font-semibold max-md:text-sm'>Оставить отзыв:</h4>
+
+                                {/* Review Type Selection */}
+                                <div className='flex gap-x-6 max-md:gap-x-4'>
+                                    <label className='flex items-center gap-x-2 cursor-pointer max-md:text-sm'>
+                                        <input
+                                            type='radio'
+                                            name='reviewType'
+                                            value='positive'
+                                            checked={reviewType === 'positive'}
+                                            onChange={(e) => setReviewType(e.target.value)}
+                                            className='w-4 h-4'
+                                        />
+                                        <span className='text-yellow-400'>★</span>
+                                        <span>Положительный</span>
+                                    </label>
+                                    <label className='flex items-center gap-x-2 cursor-pointer max-md:text-sm'>
+                                        <input
+                                            type='radio'
+                                            name='reviewType'
+                                            value='constructive'
+                                            checked={reviewType === 'constructive'}
+                                            onChange={(e) => setReviewType(e.target.value)}
+                                            className='w-4 h-4'
+                                        />
+                                        <span className='text-gray-400'>☆</span>
+                                        <span>Конструктивный</span>
+                                    </label>
+                                </div>
+
+                                {/* Text Area */}
+                                <textarea
+                                    value={reviewText}
+                                    onChange={(e) => setReviewText(e.target.value)}
+                                    placeholder='Напишите ваш отзыв...'
+                                    className='w-full h-32 px-4 py-2 bg-[#FFFFFF20] text-white rounded-lg border border-[#FFFFFF40] focus:outline-none focus:border-[#FFFFFF80] resize-none max-md:text-sm max-md:h-24'
+                                />
+
+                                {/* Submit Button */}
+                                <div className='flex gap-x-4'>
+                                    <button
+                                        onClick={handleSubmitReview}
+                                        disabled={!reviewText.trim()}
+                                        className='px-6 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-600 disabled:cursor-not-allowed text-white rounded-lg transition-colors max-md:px-4 max-md:py-1.5 max-md:text-sm'
+                                    >
+                                        Отправить
+                                    </button>
+                                    <button
+                                        onClick={() => {
+                                            setShowReviewForm(false);
+                                            setReviewText('');
+                                            setRating(5);
+                                        }}
+                                        className='px-6 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-lg transition-colors max-md:px-4 max-md:py-1.5 max-md:text-sm'
+                                    >
+                                        Отмена
+                                    </button>
+                                </div>
+
+                                {/* Info Text */}
+                                <p className='text-xs text-[#FFFFFF80] mt-4'>
+                                    Кто оставил: 1 пользователь может оставить только 1 комментарий, при необходимости он может его удалить и оставить новый. Отзывы могут оставлять все рубрики.
+                                </p>
+                            </div>
                         )}
                     </div>
+
+
                 </div>
             </div>
             <div className="relative w-full max-w-[1200px] mx-auto mt-[79px] max-md:mt-8 mb-[64px] max-md:mb-8 flex justify-center max-md:px-4">

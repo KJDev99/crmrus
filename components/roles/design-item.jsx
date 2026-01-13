@@ -94,9 +94,7 @@ export default function DesignItem({
                                         <p className='text-[#FFFFFF] uppercase text-sm max-md:text-xs leading-[100%] mt-2'>
                                             {getServiceDisplay(questionnaire.services)}
                                         </p>
-                                        <p className='text-[#FFFFFF] text-sm max-md:text-xs mt-1'>
-                                            {getSegmentDisplay(questionnaire.segments)}
-                                        </p>
+
                                     </div>
                                 </div>
                             ))}
