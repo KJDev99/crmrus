@@ -1,4 +1,5 @@
 'use client';
+import { useRouter } from 'next/navigation';
 import React, { useState } from 'react'
 import toast from 'react-hot-toast';
 import { IoIosArrowBack } from 'react-icons/io'
@@ -11,7 +12,7 @@ export default function DesignDetail({ questionnaire, onBack }) {
     const [rating, setRating] = useState(5);
     const [expandedSections, setExpandedSections] = useState({});
     const [showAllReviews, setShowAllReviews] = useState(false);
-
+    const router = useRouter();
     const toggleSection = (sectionKey) => {
         setExpandedSections(prev => ({
             ...prev,
@@ -95,7 +96,37 @@ export default function DesignDetail({ questionnaire, onBack }) {
         }
     };
 
+    const handleLogout = () => {
 
+        try {
+            // Barcha token va ma'lumotlarni o'chirish
+            localStorage.removeItem('access_token')
+            localStorage.removeItem('refresh_token')
+
+            // Session storage ni tozalash
+            sessionStorage.clear()
+
+            // Xabar berish
+            toast.success('Вы успешно вышли из системы', {
+                duration: 2000,
+                position: 'top-center'
+            })
+
+            // Login sahifasiga yo'naltirish
+            setTimeout(() => {
+                router.push('/login')
+            }, 1000)
+
+        } catch (error) {
+            console.error('Ошибка при выходе из системы:', error)
+            toast.error('Ошибка при выходе из системы')
+
+            // Xato bo'lsa ham login sahifasiga yo'naltirish
+            setTimeout(() => {
+                router.push('/login')
+            }, 1000)
+        }
+    }
 
     if (!questionnaire) {
         return (
@@ -198,7 +229,7 @@ export default function DesignDetail({ questionnaire, onBack }) {
                     <IoIosArrowBack size={40} className='max-md:w-6 max-md:h-6' />
                 </button>
                 <img src="/icons/logo.svg" alt="a" className='max-md:w-20 max-md:h-20' />
-                <div className='max-md:w-8 max-md:h-8'>
+                <div onClick={handleLogout} className='max-md:w-8 max-md:h-8'>
                     <img src="/icons/share.svg" alt="a" className='max-md:w-6 max-md:h-6' />
                 </div>
             </div>

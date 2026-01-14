@@ -373,7 +373,7 @@ export default function Anketa() {
         )}
 
         <Link href={'/archive'} className="ml-10 mt-10 mb-10">
-          <button className="w-[166px] h-[44px] rounded-[25px] bg-[#D7B7068A] font-normal not-italic text-[25px] leading-[100%] tracking-normal hover:bg-[#D7B706] transition-colors">
+          <button className="w-[166px] h-[44px] mb-10 mt-10 ml-10 rounded-[25px] bg-[#D7B7068A] font-normal not-italic text-[25px] leading-[100%] tracking-normal hover:bg-[#D7B706] transition-colors">
             АРХИВ
           </button>
         </Link>

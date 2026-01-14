@@ -6,6 +6,11 @@ import { BiSortAlt2 } from 'react-icons/bi'
 import { FaSearch } from 'react-icons/fa'
 import toast, { Toaster } from 'react-hot-toast'
 import Modal from '../ui/Modal'
+import EditModal from '../ui/EditModal'
+import DesignerEditForm from '../forms/DesignerEditForm'
+import RepairEditForm from '../forms/RepairEditForm'
+import SupplierEditForm from '../forms/SupplierEditForm'
+import MediaEditForm from '../forms/MediaEditForm'
 
 export default function DetailUsers() {
     const params = useParams()
@@ -13,9 +18,9 @@ export default function DetailUsers() {
     const { id } = params
     const [loading, setLoading] = useState(true)
     const [data, setData] = useState(null)
-    const [showModal, setShowModal] = useState(false)
+    const [showActionModal, setShowActionModal] = useState(false)
+    const [showEditModal, setShowEditModal] = useState(false)
     const [modalType, setModalType] = useState('')
-    const [editMode, setEditMode] = useState(false)
     const [editData, setEditData] = useState({})
     const [searchText, setSearchText] = useState('')
     const [requestName, setRequestName] = useState('')
@@ -146,16 +151,14 @@ export default function DetailUsers() {
         return phone
     }
 
-    // Edit mode uchun input handler
-    const handleEditChange = (field, value) => {
-        setEditData(prev => ({
-            ...prev,
-            [field]: value
-        }))
+    // Edit mode bosganda modal ochish
+    const handleEditClick = () => {
+        setEditData(data)
+        setShowEditModal(true)
     }
 
-    // Saqlash funksiyasi - To'g'rilangan
-    const handleSave = async () => {
+    // Saqlash funksiyasi
+    const handleSave = async (formData) => {
         try {
             setSaving(true)
             const token = getToken()
@@ -166,36 +169,7 @@ export default function DetailUsers() {
                 return
             }
 
-            // PUT so'rov uchun payload
-            const payload = {
-                group: editData.group,
-                full_name: editData.full_name,
-                phone: editData.phone,
-                brand_name: editData.brand_name,
-                email: editData.email,
-                responsible_person: editData.responsible_person,
-                representative_cities: editData.representative_cities || [],
-                business_form: editData.business_form,
-                activity_description: editData.activity_description,
-                welcome_message: editData.welcome_message,
-                cooperation_terms: editData.cooperation_terms,
-                segments: editData.segments || [],
-                vk: editData.vk,
-                telegram_channel: editData.telegram_channel,
-                pinterest: editData.pinterest,
-                instagram: editData.instagram,
-                website: editData.website,
-                other_contacts: editData.other_contacts,
-                vat_payment: editData.vat_payment,
-                additional_info: editData.additional_info
-            }
-
-            // Faqat to'ldirilgan field'larni yuborish
-            const cleanPayload = Object.fromEntries(
-                Object.entries(payload).filter(([_, value]) => value !== undefined && value !== null)
-            )
-
-            await axios.put(endpoints.update, cleanPayload, {
+            await axios.put(endpoints.update, formData, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                     'Content-Type': 'application/json'
@@ -203,7 +177,7 @@ export default function DetailUsers() {
             })
 
             toast.success('Данные успешно обновлены')
-            setEditMode(false)
+            setShowEditModal(false)
             fetchData()
         } catch (error) {
             console.error('Ошибка при обновлении:', error)
@@ -218,7 +192,7 @@ export default function DetailUsers() {
         }
     }
 
-    // Moderation funksiyasi - YANGI QO'SHILGAN
+    // Moderation funksiyasi
     const handleModeration = async () => {
         try {
             const token = getToken()
@@ -237,14 +211,15 @@ export default function DetailUsers() {
             })
 
             toast.success('Модерация пройдена успешно')
-            setShowModal(false)
+            setShowActionModal(false)
+            fetchData()
         } catch (error) {
             console.error('Ошибка при модерации:', error)
             toast.error(error.response?.data?.message || 'Ошибка при модерации')
         }
     }
 
-    // Status o'zgartirish - YANGILANGAN (moderation qo'shildi)
+    // Status o'zgartirish
     const handleStatusChange = async (status) => {
         try {
             const token = getToken()
@@ -255,7 +230,6 @@ export default function DetailUsers() {
                 return
             }
 
-            // 1. Statusni o'zgartirish
             await axios.post(endpoints.status, { status }, {
                 headers: {
                     Authorization: `Bearer ${token}`,
@@ -263,24 +237,9 @@ export default function DetailUsers() {
                 }
             })
 
-            // 2. Agar status "published" bo'lsa, moderation patch so'rovi yuborish
-            if (status === 'published') {
-                try {
-                    await axios.patch(endpoints.moderation, {}, {
-                        headers: {
-                            Authorization: `Bearer ${token}`,
-                            'Content-Type': 'application/json'
-                        }
-                    })
-                } catch (modError) {
-                    console.warn('Moderation error (ignored):', modError)
-                    // Moderation xatosi status o'zgarishiga ta'sir qilmasin
-                }
-            }
-
             toast.success(`Статус изменен на: ${status}`)
+            setShowActionModal(false)
             fetchData()
-            setShowModal(false)
         } catch (error) {
             console.error('Ошибка при изменении статуса:', error)
             toast.error(error.response?.data?.message || 'Ошибка при изменении статуса')
@@ -310,17 +269,17 @@ export default function DetailUsers() {
         } catch (error) {
             console.error('Ошибка при удалении:', error)
             toast.error(error.response?.data?.message || 'Ошибка при удалении')
-            setShowModal(false)
+            setShowActionModal(false)
         }
     }
 
     // Modal ochish funksiyalari
-    const openModal = (type) => {
+    const openActionModal = (type) => {
         setModalType(type)
-        setShowModal(true)
+        setShowActionModal(true)
     }
 
-    // Info text generatsiya - To'g'rilangan (JSON emas, readable text)
+    // Info text generatsiya
     const generateInfoText = () => {
         if (!data) return ''
 
@@ -331,56 +290,111 @@ export default function DetailUsers() {
         info += `Телефон: ${formatPhone(data.phone) || 'Не указано'}\n`
         info += `Email: ${data.email || 'Не указано'}\n`
         info += `Бренд: ${data.brand_name || 'Не указано'}\n`
-        info += `Ответственное лицо: ${data.responsible_person || 'Не указано'}\n\n`
 
-        // Qo'shimcha ma'lumotlar
-        info += `Форма бизнеса: ${data.business_form_display || data.business_form || 'Не указано'}\n`
-        info += `НДС: ${data.vat_payment_display || 'Не указано'}\n`
-        info += `Статус: ${data.status_display || 'Не указано'}\n`
+        if (data.responsible_person) {
+            info += `Ответственное лицо: ${data.responsible_person}\n`
+        }
+
+        if (data.business_form_display) {
+            info += `Форма бизнеса: ${data.business_form_display}\n`
+        }
+
+        if (data.vat_payment_display) {
+            info += `НДС: ${data.vat_payment_display}\n`
+        }
+
+        info += `\nСтатус: ${data.status_display || 'Не указано'}\n`
         info += `Дата создания: ${formatDate(data.created_at) || 'Не указано'}\n\n`
 
-        // Faoliyat tavsifi
-        if (data.activity_description) {
-            info += `Описание деятельности:\n${data.activity_description}\n\n`
+        // Turiga qarab qo'shimcha ma'lumotlar
+        switch (requestName) {
+            case 'DesignerQuestionnaire':
+                if (data.city) info += `Город: ${data.city}\n`
+                if (data.services && data.services.length > 0) {
+                    info += `Услуги: ${data.services.join(', ')}\n`
+                }
+                if (data.work_type_display) info += `Тип работы: ${data.work_type_display}\n`
+                break
+
+            case 'SupplierQuestionnaire':
+                if (data.product_assortment) {
+                    info += `Ассортимент продукции: ${data.product_assortment}\n`
+                }
+                if (data.delivery_terms) {
+                    info += `Сроки поставки: ${data.delivery_terms}\n`
+                }
+                if (data.guarantees) {
+                    info += `Гарантии: ${data.guarantees}\n`
+                }
+                if (data.magazine_cards_display) {
+                    info += `Карточки журнала: ${data.magazine_cards_display}\n`
+                }
+                break
+
+            case 'RepairQuestionnaire':
+                if (data.work_list) {
+                    info += `Перечень работ: ${data.work_list}\n`
+                }
+                if (data.project_timelines) {
+                    info += `Сроки выполнения проектов: ${data.project_timelines}\n`
+                }
+                if (data.work_format) {
+                    info += `Формат работы: ${data.work_format}\n`
+                }
+                if (data.guarantees) {
+                    info += `Гарантии: ${data.guarantees}\n`
+                }
+                if (data.magazine_cards_display) {
+                    info += `Карточки журнала: ${data.magazine_cards_display}\n`
+                }
+                break
+
+            case 'MediaQuestionnaire':
+                if (data.activity_description) {
+                    info += `Описание деятельности: ${data.activity_description}\n`
+                }
+                break
         }
 
-        // Приветственное сообщение
+        // Umumiy maydonlar
         if (data.welcome_message) {
-            info += `Приветственное сообщение:\n${data.welcome_message}\n\n`
+            info += `\nПриветственное сообщение:\n${data.welcome_message}\n`
         }
 
-        // Hamkorlik shartlari
         if (data.cooperation_terms) {
-            info += `Условия сотрудничества:\n${data.cooperation_terms}\n\n`
+            info += `\nУсловия сотрудничества:\n${data.cooperation_terms}\n`
         }
 
         // Segmentlar
         if (data.segments && Array.isArray(data.segments) && data.segments.length > 0) {
-            info += `Сегменты: ${data.segments.join(', ')}\n\n`
+            info += `\nСегменты: ${data.segments.join(', ')}\n`
         }
 
         // Kontaktlar
-        info += `Контакты:\n`
-        if (data.vk) info += `VK: ${data.vk}\n`
-        if (data.instagram) info += `Instagram: ${data.instagram}\n`
-        if (data.telegram_channel) info += `Telegram: ${data.telegram_channel}\n`
-        if (data.pinterest) info += `Pinterest: ${data.pinterest}\n`
-        if (data.website) info += `Website: ${data.website}\n`
-        if (data.other_contacts && data.other_contacts.length > 0) {
-            info += `Другие контакты: ${Array.isArray(data.other_contacts) ? data.other_contacts.join(', ') : data.other_contacts}\n`
+        const contacts = []
+        if (data.vk) contacts.push(`VK: ${data.vk}`)
+        if (data.instagram) contacts.push(`Instagram: ${data.instagram}`)
+        if (data.telegram_channel) contacts.push(`Telegram: ${data.telegram_channel}`)
+        if (data.pinterest) contacts.push(`Pinterest: ${data.pinterest}`)
+        if (data.website) contacts.push(`Website: ${data.website}`)
+
+        if (contacts.length > 0) {
+            info += `\nКонтакты:\n${contacts.join('\n')}\n`
         }
 
         // Shaharlar
-        if (data.representative_cities && Array.isArray(data.representative_cities) && data.representative_cities.length > 0) {
-            info += `\nГорода представительства:\n`
-            data.representative_cities.forEach(city => {
-                const cityName = city.city || 'Не указано'
-                const address = city.address || 'Не указано'
-                const phone = city.phone ? formatPhone(city.phone) : 'Не указано'
-                info += `${cityName}: ${address}, тел: ${phone}\n`
-            })
-        } else if (data.representative_cities && typeof data.representative_cities === 'string') {
-            info += `\nГорода представительства: ${data.representative_cities}\n`
+        if (data.representative_cities) {
+            if (Array.isArray(data.representative_cities) && data.representative_cities.length > 0) {
+                info += `\nГорода представительства:\n`
+                data.representative_cities.forEach(city => {
+                    const cityName = city.city || 'Не указано'
+                    const address = city.address || 'Не указано'
+                    const phone = city.phone ? formatPhone(city.phone) : 'Не указано'
+                    info += `  • ${cityName}: ${address}, тел: ${phone}\n`
+                })
+            } else if (typeof data.representative_cities === 'string') {
+                info += `\nГорода представительства: ${data.representative_cities}\n`
+            }
         }
 
         // Дополнительная информация
@@ -388,78 +402,33 @@ export default function DetailUsers() {
             info += `\nДополнительная информация:\n${data.additional_info}\n`
         }
 
-        // Гарантии
-        if (data.guarantees) {
-            info += `\nГарантии: ${data.guarantees}\n`
-        }
-
         return info
     }
 
-    // Edit mode uchun textarea formati - YANGI FUNKSIYA
-    const getEditTextareaValue = () => {
-        if (!editData) return ''
+    // Edit form componentini tanlash
+    const renderEditForm = () => {
+        if (!editData) return null
 
-        let text = ''
-
-        // Har bir fieldni alohida qator sifatida ko'rsatish
-        text += `full_name: ${editData.full_name || ''}\n`
-        text += `phone: ${editData.phone || ''}\n`
-        text += `email: ${editData.email || ''}\n`
-        text += `brand_name: ${editData.brand_name || ''}\n`
-        text += `responsible_person: ${editData.responsible_person || ''}\n`
-        text += `business_form: ${editData.business_form || ''}\n`
-        text += `activity_description: ${editData.activity_description || ''}\n`
-        text += `welcome_message: ${editData.welcome_message || ''}\n`
-        text += `cooperation_terms: ${editData.cooperation_terms || ''}\n`
-        text += `vk: ${editData.vk || ''}\n`
-        text += `instagram: ${editData.instagram || ''}\n`
-        text += `telegram_channel: ${editData.telegram_channel || ''}\n`
-        text += `website: ${editData.website || ''}\n`
-        text += `vat_payment: ${editData.vat_payment || ''}\n`
-        text += `additional_info: ${editData.additional_info || ''}\n`
-
-        // Array field'lar
-        if (editData.segments && Array.isArray(editData.segments)) {
-            text += `segments: ${editData.segments.join(', ')}\n`
+        const commonProps = {
+            data: editData,
+            onChange: setEditData,
+            onSave: handleSave,
+            onCancel: () => setShowEditModal(false),
+            saving: saving
         }
 
-        if (editData.representative_cities && Array.isArray(editData.representative_cities)) {
-            text += `representative_cities: \n`
-            editData.representative_cities.forEach(city => {
-                text += `  - ${JSON.stringify(city)}\n`
-            })
+        switch (requestName) {
+            case 'DesignerQuestionnaire':
+                return <DesignerEditForm {...commonProps} />
+            case 'RepairQuestionnaire':
+                return <RepairEditForm {...commonProps} />
+            case 'SupplierQuestionnaire':
+                return <SupplierEditForm {...commonProps} />
+            case 'MediaQuestionnaire':
+                return <MediaEditForm {...commonProps} />
+            default:
+                return null
         }
-
-        return text
-    }
-
-    // Textarea'dan editData'ga o'girish - YANGI FUNKSIYA
-    const handleTextareaChange = (e) => {
-        const text = e.target.value
-        const lines = text.split('\n')
-        const newData = { ...editData }
-
-        lines.forEach(line => {
-            const [key, ...valueParts] = line.split(':')
-            if (key && key.trim()) {
-                const value = valueParts.join(':').trim()
-
-                // Special handling for array fields
-                if (key.trim() === 'segments') {
-                    newData.segments = value ? value.split(',').map(s => s.trim()) : []
-                }
-                // Special handling for representative_cities
-                else if (key.trim() === 'representative_cities') {
-                    // This is complex - skip for now or implement JSON parsing
-                }
-                else {
-                    newData[key.trim()] = value
-                }
-            }
-        })
-
-        setEditData(newData)
     }
 
     if (!requestName) {
@@ -499,11 +468,11 @@ export default function DetailUsers() {
                 }}
             />
 
-            {/* Modal */}
-            {showModal && (
+            {/* Action Modal (delete/publish/reject/moderation) */}
+            {showActionModal && (
                 <Modal
-                    isOpen={showModal}
-                    onClose={() => setShowModal(false)}
+                    isOpen={showActionModal}
+                    onClose={() => setShowActionModal(false)}
                     onConfirm={() => {
                         if (modalType === 'moderation') handleModeration()
                         else if (modalType === 'delete') handleDelete()
@@ -521,11 +490,22 @@ export default function DetailUsers() {
                     message={
                         modalType === 'delete' ? 'Вы уверены, что хотите переместить эту анкету в архив?' :
                             modalType === 'moderation' ? 'Вы уверены, что хотите пройти модерацию этой анкеты?' :
-                                modalType === 'publish' ? 'Вы уверены, что хотите опубликовать эту анкету? (Будет выполнена модерация)' :
+                                modalType === 'publish' ? 'Вы уверены, что хотите опубликовать эту анкету?' :
                                     modalType === 'reject' ? 'Вы уверены, что хотите отклонить эту анкету?' :
                                         'Вы уверены, что хотите переместить эту анкету в архив?'
                     }
                 />
+            )}
+
+            {/* Edit Modal */}
+            {showEditModal && (
+                <EditModal
+                    isOpen={showEditModal}
+                    onClose={() => setShowEditModal(false)}
+                    title={`Редактирование анкеты (ID: ${data.id})`}
+                >
+                    {renderEditForm()}
+                </EditModal>
             )}
 
             <div className="px-4 py-3 flex items-center gap-7 mt-14 max-md:mt-4 ml-20 max-md:ml-4 max-md:gap-2">
@@ -550,6 +530,9 @@ export default function DetailUsers() {
                 <h1 className="font-normal not-italic text-[37px] max-md:text-xl leading-[100%] tracking-normal text-white">
                     АНКЕТЫ
                 </h1>
+                <p className="text-white/70 mt-2">
+                    Тип: {requestName} | Статус: {data.status_display}
+                </p>
             </div>
 
             <div className="text-white">
@@ -570,132 +553,68 @@ export default function DetailUsers() {
                             <div className="col-span-10 grid grid-cols-10 max-md:col-span-12">
                                 {/* Row data */}
                                 <div className="col-span-1 h-20 max-md:h-16 flex items-center px-4 max-md:px-2 font-normal text-[20px] max-md:text-xs leading-[100%] tracking-normal">
-                                    {editMode ? (
-                                        <input
-                                            type="text"
-                                            value={editData.id || ''}
-                                            disabled
-                                            className="bg-white/10 border border-white/30 rounded px-2 py-1 w-full text-white text-xs"
-                                        />
-                                    ) : data.id}
+                                    {data.id}
                                 </div>
 
                                 <div className="col-span-3 h-20 max-md:h-16 flex items-center px-4 max-md:px-2 font-normal text-[20px] max-md:text-xs leading-[100%] tracking-normal">
-                                    {editMode ? (
-                                        <input
-                                            type="text"
-                                            value={editData.full_name || ''}
-                                            onChange={(e) => handleEditChange('full_name', e.target.value)}
-                                            className="bg-white/10 border border-white/30 rounded px-2 py-1 w-full text-white text-xs"
-                                        />
-                                    ) : data.full_name || 'Не указано'}
+                                    {data.full_name || 'Не указано'}
                                 </div>
 
                                 <div className="col-span-2 h-20 max-md:h-16 flex items-center px-4 max-md:px-2 font-normal text-[20px] max-md:text-xs leading-[100%] tracking-normal not-italic">
-                                    {editMode ? (
-                                        <select
-                                            value={editData.group || ''}
-                                            onChange={(e) => handleEditChange('group', e.target.value)}
-                                            className="bg-white/10 border border-white/30 rounded px-2 py-1 w-full text-white text-xs"
-                                        >
-                                            <option value="design">Дизайн</option>
-                                            <option value="repair">Ремонт</option>
-                                            <option value="supplier">Поставщик</option>
-                                            <option value="media">Медиа</option>
-                                        </select>
-                                    ) : data.group_display || data.group || 'Не указано'}
+                                    {data.group_display || data.group || 'Не указано'}
                                 </div>
 
                                 <div className="col-span-2 h-20 max-md:h-16 flex items-center px-4 max-md:px-2 font-normal text-[20px] max-md:text-xs leading-[100%] tracking-normal not-italic">
-                                    {editMode ? (
-                                        <input
-                                            type="text"
-                                            value={editData.phone || ''}
-                                            onChange={(e) => handleEditChange('phone', e.target.value)}
-                                            className="bg-white/10 border border-white/30 rounded px-2 py-1 w-full text-white text-xs"
-                                        />
-                                    ) : formatPhone(data.phone)}
+                                    {formatPhone(data.phone)}
                                 </div>
 
                                 <div className="col-span-2 h-20 max-md:h-16 flex items-center px-4 max-md:px-2 font-normal not-italic text-[20px] max-md:text-xs leading-[100%] tracking-normal">
                                     {formatDate(data.created_at)}
                                 </div>
 
-                                {/* Info textarea - To'g'rilangan */}
+                                {/* Info textarea */}
                                 <textarea
                                     className='col-span-10 max-md:col-span-12 bg-white/10 outline-none h-[438px] max-md:h-40 p-4.5 max-md:p-2 text-white max-md:text-xs mt-4 max-md:mt-2 resize-none border border-white/20 rounded-lg'
-                                    value={editMode ? getEditTextareaValue() : generateInfoText()}
-                                    onChange={editMode ? handleTextareaChange : undefined}
-                                    readOnly={!editMode}
+                                    value={generateInfoText()}
+                                    readOnly
                                     placeholder='ИНФОРМАЦИЯ СОГЛАСНО ПРОФЕЛЮ УЧАСТНИКОВ'
-                                    style={{ fontFamily: editMode ? 'monospace' : 'inherit' }}
                                 />
                             </div>
 
                             {/* Action buttons */}
                             <div className='col-span-2 max-md:col-span-12'>
                                 <div className="col-span-2 flex flex-col max-md:flex-row max-md:flex-wrap items-start max-md:justify-between px-4 max-md:px-2 text-right gap-y-3 max-md:gap-1 mt-4 max-md:mt-2">
-                                    {editMode ? (
-                                        <>
-                                            <button
-                                                onClick={handleSave}
-                                                disabled={saving}
-                                                className="font-normal not-italic text-base max-md:text-xs leading-[100%] tracking-normal bg-green-600 hover:bg-green-700 w-40 max-md:w-20 h-11 max-md:h-8 rounded-[25px] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                                            >
-                                                {saving ? 'СОХРАНЕНИЕ...' : 'СОХРАНИТЬ'}
-                                            </button>
-                                            <button
-                                                onClick={() => {
-                                                    setEditMode(false)
-                                                    setEditData(data)
-                                                }}
-                                                className="font-normal not-italic text-base max-md:text-xs leading-[100%] tracking-normal bg-red-600 hover:bg-red-700 w-40 max-md:w-20 h-11 max-md:h-8 rounded-[25px] transition-colors"
-                                            >
-                                                ОТМЕНИТЬ
-                                            </button>
-                                        </>
-                                    ) : (
-                                        <>
-                                            <button
-                                                onClick={() => setEditMode(true)}
-                                                className="font-normal not-italic text-base max-md:text-xs leading-[100%] tracking-normal bg-white/10 hover:bg-white/20 w-40 max-md:w-20 h-11 max-md:h-8 rounded-[25px] transition-colors border border-white/30"
-                                            >
-                                                редактировать
-                                            </button>
+                                    <button
+                                        onClick={handleEditClick}
+                                        className="font-normal not-italic text-base max-md:text-xs leading-[100%] tracking-normal bg-white/10 hover:bg-white/20 w-40 max-md:w-20 h-11 max-md:h-8 rounded-[25px] transition-colors border border-white/30"
+                                    >
+                                        редактировать
+                                    </button>
 
-                                            {data.status !== 'published' && (
-                                                <button
-                                                    onClick={() => openModal('publish')}
-                                                    className="font-normal not-italic text-base max-md:text-xs leading-[100%] tracking-normal bg-blue-600 hover:bg-blue-700 w-40 max-md:w-20 h-11 max-md:h-8 rounded-[25px] transition-colors"
-                                                >
-                                                    опубликовать
-                                                </button>
-                                            )}
-
-                                            {data.status !== 'rejected' && (
-                                                <button
-                                                    onClick={() => openModal('reject')}
-                                                    className="font-normal not-italic text-base max-md:text-xs leading-[100%] tracking-normal bg-yellow-600 hover:bg-yellow-700 w-40 max-md:w-20 h-11 max-md:h-8 rounded-[25px] transition-colors"
-                                                >
-                                                    отклонить
-                                                </button>
-                                            )}
-
-                                            <button
-                                                onClick={() => openModal('delete')}
-                                                className="font-normal not-italic text-base max-md:text-xs leading-[100%] tracking-normal bg-[#D7B706] hover:bg-[#C0A205] w-40 max-md:w-20 h-11 max-md:h-8 rounded-[25px] transition-colors"
-                                            >
-                                                в архив
-                                            </button>
-
-                                            {/* <button
-                                                onClick={() => openModal('moderation')}
-                                                className="font-normal not-italic text-base leading-[100%] tracking-normal bg-purple-600 hover:bg-purple-700 w-40 h-11 rounded-[25px] transition-colors mt-4"
-                                            >
-                                                модерация
-                                            </button> */}
-                                        </>
+                                    {data.status !== 'published' && (
+                                        <button
+                                            onClick={() => openActionModal('publish')}
+                                            className="font-normal not-italic text-base max-md:text-xs leading-[100%] tracking-normal bg-blue-600 hover:bg-blue-700 w-40 max-md:w-20 h-11 max-md:h-8 rounded-[25px] transition-colors"
+                                        >
+                                            опубликовать
+                                        </button>
                                     )}
+
+                                    {data.status !== 'rejected' && (
+                                        <button
+                                            onClick={() => openActionModal('reject')}
+                                            className="font-normal not-italic text-base max-md:text-xs leading-[100%] tracking-normal bg-yellow-600 hover:bg-yellow-700 w-40 max-md:w-20 h-11 max-md:h-8 rounded-[25px] transition-colors"
+                                        >
+                                            отклонить
+                                        </button>
+                                    )}
+
+                                    <button
+                                        onClick={() => openActionModal('delete')}
+                                        className="font-normal not-italic text-base max-md:text-xs leading-[100%] tracking-normal bg-[#D7B706] hover:bg-[#C0A205] w-40 max-md:w-20 h-11 max-md:h-8 rounded-[25px] transition-colors"
+                                    >
+                                        в архив
+                                    </button>
                                 </div>
                             </div>
                         </div>

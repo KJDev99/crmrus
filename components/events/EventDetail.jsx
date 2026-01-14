@@ -4,11 +4,12 @@ import { IoIosArrowBack } from 'react-icons/io'
 import { format, parseISO } from 'date-fns'
 import { ru } from 'date-fns/locale'
 import axios from 'axios'
+import { useRouter } from 'next/navigation'
 
 export default function EventDetail({ setStep, selectedEvent }) {
     const [eventDetail, setEventDetail] = useState(null)
     const [loading, setLoading] = useState(false)
-
+    const router = useRouter();
     useEffect(() => {
         if (selectedEvent) {
             fetchEventDetail()
@@ -54,6 +55,38 @@ export default function EventDetail({ setStep, selectedEvent }) {
         }
     }
 
+    const handleLogout = () => {
+
+        try {
+            // Barcha token va ma'lumotlarni o'chirish
+            localStorage.removeItem('access_token')
+            localStorage.removeItem('refresh_token')
+
+            // Session storage ni tozalash
+            sessionStorage.clear()
+
+            // Xabar berish
+            toast.success('Вы успешно вышли из системы', {
+                duration: 2000,
+                position: 'top-center'
+            })
+
+            // Login sahifasiga yo'naltirish
+            setTimeout(() => {
+                router.push('/login')
+            }, 1000)
+
+        } catch (error) {
+            console.error('Ошибка при выходе из системы:', error)
+            toast.error('Ошибка при выходе из системы')
+
+            // Xato bo'lsa ham login sahifasiga yo'naltirish
+            setTimeout(() => {
+                router.push('/login')
+            }, 1000)
+        }
+    }
+
     if (loading || !eventDetail) {
         return (
             <div>
@@ -80,7 +113,7 @@ export default function EventDetail({ setStep, selectedEvent }) {
                     <IoIosArrowBack size={40} />
                 </button>
                 <img src="/icons/logo.svg" alt="logo" />
-                <div>
+                <div onClick={handleLogout}>
                     <img src="/icons/share.svg" alt="share" className="cursor-pointer" />
                 </div>
             </div>

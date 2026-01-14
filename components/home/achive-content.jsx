@@ -1,11 +1,31 @@
 'use client'
 import { useState, useEffect, useCallback } from "react";
 import axios from "axios";
-import Link from "next/link";
 import { FaSearch } from "react-icons/fa";
 import { BiSortAlt2 } from "react-icons/bi";
 import { BsChevronLeft } from "react-icons/bs";
+import { FiRefreshCw } from "react-icons/fi";
 import debounce from "lodash/debounce";
+
+const API_BASE_URL = "https://api.reiting-profi.ru/api/v1/accounts";
+
+// URL generator funksiyasi
+const getRestoreUrl = (requestName, id) => {
+    const baseURL = API_BASE_URL;
+
+    switch (requestName) {
+        case 'DesignerQuestionnaire':
+            return `${baseURL}/questionnaires/${id}/restore/`;
+        case 'RepairQuestionnaire':
+            return `${baseURL}/repair-questionnaires/${id}/restore/`;
+        case 'SupplierQuestionnaire':
+            return `${baseURL}/supplier-questionnaires/${id}/restore/`;
+        case 'MediaQuestionnaire':
+            return `${baseURL}/media-questionnaires/${id}/restore/`;
+        default:
+            return null;
+    }
+};
 
 export default function AchiveContent() {
     const [data, setData] = useState([]);
@@ -25,6 +45,7 @@ export default function AchiveContent() {
         offset: 0,
     });
     const [sortReverse, setSortReverse] = useState(false);
+    const [restoringId, setRestoringId] = useState(null);
 
     // Debounce qidiruv funksiyasi
     const debouncedFetch = useCallback(
@@ -43,6 +64,7 @@ export default function AchiveContent() {
     useEffect(() => {
         debouncedFetch({ ...filters, offset: 0 });
     }, [filters.full_name, filters.id, filters.organization_name, filters.phone, filters.limit]);
+
 
     const fetchQuestionnaires = async (currentFilters) => {
         try {
@@ -99,6 +121,70 @@ export default function AchiveContent() {
         }
     };
 
+    // Archivdan chiqarish funksiyasi
+    const handleRestoreFromArchive = async (id, requestName, fullName) => {
+        try {
+            // URL ni olish
+            const restoreUrl = getRestoreUrl(requestName, id);
+
+            if (!restoreUrl) {
+                throw new Error(`Неизвестный тип анкеты: ${requestName}`);
+            }
+
+
+
+            setRestoringId(id);
+
+            const token = localStorage.getItem("accessToken");
+
+            if (!token) {
+                throw new Error("Токен не найден. Пожалуйста, войдите в систему.");
+            }
+
+            // PATCH so'rovini yuborish
+            const response = await axios.patch(
+                restoreUrl,
+                {},
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                        "Content-Type": "application/json",
+                    }
+                }
+            );
+
+            console.log("Восстановление успешно:", response.data);
+
+            // Ma'lumotlarni yangilash
+            fetchQuestionnaires(filters);
+
+        } catch (err) {
+            console.error("Ошибка при восстановлении из архива:", err);
+
+            let errorMessage = "Ошибка при восстановлении из архива";
+
+            if (err.response) {
+                // Serverdan kelgan xatolik
+                if (err.response.status === 401) {
+                    errorMessage = "Ошибка авторизации. Пожалуйста, войдите снова.";
+                } else if (err.response.status === 403) {
+                    errorMessage = "У вас нет прав для восстановления анкет из архива.";
+                } else if (err.response.status === 404) {
+                    errorMessage = "Анкета не найдена или уже восстановлена.";
+                } else if (err.response.data?.message) {
+                    errorMessage = err.response.data.message;
+                } else if (err.response.data?.detail) {
+                    errorMessage = err.response.data.detail;
+                }
+            } else if (err.message) {
+                errorMessage = err.message;
+            }
+
+        } finally {
+            setRestoringId(null);
+        }
+    };
+
     // Filter o'zgartirish
     const handleFilterChange = (key, value) => {
         setFilters(prev => ({ ...prev, [key]: value }));
@@ -107,9 +193,7 @@ export default function AchiveContent() {
     // Search input uchun umumiy handler
     const handleSearchChange = (e) => {
         const value = e.target.value;
-        // Avtomatik ravishda ID yoki telefon raqamni aniqlash
         if (/^\d+$/.test(value)) {
-            // Faqat raqamlar bo'lsa, ID yoki telefon bo'lishi mumkin
             if (value.length <= 6) {
                 handleFilterChange("id", value);
                 handleFilterChange("phone", "");
@@ -122,7 +206,6 @@ export default function AchiveContent() {
                 handleFilterChange("organization_name", "");
             }
         } else {
-            // Matn bo'lsa, ism yoki tashkilot nomi bo'lishi mumkin
             handleFilterChange("full_name", value);
             handleFilterChange("organization_name", value);
             handleFilterChange("id", "");
@@ -183,6 +266,17 @@ export default function AchiveContent() {
         return phone;
     };
 
+    // Request name ni chiroyli formatlash
+    const formatRequestName = (requestName) => {
+        const map = {
+            'DesignerQuestionnaire': 'Дизайнер',
+            'RepairQuestionnaire': 'Ремонт',
+            'SupplierQuestionnaire': 'Поставщик',
+            'MediaQuestionnaire': 'Медиа'
+        };
+        return map[requestName] || requestName;
+    };
+
     // Pagination sahifalarini hisoblash
     const totalPages = Math.ceil(pagination.count / filters.limit);
     const currentPage = Math.floor(filters.offset / filters.limit) + 1;
@@ -212,6 +306,8 @@ export default function AchiveContent() {
         return pages;
     };
 
+
+
     return (
         <div className="text-white">
             <div className="px-4 py-3 flex items-center gap-7 mt-14 ml-20">
@@ -240,7 +336,6 @@ export default function AchiveContent() {
                     <h1 className="font-normal not-italic text-[37px] leading-[100%] tracking-normal text-white">
                         АНКЕТЫ АРХИВ
                     </h1>
-
                 </div>
 
                 {error && (
@@ -248,6 +343,7 @@ export default function AchiveContent() {
                         Ошибка: {error}
                     </div>
                 )}
+
 
                 {loading ? (
                     <div className="flex justify-center items-center h-64">
@@ -258,66 +354,90 @@ export default function AchiveContent() {
                         <div className="overflow-x-auto">
                             <table className="w-full">
                                 <thead>
-                                    <tr className="text-left text-white text-sm grid grid-cols-14">
-                                        <th className="col-span-1 pb-4 px-4 text-[20px] font-normal leading-[100%] border-b border-white tracking-normal">
+                                    <tr className="text-left text-white text-sm grid grid-cols-15">
+                                        <th className="col-span-1 pb-4 px-4 text-[18px] font-normal leading-[100%] border-b border-white tracking-normal">
                                             ID
                                         </th>
-                                        <th className="col-span-3 pb-4 px-4 text-[20px] font-normal leading-[100%] border-b border-white tracking-normal">
+                                        <th className="col-span-3 pb-4 px-4 text-[18px] font-normal leading-[100%] border-b border-white tracking-normal">
                                             ФИО / Название
                                         </th>
-                                        <th className="col-span-2 pb-4 px-4 text-[20px] font-normal leading-[100%] border-b border-white tracking-normal">
+                                        <th className="col-span-2 pb-4 px-4 text-[18px] font-normal leading-[100%] border-b border-white tracking-normal">
+                                            Тип
+                                        </th>
+                                        <th className="col-span-1 pb-4 px-4 text-[18px] font-normal leading-[100%] border-b border-white tracking-normal">
                                             Группа
                                         </th>
-                                        <th className="col-span-2 pb-4 px-4 text-[20px] font-normal leading-[100%] border-b border-white tracking-normal">
+                                        <th className="col-span-2 pb-4 px-4 text-[18px] font-normal leading-[100%] border-b border-white tracking-normal">
                                             Телефон
                                         </th>
-                                        <th className="col-span-2 pb-4 px-4 text-[20px] font-normal leading-[100%] border-b border-white tracking-normal">
+                                        <th className="col-span-2 pb-4 px-4 text-[18px] font-normal leading-[100%] border-b border-white tracking-normal">
                                             Бренд
                                         </th>
-                                        <th className="col-span-2 pb-4 px-4 text-[20px] font-normal leading-[100%] border-b border-white tracking-normal">
+                                        <th className="col-span-2 pb-4 px-4 text-[18px] font-normal leading-[100%] border-b border-white tracking-normal">
                                             Дата создания
                                         </th>
-                                        <th className="col-span-2 pb-4 px-4 text-[20px] font-normal leading-[100%] border-b border-white tracking-normal"></th>
+                                        <th className="col-span-2 pb-4 px-4 text-[18px] font-normal leading-[100%] border-b border-white tracking-normal">
+                                            Действия
+                                        </th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     {data.length === 0 ? (
                                         <tr>
-                                            <td colSpan="14" className="text-center py-8 text-xl text-gray-400">
+                                            <td colSpan="15" className="text-center py-8 text-xl text-gray-400">
                                                 Нет данных для отображения
                                             </td>
                                         </tr>
                                     ) : (
                                         data.map((row, index) => (
                                             <tr
-                                                key={`${row.id}-${index}`}
-                                                className="text-white hover:bg-gray-750 grid grid-cols-14 items-center"
+                                                key={`${row.id}-${row.request_name}-${index}`}
+                                                className="text-white hover:bg-gray-750 grid grid-cols-15 items-center"
                                             >
-                                                <td className="col-span-1 h-20 flex items-center px-4 font-normal text-[20px] leading-[100%] tracking-normal border-b border-white/30">
+                                                <td className="col-span-1 h-20 flex items-center px-4 font-normal text-[16px] leading-[100%] tracking-normal border-b border-white/30">
                                                     {index + 1}
                                                 </td>
-                                                <td className="col-span-3 h-20 flex items-center px-4 font-normal text-[20px] leading-[100%] tracking-normal border-b border-white/30">
+                                                <td className="col-span-3 h-20 flex items-center px-4 font-normal text-[16px] leading-[100%] tracking-normal border-b border-white/30">
                                                     {row.full_name || "Не указано"}
                                                 </td>
-                                                <td className="col-span-2 h-20 flex items-center px-4 font-normal text-[20px] leading-[100%] tracking-normal not-italic border-b border-white/30">
-                                                    {row.group_display || row.group || "Не указано"}
+                                                <td className="col-span-2 h-20 flex items-center px-4 font-normal text-[16px] leading-[100%] tracking-normal not-italic border-b border-white/30">
+                                                    {formatRequestName(row.request_name)}
                                                 </td>
-                                                <td className="col-span-2 h-20 flex items-center px-4 font-normal text-[20px] leading-[100%] tracking-normal not-italic border-b border-white/30">
+                                                <td className="col-span-1 h-20 flex items-center px-4 font-normal text-[16px] leading-[100%] tracking-normal not-italic border-b border-white/30">
+                                                    {row.group_display || "Не указано"}
+                                                </td>
+                                                <td className="col-span-2 h-20 flex items-center px-4 font-normal text-[16px] leading-[100%] tracking-normal not-italic border-b border-white/30">
                                                     {formatPhone(row.phone)}
                                                 </td>
-                                                <td className="col-span-2 h-20 flex items-center px-4 font-normal text-[20px] leading-[100%] tracking-normal not-italic border-b border-white/30">
+                                                <td className="col-span-2 h-20 flex items-center px-4 font-normal text-[16px] leading-[100%] tracking-normal not-italic border-b border-white/30">
                                                     {row.brand_name || "Не указано"}
                                                 </td>
-                                                <td className="col-span-2 h-20 flex items-center px-4 font-normal not-italic text-[20px] leading-[100%] tracking-normal border-b border-white/30">
+                                                <td className="col-span-2 h-20 flex items-center px-4 font-normal not-italic text-[16px] leading-[100%] tracking-normal border-b border-white/30">
                                                     {formatDate(row.created_at)}
                                                 </td>
-                                                <td className="col-span-2 h-20 flex items-center px-4 border-b border-white/30 text-right">
-                                                    <Link
-                                                        href={`/anketa/${row.id}?type=${row.request_name}`}
-                                                        className="font-normal not-italic text-base leading-[100%] tracking-normal bg-[#71707099] hover:bg-[#717070cc] w-40 h-11 rounded-[25px] flex items-center justify-center transition-colors"
+                                                <td className="col-span-2 h-20 flex items-center px-4 border-b border-white/30">
+                                                    <button
+                                                        onClick={() => handleRestoreFromArchive(
+                                                            row.id,
+                                                            row.request_name,
+                                                            row.full_name || "Неизвестный"
+                                                        )}
+                                                        disabled={restoringId === row.id}
+                                                        className={`font-normal not-italic text-sm leading-[100%] tracking-normal w-48 h-11 rounded-[25px] flex items-center justify-center transition-colors gap-2 ${restoringId === row.id
+                                                            ? 'bg-[#4a5568] cursor-not-allowed'
+                                                            : 'bg-[#2d3748] hover:bg-[#4a5568] hover:shadow-lg'
+                                                            }`}
+                                                        title={`Восстановить ${formatRequestName(row.request_name)} анкету`}
                                                     >
-                                                        ПОСМОТРЕТЬ
-                                                    </Link>
+                                                        {restoringId === row.id ? (
+                                                            <>
+                                                                <FiRefreshCw className="animate-spin" size={18} />
+                                                                Восстановление...
+                                                            </>
+                                                        ) : (
+                                                            <>Pазархив</>
+                                                        )}
+                                                    </button>
                                                 </td>
                                             </tr>
                                         ))
@@ -329,7 +449,6 @@ export default function AchiveContent() {
                         {/* Pagination */}
                         {totalPages > 1 && (
                             <div className="flex justify-end gap-px mt-6 mr-20">
-                                {/* Oldingi sahifaga */}
                                 <button
                                     onClick={handlePrevPage}
                                     disabled={!pagination.previous}
@@ -338,7 +457,6 @@ export default function AchiveContent() {
                                     <BsChevronLeft />
                                 </button>
 
-                                {/* Sahifa raqamlari */}
                                 {getPageNumbers().map(page => (
                                     <button
                                         key={page}
@@ -349,7 +467,6 @@ export default function AchiveContent() {
                                     </button>
                                 ))}
 
-                                {/* Keyingi sahifaga */}
                                 <button
                                     onClick={handleNextPage}
                                     disabled={!pagination.next}
@@ -362,9 +479,10 @@ export default function AchiveContent() {
 
                         {/* Pagination info */}
                         {pagination.count > 0 && (
-                            <div className="ml-20 mt-4 text-gray-400">
+                            <div className="ml-20 mt-4 text-gray-400 text-sm">
                                 Показано {Math.min(filters.offset + 1, pagination.count)}-
                                 {Math.min(filters.offset + filters.limit, pagination.count)} из {pagination.count}
+                                <span className="ml-4">Текущая страница: {currentPage} из {totalPages}</span>
                             </div>
                         )}
                     </>

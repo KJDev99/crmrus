@@ -150,7 +150,7 @@ export default function Rating() {
   // Sort icon olish
   const getSortIcon = (column) => {
     if (sortBy !== column) return null
-    return sortOrder === 'desc' ? '▼' : '▲'
+    return sortOrder === 'desc' ? <BiSortAlt2 /> : <BiSortAlt2 color="yellow" />
   }
 
   // Pagination sahifalarini hisoblash
@@ -252,7 +252,6 @@ export default function Rating() {
                 <tr className="border-b border-line text-left text-[18px]">
                   <th className="py-4 font-normal text-[20px] leading-[1] tracking-normal px-6">
                     <button
-                      onClick={() => handleSort('name')}
                       className="flex items-center gap-1 hover:text-yellow-400 transition-colors"
                     >
                       Название организации / ФИ
@@ -261,7 +260,6 @@ export default function Rating() {
                   </th>
                   <th className="py-4 font-normal text-[20px] leading-[1] tracking-normal px-6">
                     <button
-                      onClick={() => handleSort('group')}
                       className="flex items-center gap-1 hover:text-yellow-400 transition-colors"
                     >
                       Группа
@@ -271,27 +269,27 @@ export default function Rating() {
                   <th className="py-4 font-normal text-[20px] leading-[1] tracking-normal px-6 text-center">
                     <button
                       onClick={() => handleSort('total_rating_count')}
-                      className="flex items-center gap-1 hover:text-yellow-400 transition-colors justify-center"
+                      className="flex items-center gap-1 hover:text-yellow-400 transition-colors justify-center w-full"
                     >
-                      Общий<br />Рейтинг
+                      Общий Рейтинг
                       {getSortIcon('total_rating_count')}
                     </button>
                   </th>
                   <th className="py-4 font-normal text-[20px] leading-[1] tracking-normal px-6 text-center">
                     <button
                       onClick={() => handleSort('positive_rating_count')}
-                      className="flex items-center gap-1 hover:text-yellow-400 transition-colors justify-center"
+                      className="flex items-center gap-1 hover:text-yellow-400 transition-colors justify-center w-full"
                     >
-                      Положительный<br />Рейтинг
+                      Положительный Рейтинг
                       {getSortIcon('positive_rating_count')}
                     </button>
                   </th>
                   <th className="py-4 font-normal text-[20px] leading-[1] tracking-normal px-6 text-center">
                     <button
                       onClick={() => handleSort('constructive_rating_count')}
-                      className="flex items-center gap-1 hover:text-yellow-400 transition-colors justify-center"
+                      className="flex items-center gap-1 hover:text-yellow-400 transition-colors justify-center w-full"
                     >
-                      Конструктивный<br />Рейтинг
+                      Конструктивный Рейтинг
                       {getSortIcon('constructive_rating_count')}
                     </button>
                   </th>

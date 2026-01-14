@@ -192,7 +192,7 @@ export default function DesignBox() {
     };
 
     return (
-        <div className='max-md:px-4'>
+        <div className='max-md:px-4 max-w-7xl mx-auto'>
             {step === 'select' && (
                 <DesignSelect
                     filterChoices={filterChoices}
