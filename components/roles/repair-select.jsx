@@ -81,6 +81,8 @@ export default function RepairSelect({ filterChoices, selectedFilters, onFilterC
     };
 
     const getChoices = (filterName) => {
+        console.log(filterName, filterChoices);
+
         if (!filterChoices) return [];
 
         switch (filterName) {
@@ -165,11 +167,11 @@ export default function RepairSelect({ filterChoices, selectedFilters, onFilterC
                                 {getChoices(item.key).map((choice) => (
                                     <button
                                         key={choice.value}
-                                        onClick={() => handleSelect(item.key, choice.value)}
+                                        onClick={() => handleSelect(item.key, choice.label)}
                                         className={`
                                             w-full text-left px-5 py-3 text-white
                                             hover:bg-white/20 transition-all
-                                            ${selectedFilters[item.key] === choice.value ? 'bg-white/30' : ''}
+                                            ${selectedFilters[item.key] === choice.label ? 'bg-white/30' : ''}
                                         `}
                                     >
                                         {choice.label}

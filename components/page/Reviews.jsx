@@ -101,7 +101,7 @@ function ReviewItem({ review, onApprove, onReject, onStatusUpdate }) {
               {formatPhone(review.reviewer_phone)}
             </p>
             <div className="mt-4 flex items-center gap-2 font-normal text-[12px] leading-[1] tracking-normal">
-              {getReviewType() === 'positive' ? (
+              {getReviewType() !== 'positive' ? (
                 <Star className="text-yellow-400" size={16} />
               ) : (
                 <FaStar className="text-yellow-400" size={16} />
