@@ -466,7 +466,7 @@ export default function DesignBox() {
             <div className="max-w-4xl mx-auto">
                 <div className="bg-glass1 rounded-2xl p-4 sm:p-6 md:p-8 lg:p-10 shadow-2xl mobile-padding">
                     <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-center mb-2 text-white">
-                        Копия "Дизайн"
+                        Анкета участника: роль — Дизайн.
                     </h1>
 
 
@@ -1079,7 +1079,7 @@ export default function DesignBox() {
                                 </>
                             ) : (
                                 <>
-                                    <span className="text-sm sm:text-base">Присоединится к клубу</span>
+                                    <span className="text-sm sm:text-base">Клуб</span>
                                 </>
                             )}
                         </button>

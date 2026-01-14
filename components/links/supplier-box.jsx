@@ -1070,7 +1070,7 @@ export default function SupplierBox() {
                                 </>
                             ) : (
                                 <>
-                                    <span className="text-sm sm:text-base"> Присоединится к клубу</span>
+                                    <span className="text-sm sm:text-base"> Клуб</span>
                                 </>
                             )}
                         </button>
