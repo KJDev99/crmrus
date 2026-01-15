@@ -1,5 +1,5 @@
 'use client'
-import React, { useState, useEffect, useCallback } from "react"
+import React, { useState, useEffect, useCallback, useRef } from "react"
 import axios from "axios"
 import { FaSearch, FaPhone, FaEnvelope } from "react-icons/fa"
 import { IoIosArrowDown, IoIosArrowUp } from "react-icons/io"
@@ -24,25 +24,49 @@ export default function Users() {
         offset: 0,
     })
 
+    // Abort controller uchun ref
+    const abortControllerRef = useRef(null)
+
     // Debounce qidiruv funksiyasi
     const debouncedFetch = useCallback(
-        debounce((filters) => {
-            fetchUsers(filters)
+        debounce((searchFilters) => {
+            fetchUsers(searchFilters)
         }, 500),
         []
     )
 
-    // Ma'lumotlarni yuklash
+    // Barcha dependency'larni bitta useEffectda boshqarish
     useEffect(() => {
-        fetchUsers(filters)
-    }, [])
+        // Avvalgi so'rovni abort qilish
+        if (abortControllerRef.current) {
+            abortControllerRef.current.abort()
+        }
 
-    // Search filter o'zgarganida
-    useEffect(() => {
-        debouncedFetch({ ...filters, offset: 0 })
-    }, [filters.search, filters.limit])
+        // Yangi abort controller yaratish
+        abortControllerRef.current = new AbortController()
+        const signal = abortControllerRef.current.signal
 
-    const fetchUsers = async (currentFilters) => {
+        // Kichik timeout orqali bir necha marta chaqirilishdan himoya qilish
+        const timer = setTimeout(() => {
+            fetchUsers(filters, signal)
+        }, 100)
+
+        // Cleanup funksiyasi
+        return () => {
+            clearTimeout(timer)
+            if (abortControllerRef.current) {
+                abortControllerRef.current.abort()
+            }
+        }
+    }, [filters.search, filters.limit, filters.offset])
+
+    const fetchUsers = async (currentFilters, signal) => {
+        // Agar so'rov abort qilingan bo'lsa
+        if (signal && signal.aborted) {
+            console.log('Request aborted')
+            return
+        }
+
         try {
             setLoading(true)
             setError(null)
@@ -69,31 +93,43 @@ export default function Users() {
                         Authorization: `Bearer ${token}`,
                         "Content-Type": "application/json",
                     },
-                    params: params
+                    params: params,
+                    signal: signal // abort signal ni berish
                 }
             )
 
-            console.log("API ответ:", response.data)
+            // Agar so'rov abort qilinmagan bo'lsa
+            if (!signal || !signal.aborted) {
+                console.log("API ответ:", response.data)
 
-            if (Array.isArray(response.data.results)) {
-                setData(response.data.results)
-                setPagination({
-                    count: response.data.count || 0,
-                    next: response.data.next,
-                    previous: response.data.previous,
-                })
-            } else {
-                setData([])
-                setPagination({ count: 0, next: null, previous: null })
+                if (Array.isArray(response.data.results)) {
+                    setData(response.data.results)
+                    setPagination({
+                        count: response.data.count || 0,
+                        next: response.data.next,
+                        previous: response.data.previous,
+                    })
+                } else {
+                    setData([])
+                    setPagination({ count: 0, next: null, previous: null })
+                }
             }
         } catch (err) {
+            // Agar abort qilingan bo'lsa, xatoni ignore qilish
+            if (axios.isCancel(err) || err.name === 'AbortError') {
+                console.log('Request was cancelled')
+                return
+            }
+
             console.error("Ошибка при загрузке пользователей:", err)
             setError(err.response?.data?.message || err.message || "Ошибка при загрузке данных")
             setData([])
             setPagination({ count: 0, next: null, previous: null })
             toast.error(err.response?.data?.message || "Ошибка при загрузке пользователей")
         } finally {
-            setLoading(false)
+            if (!signal || !signal.aborted) {
+                setLoading(false)
+            }
         }
     }
 
@@ -108,7 +144,11 @@ export default function Users() {
 
     // Filter o'zgartirish
     const handleFilterChange = (key, value) => {
-        setFilters(prev => ({ ...prev, [key]: value }))
+        setFilters(prev => ({
+            ...prev,
+            [key]: value,
+            offset: key === 'search' ? 0 : prev.offset // Search o'zgarganda offsetni 0 qilish
+        }))
     }
 
     // Search input handler
@@ -116,30 +156,28 @@ export default function Users() {
         handleFilterChange('search', e.target.value)
     }
 
-    // Pagination handlerlari
+    // Pagination handlerlari - faqat state o'zgartirish
     const handleNextPage = () => {
         if (pagination.next) {
-            const newOffset = filters.offset + filters.limit
-            const newFilters = { ...filters, offset: newOffset }
-            setFilters(newFilters)
-            fetchUsers(newFilters)
+            setFilters(prev => ({
+                ...prev,
+                offset: prev.offset + prev.limit
+            }))
         }
     }
 
     const handlePrevPage = () => {
         if (pagination.previous) {
-            const newOffset = Math.max(0, filters.offset - filters.limit)
-            const newFilters = { ...filters, offset: newOffset }
-            setFilters(newFilters)
-            fetchUsers(newFilters)
+            setFilters(prev => ({
+                ...prev,
+                offset: Math.max(0, prev.offset - prev.limit)
+            }))
         }
     }
 
     const handlePageClick = (pageNumber) => {
         const newOffset = (pageNumber - 1) * filters.limit
-        const newFilters = { ...filters, offset: newOffset }
-        setFilters(newFilters)
-        fetchUsers(newFilters)
+        setFilters(prev => ({ ...prev, offset: newOffset }))
     }
 
     // Format phone number

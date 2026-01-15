@@ -21,16 +21,22 @@ export default function DesignSelect({ filterChoices, selectedFilters, onFilterC
         }));
     };
 
-    const getSelectedLabel = (filterName, value) => {
+    const getSelectedLabel = (filterName) => {
+        const value = selectedFilters[filterName];
         if (!value || !filterChoices) return `Выберете ${getPlaceholder(filterName)}`;
 
-        const choices = filterChoices[filterName + (filterName === 'segment' ? 's' : '_options')] ||
-            filterChoices[filterName + (filterName === 'property_purpose' ? 's' : '')] ||
-            filterChoices[filterName === 'group' ? 'categories' : filterName + 's'] ||
-            [];
+        const choices = getChoices(filterName);
 
+        // Filter by value (backend qiymati)
         const choice = choices.find(item => item.value === value);
-        return choice ? choice.label : `Выберете ${getPlaceholder(filterName)}`;
+
+        // Agar value topilmasa, label orqali qidirish (eski versiya uchun)
+        if (!choice) {
+            const choiceByLabel = choices.find(item => item.label === value);
+            return choiceByLabel ? choiceByLabel.label : `Выберете ${getPlaceholder(filterName)}`;
+        }
+
+        return choice.label;
     };
 
     const getPlaceholder = (filterName) => {
@@ -46,8 +52,9 @@ export default function DesignSelect({ filterChoices, selectedFilters, onFilterC
         return placeholders[filterName] || '';
     };
 
-    const handleSelect = (filterName, value) => {
-        onFilterChange(filterName, value);
+    const handleSelect = (filterName, choice) => {
+        // Bu yerda choice objectni (value va label) yuboramiz
+        onFilterChange(filterName, choice.value); // Faqat value ni saqlaymiz
         toggleDropdown(filterName);
     };
 
@@ -120,10 +127,11 @@ export default function DesignSelect({ filterChoices, selectedFilters, onFilterC
                                 rounded-2xl transition-all duration-200
                                 bg-glass2 text-white hover:bg-white/40 text-left px-5
                                 flex items-center justify-between
+                                ${selectedFilters[item.key] ? 'border border-yellow-400' : ''}
                             `}
                         >
-                            <span className='truncate'>{getSelectedLabel(item.key, selectedFilters[item.key])}</span>
-                            <IoIosArrowDown />
+                            <span className='truncate'>{getSelectedLabel(item.key)}</span>
+                            <IoIosArrowDown className={selectedFilters[item.key] ? 'text-yellow-400' : ''} />
                         </button>
 
                         {dropdowns[item.key] && (
@@ -131,11 +139,14 @@ export default function DesignSelect({ filterChoices, selectedFilters, onFilterC
                                 {getChoices(item.key).map((choice) => (
                                     <button
                                         key={choice.value}
-                                        onClick={() => handleSelect(item.key, choice.label)}
+                                        onClick={() => handleSelect(item.key, choice)}
                                         className={`
                                             w-full text-left px-5 py-3 text-white
                                             hover:bg-white/20 transition-all
-                                            ${selectedFilters[item.key] === choice.label ? 'bg-white/30' : ''}
+                                            ${selectedFilters[item.key] === choice.value ?
+                                                'bg-white/30 border-l-4 border-yellow-400' :
+                                                ''
+                                            }
                                         `}
                                     >
                                         {choice.label}

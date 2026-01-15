@@ -1,5 +1,5 @@
 'use client'
-import { useState, useEffect, useCallback } from "react"
+import { useState, useEffect, useCallback, useRef } from "react"
 import axios from "axios"
 import { BiSortAlt2 } from "react-icons/bi"
 import { FaSearch } from "react-icons/fa"
@@ -24,30 +24,49 @@ export default function Rating() {
   const [sortBy, setSortBy] = useState('total_rating_count')
   const [sortOrder, setSortOrder] = useState('desc')
 
+  // Abort controller uchun ref
+  const abortControllerRef = useRef(null)
+
   // Debounce qidiruv funksiyasi
   const debouncedFetch = useCallback(
-    debounce((filters) => {
-      fetchRatings(filters)
+    debounce((searchFilters) => {
+      fetchRatings(searchFilters)
     }, 500),
     []
   )
 
-  // Ma'lumotlarni yuklash
+  // Barcha dependency'larni bitta useEffectda boshqarish
   useEffect(() => {
-    fetchRatings(filters)
-  }, [])
+    // Avvalgi so'rovni abort qilish
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort()
+    }
 
-  // Filter o'zgarganida qidiruv
-  useEffect(() => {
-    debouncedFetch({ ...filters, offset: 0 })
-  }, [filters.search, filters.limit])
+    // Yangi abort controller yaratish
+    abortControllerRef.current = new AbortController()
+    const signal = abortControllerRef.current.signal
 
-  // Sort o'zgarganida
-  useEffect(() => {
-    fetchRatings(filters)
-  }, [sortBy, sortOrder])
+    // Kichik timeout orqali bir necha marta chaqirilishdan himoya qilish
+    const timer = setTimeout(() => {
+      fetchRatings(filters, signal)
+    }, 100)
 
-  const fetchRatings = async (currentFilters) => {
+    // Cleanup funksiyasi
+    return () => {
+      clearTimeout(timer)
+      if (abortControllerRef.current) {
+        abortControllerRef.current.abort()
+      }
+    }
+  }, [filters.search, filters.limit, filters.offset, sortBy, sortOrder])
+
+  const fetchRatings = async (currentFilters, signal) => {
+    // Agar so'rov abort qilingan bo'lsa
+    if (signal && signal.aborted) {
+      console.log('Request aborted')
+      return
+    }
+
     try {
       setLoading(true)
       setError(null)
@@ -74,36 +93,52 @@ export default function Rating() {
             Authorization: `Bearer ${token}`,
             "Content-Type": "application/json",
           },
-          params: params
+          params: params,
+          signal: signal // abort signal ni berish
         }
       )
 
-      console.log("API ответ:", response.data)
+      // Agar so'rov abort qilinmagan bo'lsa
+      if (!signal || !signal.aborted) {
+        console.log("API ответ:", response.data)
 
-      if (Array.isArray(response.data.results)) {
-        setData(response.data.results)
-        setPagination({
-          count: response.data.count || 0,
-          next: response.data.next,
-          previous: response.data.previous,
-        })
-      } else {
-        setData([])
-        setPagination({ count: 0, next: null, previous: null })
+        if (Array.isArray(response.data.results)) {
+          setData(response.data.results)
+          setPagination({
+            count: response.data.count || 0,
+            next: response.data.next,
+            previous: response.data.previous,
+          })
+        } else {
+          setData([])
+          setPagination({ count: 0, next: null, previous: null })
+        }
       }
     } catch (err) {
+      // Agar abort qilingan bo'lsa, xatoni ignore qilish
+      if (axios.isCancel(err) || err.name === 'AbortError') {
+        console.log('Request was cancelled')
+        return
+      }
+
       console.error("Ошибка при загрузке рейтингов:", err)
       setError(err.response?.data?.message || err.message || "Ошибка при загрузке данных")
       setData([])
       setPagination({ count: 0, next: null, previous: null })
     } finally {
-      setLoading(false)
+      if (!signal || !signal.aborted) {
+        setLoading(false)
+      }
     }
   }
 
   // Filter o'zgartirish
   const handleFilterChange = (key, value) => {
-    setFilters(prev => ({ ...prev, [key]: value }))
+    setFilters(prev => ({
+      ...prev,
+      [key]: value,
+      offset: key === 'search' ? 0 : prev.offset // Search o'zgarganda offsetni 0 qilish
+    }))
   }
 
   // Search input handler
@@ -114,43 +149,56 @@ export default function Rating() {
   // Sort funksiyasi
   const handleSort = (column) => {
     if (sortBy === column) {
+      // Agar bir xil column bosilsa, orderni o'zgartirish
       setSortOrder(sortOrder === 'desc' ? 'asc' : 'desc')
     } else {
+      // Yangi column bosilsa, yangi column va default desc order
       setSortBy(column)
       setSortOrder('desc')
     }
   }
 
-  // Pagination handlerlari
+  // Pagination handlerlari - faqat state o'zgartirish
   const handleNextPage = () => {
     if (pagination.next) {
-      const newOffset = filters.offset + filters.limit
-      const newFilters = { ...filters, offset: newOffset }
-      setFilters(newFilters)
-      fetchRatings(newFilters)
+      setFilters(prev => ({
+        ...prev,
+        offset: prev.offset + prev.limit
+      }))
     }
   }
 
   const handlePrevPage = () => {
     if (pagination.previous) {
-      const newOffset = Math.max(0, filters.offset - filters.limit)
-      const newFilters = { ...filters, offset: newOffset }
-      setFilters(newFilters)
-      fetchRatings(newFilters)
+      setFilters(prev => ({
+        ...prev,
+        offset: Math.max(0, prev.offset - prev.limit)
+      }))
     }
   }
 
   const handlePageClick = (pageNumber) => {
     const newOffset = (pageNumber - 1) * filters.limit
-    const newFilters = { ...filters, offset: newOffset }
-    setFilters(newFilters)
-    fetchRatings(newFilters)
+    setFilters(prev => ({ ...prev, offset: newOffset }))
   }
 
-  // Sort icon olish
+  // Sort icon olish - faqat aktiv sort bo'lgan column uchun sariq rang
   const getSortIcon = (column) => {
-    if (sortBy !== column) return null
-    return sortOrder === 'desc' ? <BiSortAlt2 /> : <BiSortAlt2 color="yellow" />
+    if (sortBy === column) {
+      return (
+        <BiSortAlt2
+          size={24}
+          className={sortOrder === 'desc' ? 'text-yellow-500 rotate-180' : 'text-yellow-500'}
+        />
+      )
+    }
+    return <BiSortAlt2 size={24} className="text-white" />
+  }
+
+  // Sort iconni faqat raqamli ustunlar uchun ko'rsatish
+  const shouldShowSortIcon = (column) => {
+    const sortableColumns = ['total_rating_count', 'positive_rating_count', 'constructive_rating_count']
+    return sortableColumns.includes(column)
   }
 
   // Pagination sahifalarini hisoblash
@@ -182,13 +230,6 @@ export default function Rating() {
     return pages
   }
 
-  // Umumiy statistika
-  const totalStats = data.reduce((acc, item) => ({
-    total: acc.total + item.total_rating_count,
-    positive: acc.positive + item.positive_rating_count,
-    constructive: acc.constructive + item.constructive_rating_count
-  }), { total: 0, positive: 0, constructive: 0 })
-
   return (
     <div>
       <Toaster
@@ -215,23 +256,12 @@ export default function Rating() {
             <FaSearch size={20} className='text-black font-thin' />
           </button>
         </div>
-
-        <button
-          className="text-gray-400 hover:text-white"
-          onClick={() => handleSort('total_rating_count')}
-          title="Сортировать по общему рейтингу"
-        >
-          <BiSortAlt2 size={32} className={`text-white ${sortBy === 'total_rating_count' && sortOrder === 'desc' ? 'rotate-180' : ''}`} />
-        </button>
       </div>
 
       <div className="ml-20 mt-5 mb-14">
         <h1 className="font-normal not-italic text-[37px] leading-[100%] tracking-normal text-white">
           РЕЙТИНГ
         </h1>
-
-        {/* Umumiy statistika */}
-
       </div>
 
       {error && (
@@ -251,46 +281,51 @@ export default function Rating() {
               <thead>
                 <tr className="border-b border-line text-left text-[18px]">
                   <th className="py-4 font-normal text-[20px] leading-[1] tracking-normal px-6">
+                    Название организации / ФИ
+                  </th>
+                  <th className="py-4 font-normal text-[20px] leading-[1] tracking-normal px-6">
+                    Группа
+                  </th>
+                  <th className="py-4 font-normal text-[20px] leading-[1] tracking-normal px-6">
                     <button
-                      className="flex items-center gap-1 hover:text-yellow-400 transition-colors"
+                      onClick={() => handleSort('total_rating_count')}
+                      className="flex items-center gap-2 hover:text-yellow-400 transition-colors justify-start w-full"
                     >
-                      Название организации / ФИ
-                      {getSortIcon('name')}
+                      {/* Icon oldida */}
+                      {shouldShowSortIcon('total_rating_count') && (
+                        <span className="flex-shrink-0">
+                          {getSortIcon('total_rating_count')}
+                        </span>
+                      )}
+                      <span>Общий Рейтинг</span>
                     </button>
                   </th>
                   <th className="py-4 font-normal text-[20px] leading-[1] tracking-normal px-6">
                     <button
-                      className="flex items-center gap-1 hover:text-yellow-400 transition-colors"
-                    >
-                      Группа
-                      {getSortIcon('group')}
-                    </button>
-                  </th>
-                  <th className="py-4 font-normal text-[20px] leading-[1] tracking-normal px-6 text-center">
-                    <button
-                      onClick={() => handleSort('total_rating_count')}
-                      className="flex items-center gap-1 hover:text-yellow-400 transition-colors justify-center w-full"
-                    >
-                      Общий Рейтинг
-                      {getSortIcon('total_rating_count')}
-                    </button>
-                  </th>
-                  <th className="py-4 font-normal text-[20px] leading-[1] tracking-normal px-6 text-center">
-                    <button
                       onClick={() => handleSort('positive_rating_count')}
-                      className="flex items-center gap-1 hover:text-yellow-400 transition-colors justify-center w-full"
+                      className="flex items-center gap-2 hover:text-yellow-400 transition-colors justify-start w-full"
                     >
-                      Положительный Рейтинг
-                      {getSortIcon('positive_rating_count')}
+                      {/* Icon oldida */}
+                      {shouldShowSortIcon('positive_rating_count') && (
+                        <span className="flex-shrink-0">
+                          {getSortIcon('positive_rating_count')}
+                        </span>
+                      )}
+                      <span>Положительный Рейтинг</span>
                     </button>
                   </th>
-                  <th className="py-4 font-normal text-[20px] leading-[1] tracking-normal px-6 text-center">
+                  <th className="py-4 font-normal text-[20px] leading-[1] tracking-normal px-6">
                     <button
                       onClick={() => handleSort('constructive_rating_count')}
-                      className="flex items-center gap-1 hover:text-yellow-400 transition-colors justify-center w-full"
+                      className="flex items-center gap-2 hover:text-yellow-400 transition-colors justify-start w-full"
                     >
-                      Конструктивный Рейтинг
-                      {getSortIcon('constructive_rating_count')}
+                      {/* Icon oldida */}
+                      {shouldShowSortIcon('constructive_rating_count') && (
+                        <span className="flex-shrink-0">
+                          {getSortIcon('constructive_rating_count')}
+                        </span>
+                      )}
+                      <span>Конструктивный Рейтинг</span>
                     </button>
                   </th>
                 </tr>
@@ -315,7 +350,7 @@ export default function Rating() {
                       </td>
 
                       <td className="py-6 px-6">
-                        <div className="flex items-center justify-center gap-2">
+                        <div className="flex items-center gap-2 justify-center">
                           <svg
                             width="37"
                             height="35"
@@ -333,7 +368,7 @@ export default function Rating() {
                       </td>
 
                       <td className="py-6 px-6">
-                        <div className="flex items-center justify-center gap-2">
+                        <div className="flex items-center gap-2 justify-center">
                           <svg
                             width="37"
                             height="35"
@@ -347,12 +382,11 @@ export default function Rating() {
                             />
                           </svg>
                           <span className="font-bold">{item.positive_rating_count || 0}</span>
-
                         </div>
                       </td>
 
                       <td className="py-6 px-6">
-                        <div className="flex items-center justify-center gap-2">
+                        <div className="flex items-center gap-2 justify-center">
                           <svg
                             width="35"
                             height="33"
@@ -366,7 +400,6 @@ export default function Rating() {
                             />
                           </svg>
                           <span className="font-bold">{item.constructive_rating_count || 0}</span>
-
                         </div>
                       </td>
                     </tr>

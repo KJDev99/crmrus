@@ -1,5 +1,5 @@
 'use client'
-import React, { useState, useEffect, useCallback } from 'react'
+import React, { useState, useEffect, useCallback, useRef } from 'react'
 import axios from 'axios'
 import { FaSearch, FaStar, FaStarHalf } from 'react-icons/fa'
 import { BiSortAlt2 } from 'react-icons/bi'
@@ -100,7 +100,10 @@ function ReviewItem({ review, onApprove, onReject, onStatusUpdate }) {
             <p className="font-normal text-[16px] leading-[1] tracking-normal text-white/50 mt-2">
               {formatPhone(review.reviewer_phone)}
             </p>
-            <div className="mt-4 flex items-center gap-2 font-normal text-[12px] leading-[1] tracking-normal">
+            <p className="font-normal text-[14px] leading-[1] tracking-normal text-white/35 mt-2">
+              {review.created_at ? formatDate(review.created_at) : ''}
+            </p>
+            <div className="mt-2 flex items-center gap-2 font-normal text-[12px] leading-[1] tracking-normal">
               {getReviewType() !== 'positive' ? (
                 <Star className="text-yellow-400" size={16} />
               ) : (
@@ -146,11 +149,16 @@ function ReviewItem({ review, onApprove, onReject, onStatusUpdate }) {
               </div>
             </div>
           ) : (
-            <textarea
-              value={review.text}
-              readOnly
-              className="resize-none w-full h-[130px] outline-none bg-[#3f4763] p-4 font-normal text-[18px] leading-[1] tracking-normal text-white cursor-default"
-            />
+            <div>
+              <p className="font-normal text-[20px] leading-[1] tracking-normal mb-2 text-white">
+                {review?.questionnaire?.brand_name || ''}
+              </p>
+              <textarea
+                value={review.text}
+                readOnly
+                className="resize-none w-full h-[110px] outline-none bg-[#3f4763] p-4 font-normal text-[18px] leading-[1] tracking-normal text-white cursor-default"
+              />
+            </div>
           )}
           {/* {!isEditing && review.status === 'pending' && (
             <button
@@ -217,28 +225,55 @@ export default function Reviews() {
     review_type: ''
   })
   const [sortReverse, setSortReverse] = useState(false)
-
+  const initialFetchDone = useRef(false)
+  const abortControllerRef = useRef(null)
   // Debounce qidiruv funksiyasi
   const debouncedFetch = useCallback(
-    debounce((filters) => {
-      fetchReviews(filters)
+    debounce((searchFilters) => {
+      fetchReviews(searchFilters)
     }, 500),
     []
   )
 
-  // Ma'lumotlarni yuklash
-  useEffect(() => {
-    fetchReviews(filters)
-  }, [])
 
-  // Filter o'zgarganida qidiruv
   useEffect(() => {
-    debouncedFetch({ ...filters, offset: 0 })
-  }, [filters.search, filters.status, filters.review_type, filters.limit])
+    // Avvalgi so'rovni abort qilish
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort()
+    }
 
-  const fetchReviews = async (currentFilters) => {
+    // Yangi abort controller yaratish
+    abortControllerRef.current = new AbortController()
+    const signal = abortControllerRef.current.signal
+
+    const timer = setTimeout(() => {
+      fetchReviews(filters, signal)
+    }, 100)
+
+    return () => {
+      clearTimeout(timer)
+      if (abortControllerRef.current) {
+        abortControllerRef.current.abort()
+      }
+    }
+  }, [
+    filters.search,
+    filters.status,
+    filters.review_type,
+    filters.limit,
+    filters.offset,
+    sortReverse // sortReverse dependency ga qo'shildi
+  ])
+
+  const fetchReviews = async (currentFilters, signal) => {
+    // Agar so'rov abort qilingan bo'lsa
+    if (signal && signal.aborted) {
+      console.log('Request aborted')
+      return
+    }
+
+    setLoading(true)
     try {
-      setLoading(true)
       setError(null)
 
       const token = localStorage.getItem('accessToken')
@@ -272,34 +307,54 @@ export default function Reviews() {
             Authorization: `Bearer ${token}`,
             'Content-Type': 'application/json'
           },
-          params: params
+          params: params,
+          signal: signal // abort signal ni berish
         }
       )
 
-      if (response.data.results && Array.isArray(response.data.results)) {
-        setReviews(sortReverse ? [...response.data.results].reverse() : response.data.results)
-        setPagination({
-          count: response.data.count || 0,
-          next: response.data.next,
-          previous: response.data.previous,
-        })
-      } else {
-        setReviews([])
-        setPagination({ count: 0, next: null, previous: null })
+      // Agar so'rov abort qilinmagan bo'lsa
+      if (!signal || !signal.aborted) {
+        if (response.data.results && Array.isArray(response.data.results)) {
+          // sortReverse ga qarab tartiblash
+          const sortedReviews = sortReverse
+            ? [...response.data.results].reverse()
+            : response.data.results
+
+          setReviews(sortedReviews)
+          setPagination({
+            count: response.data.count || 0,
+            next: response.data.next,
+            previous: response.data.previous,
+          })
+        } else {
+          setReviews([])
+          setPagination({ count: 0, next: null, previous: null })
+        }
       }
     } catch (err) {
+      // Agar abort qilingan bo'lsa, xatoni ignore qilish
+      if (axios.isCancel(err) || err.name === 'AbortError') {
+        console.log('Request was cancelled')
+        return
+      }
+
       console.error('Ошибка при загрузке отзывов:', err)
       setError(err.response?.data?.message || err.message || 'Ошибка при загрузке данных')
       setReviews([])
       setPagination({ count: 0, next: null, previous: null })
     } finally {
-      setLoading(false)
+      if (!signal || !signal.aborted) {
+        setLoading(false)
+      }
     }
   }
-
   // Filter o'zgartirish
   const handleFilterChange = (key, value) => {
-    setFilters(prev => ({ ...prev, [key]: value }))
+    setFilters(prev => ({
+      ...prev,
+      [key]: value,
+      offset: 0
+    }))
   }
 
   // Search input handler
@@ -326,27 +381,25 @@ export default function Reviews() {
   // Pagination handlerlari
   const handleNextPage = () => {
     if (pagination.next) {
-      const newOffset = filters.offset + filters.limit
-      const newFilters = { ...filters, offset: newOffset }
-      setFilters(newFilters)
-      fetchReviews(newFilters)
+      setFilters(prev => ({
+        ...prev,
+        offset: prev.offset + prev.limit
+      }))
     }
   }
 
   const handlePrevPage = () => {
     if (pagination.previous) {
-      const newOffset = Math.max(0, filters.offset - filters.limit)
-      const newFilters = { ...filters, offset: newOffset }
-      setFilters(newFilters)
-      fetchReviews(newFilters)
+      setFilters(prev => ({
+        ...prev,
+        offset: Math.max(0, prev.offset - prev.limit)
+      }))
     }
   }
 
   const handlePageClick = (pageNumber) => {
     const newOffset = (pageNumber - 1) * filters.limit
-    const newFilters = { ...filters, offset: newOffset }
-    setFilters(newFilters)
-    fetchReviews(newFilters)
+    setFilters(prev => ({ ...prev, offset: newOffset }))
   }
 
   // Review status o'zgartirish

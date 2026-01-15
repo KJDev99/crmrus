@@ -2,11 +2,14 @@
 import React, { useState } from 'react'
 import PhoneInput from '../ui/input'
 import GlassButton from '../ui/GlassButton'
+import { Eye, EyeOff } from 'lucide-react'
 
 export default function PasswordCreate({ onSubmit, error, loading, isNewUser }) {
     const [password, setPassword] = useState('')
     const [confirmPassword, setConfirmPassword] = useState('')
     const [localError, setLocalError] = useState('')
+    const [showPassword, setShowPassword] = useState(false)
+    const [showConfirmPassword, setShowConfirmPassword] = useState(false)
 
     const handleSubmit = () => {
         setLocalError('')
@@ -40,19 +43,51 @@ export default function PasswordCreate({ onSubmit, error, loading, isNewUser }) 
                     {isNewUser ? 'Создайте пароль' : 'Введите пароль'}
                 </p>
 
-                <PhoneInput
-                    text={isNewUser ? 'Придумайте пароль' : 'Пароль'}
-                    value={password}
-                    onChange={setPassword}
-                />
+                {/* Parol input - asl funksiyalar o'zgarmadi */}
+                <div className="relative">
+                    <input
+                        type={showPassword ? "text" : "password"}
+                        placeholder={isNewUser ? "Придумайте пароль" : "Пароль"}
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        className="px-5 pr-14 w-[480px] h-[90px] text-[28px] text-yellow-400 rounded-3xl outline-none bg-white/10 placeholder:text-yellow-400/70 border border-white/30 focus:border-yellow-400 transition-colors"
+                    />
+                    <button
+                        type="button"
+                        onClick={() => setShowPassword(!showPassword)}
+                        className="absolute right-8 top-1/2 transform -translate-y-1/2"
+                    >
+                        {showPassword ? (
+                            <EyeOff className="w-8 h-8 text-yellow-400/70 hover:text-yellow-400 transition-colors" />
+                        ) : (
+                            <Eye className="w-8 h-8 text-yellow-400/70 hover:text-yellow-400 transition-colors" />
+                        )}
+                    </button>
+                </div>
 
                 {isNewUser && (
                     <div className="mt-4 sm:mt-6">
-                        <PhoneInput
-                            text={'Повторите пароль'}
-                            value={confirmPassword}
-                            onChange={setConfirmPassword}
-                        />
+                        {/* Tasdiqlash parol input */}
+                        <div className="relative">
+                            <input
+                                type={showConfirmPassword ? "text" : "password"}
+                                placeholder="Повторите пароль"
+                                value={confirmPassword}
+                                onChange={(e) => setConfirmPassword(e.target.value)}
+                                className="px-5 pr-14 w-[480px] h-[90px] text-[28px] text-yellow-400 rounded-3xl outline-none bg-white/10 placeholder:text-yellow-400/70 border border-white/30 focus:border-yellow-400 transition-colors"
+                            />
+                            <button
+                                type="button"
+                                onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                                className="absolute right-8 top-1/2 transform -translate-y-1/2"
+                            >
+                                {showConfirmPassword ? (
+                                    <EyeOff className="w-8 h-8 text-yellow-400/70 hover:text-yellow-400 transition-colors" />
+                                ) : (
+                                    <Eye className="w-8 h-8 text-yellow-400/70 hover:text-yellow-400 transition-colors" />
+                                )}
+                            </button>
+                        </div>
                     </div>
                 )}
 
@@ -72,7 +107,6 @@ export default function PasswordCreate({ onSubmit, error, loading, isNewUser }) 
 
                 {!isNewUser && (
                     <p className="font-[JejuMyeongjo] text-base sm:text-[18px] leading-6 sm:leading-[22px] text-center mt-6 sm:mt-8 opacity-80">
-                        Забыли пароль?<br />
                         <a
                             href="https://r-profi.taplink.ws"
                             target="_blank"
@@ -85,6 +119,5 @@ export default function PasswordCreate({ onSubmit, error, loading, isNewUser }) 
                 )}
             </div>
         </div>
-
     )
 }

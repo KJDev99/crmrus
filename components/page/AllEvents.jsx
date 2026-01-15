@@ -22,7 +22,7 @@ export default function AllEvents() {
         event_date: '',
         event_type: '',
         status: '',
-        ordering: '-event_date',
+        ordering: '',
         limit: 10,
         offset: 0,
     })
@@ -380,6 +380,26 @@ export default function AllEvents() {
         })
     }
 
+    const formatPhoneInput = (value) => {
+        // Faqat raqamlarni qoldirish
+        const numbers = value.replace(/\D/g, '');
+
+        // Agar input bo'sh bo'lsa, faqat '+' qaytarish
+        if (!numbers) return '+';
+
+        // Agar + bo'lmasa, + qo'shish
+        if (!value.startsWith('+')) {
+            return '+' + numbers;
+        }
+
+        // Aks holda + bilan raqamlarni qaytarish
+        return '+' + numbers;
+    }
+    const handlePhoneChange = (e) => {
+        const formattedPhone = formatPhoneInput(e.target.value);
+        setNewEvent({ ...newEvent, registration_phone: formattedPhone });
+    }
+
     // Получить цвет статуса
     const getStatusColor = (status) => {
         switch (status) {
@@ -607,8 +627,19 @@ export default function AllEvents() {
                                         <label className="block text-white mb-2">Телефон для регистрации *</label>
                                         <input
                                             type="tel"
+                                            placeholder='+7 999 999 99 99'
                                             value={newEvent.registration_phone}
-                                            onChange={(e) => setNewEvent({ ...newEvent, registration_phone: e.target.value })}
+                                            onChange={handlePhoneChange}
+                                            onKeyDown={(e) => {
+                                                // Faqat raqamlar, Backspace, Delete, Tab, Arrow keys
+                                                const allowedKeys = ['Backspace', 'Delete', 'Tab', 'ArrowLeft', 'ArrowRight', 'Home', 'End'];
+                                                const isNumber = /[0-9]/.test(e.key);
+                                                const isControl = allowedKeys.includes(e.key);
+
+                                                if (!isNumber && !isControl) {
+                                                    e.preventDefault();
+                                                }
+                                            }}
                                             className="w-full px-4 py-2 bg-[#2D2D2D] border border-gray-700 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-500"
                                             required
                                         />

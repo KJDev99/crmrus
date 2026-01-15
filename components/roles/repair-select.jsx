@@ -23,42 +23,13 @@ export default function RepairSelect({ filterChoices, selectedFilters, onFilterC
         }));
     };
 
-    const getSelectedLabel = (filterName, value) => {
-        if (!value || !filterChoices) return `Выберете ${getPlaceholder(filterName)}`;
+    const getSelectedLabel = (filterName) => {
+        const selectedValue = selectedFilters[filterName];
+        if (!selectedValue || !filterChoices) return `Выберете ${getPlaceholder(filterName)}`;
 
-        let choices = [];
-
-        switch (filterName) {
-            case 'group':
-                choices = filterChoices.categories || [];
-                break;
-            case 'city':
-                choices = filterChoices.cities || [];
-                break;
-            case 'segment':
-                choices = filterChoices.segments || [];
-                break;
-            case 'vat_payment':
-                choices = filterChoices.vat_payments || [];
-                break;
-            case 'magazine_cards':
-                choices = filterChoices.magazine_cards || [];
-                break;
-            case 'execution_speed':
-                choices = filterChoices.execution_speeds || [];
-                break;
-            case 'cooperation_terms':
-                choices = filterChoices.cooperation_terms_options || [];
-                break;
-            case 'business_form':
-                choices = filterChoices.business_forms || [];
-                break;
-            default:
-                choices = [];
-        }
-
-        const choice = choices.find(item => item.value === value);
-        return choice ? choice.label : `Выберете ${getPlaceholder(filterName)}`;
+        // Sizda selectedFilters da label saqlanayapti, shuning uchun
+        // shu labelni qaytarish kifoya
+        return selectedValue;
     };
 
     const getPlaceholder = (filterName) => {
@@ -75,8 +46,8 @@ export default function RepairSelect({ filterChoices, selectedFilters, onFilterC
         return placeholders[filterName] || '';
     };
 
-    const handleSelect = (filterName, value) => {
-        onFilterChange(filterName, value);
+    const handleSelect = (filterName, label) => {
+        onFilterChange(filterName, label); // Label ni saqlaymiz (hozirgi holat)
         toggleDropdown(filterName);
     };
 
@@ -156,10 +127,11 @@ export default function RepairSelect({ filterChoices, selectedFilters, onFilterC
                                 rounded-2xl transition-all duration-200
                                 bg-glass2 text-white hover:bg-white/40 text-left px-5
                                 flex items-center justify-between
+                                ${selectedFilters[item.key] ? 'border border-yellow-400' : ''}
                             `}
                         >
-                            <span className='truncate'>{getSelectedLabel(item.key, selectedFilters[item.key])}</span>
-                            <IoIosArrowDown />
+                            <span className='truncate'>{getSelectedLabel(item.key)}</span>
+                            <IoIosArrowDown className={selectedFilters[item.key] ? 'text-yellow-400' : ''} />
                         </button>
 
                         {dropdowns[item.key] && (
@@ -171,7 +143,10 @@ export default function RepairSelect({ filterChoices, selectedFilters, onFilterC
                                         className={`
                                             w-full text-left px-5 py-3 text-white
                                             hover:bg-white/20 transition-all
-                                            ${selectedFilters[item.key] === choice.label ? 'bg-white/30' : ''}
+                                            ${selectedFilters[item.key] === choice.label ?
+                                                'bg-white/30 border-l-4 border-yellow-400' :
+                                                ''
+                                            }
                                         `}
                                     >
                                         {choice.label}

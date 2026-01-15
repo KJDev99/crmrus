@@ -65,7 +65,7 @@ export default function MediaItem({
     };
 
     return (
-        <div className='max-md:px-4'>
+        <div className='max-md:px-4 max-w-7xl mx-auto'>
             <div className="text-white flex justify-between items-center mt-[0px] max-md:px-0">
                 <Link href={'/role'} className="cursor-pointer max-md:w-8 max-md:h-8">
                     <IoIosArrowBack size={40} className='max-md:w-6 max-md:h-6' />
