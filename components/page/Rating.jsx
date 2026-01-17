@@ -18,11 +18,21 @@ export default function Rating() {
   })
   const [filters, setFilters] = useState({
     search: '',
+    group: '',
     limit: 10,
     offset: 0,
   })
   const [sortBy, setSortBy] = useState('total_rating_count')
   const [sortOrder, setSortOrder] = useState('desc')
+
+  // Guruhlar ro'yxati
+  const groups = [
+    { value: '', label: 'Все группы' },
+    { value: 'Дизайн', label: 'Дизайн' },
+    { value: 'Ремонт', label: 'Ремонт' },
+    { value: 'Поставщик', label: 'Поставщик' },
+    { value: 'Медиа', label: 'Медиа' }
+  ]
 
   // Abort controller uchun ref
   const abortControllerRef = useRef(null)
@@ -58,7 +68,7 @@ export default function Rating() {
         abortControllerRef.current.abort()
       }
     }
-  }, [filters.search, filters.limit, filters.offset, sortBy, sortOrder])
+  }, [filters.search, filters.group, filters.limit, filters.offset, sortBy, sortOrder])
 
   const fetchRatings = async (currentFilters, signal) => {
     // Agar so'rov abort qilingan bo'lsa
@@ -84,6 +94,10 @@ export default function Rating() {
 
       if (currentFilters.search) {
         params.search = currentFilters.search
+      }
+
+      if (currentFilters.group) {
+        params.group = currentFilters.group
       }
 
       const response = await axios.get(
@@ -137,13 +151,18 @@ export default function Rating() {
     setFilters(prev => ({
       ...prev,
       [key]: value,
-      offset: key === 'search' ? 0 : prev.offset // Search o'zgarganda offsetni 0 qilish
+      offset: key === 'search' || key === 'group' ? 0 : prev.offset // Search yoki group o'zgarganda offsetni 0 qilish
     }))
   }
 
   // Search input handler
   const handleSearchChange = (e) => {
     handleFilterChange('search', e.target.value)
+  }
+
+  // Group select handler
+  const handleGroupChange = (e) => {
+    handleFilterChange('group', e.target.value)
   }
 
   // Sort funksiyasi
@@ -244,6 +263,7 @@ export default function Rating() {
       />
 
       <div className="px-4 py-3 flex items-center gap-7 mt-14 ml-20">
+        {/* Search input */}
         <div className='relative grow flex h-9.25 bg-[#B7B2B299] rounded-2xl px-5 flex items-center'>
           <input
             type="text"
@@ -255,6 +275,30 @@ export default function Rating() {
           <button className="text-white">
             <FaSearch size={20} className='text-black font-thin' />
           </button>
+        </div>
+
+        {/* Group filter dropdown */}
+        <div className="flex-shrink-0">
+          <div className="relative">
+            <select
+              value={filters.group}
+              onChange={handleGroupChange}
+              className="h-9.25 bg-[#B7B2B299] rounded-2xl px-5 py-2 outline-none text-[#FFF] font-normal not-italic text-[16px] leading-[100%] tracking-normal appearance-none cursor-pointer hover:bg-[#B7B2B2CC] transition-colors"
+              style={{
+                backgroundImage: `url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%23ffffff' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e")`,
+                backgroundPosition: 'right 0.75rem center',
+                backgroundRepeat: 'no-repeat',
+                backgroundSize: '1.5em 1.5em',
+                paddingRight: '2.5rem'
+              }}
+            >
+              {groups.map(group => (
+                <option key={group.value} value={group.value}>
+                  {group.label}
+                </option>
+              ))}
+            </select>
+          </div>
         </div>
       </div>
 

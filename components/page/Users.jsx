@@ -20,9 +20,19 @@ export default function Users() {
 
     const [filters, setFilters] = useState({
         search: '',
+        group: '', // Guruh filteri qo'shildi
         limit: 10,
         offset: 0,
     })
+
+    // Guruhlar ro'yxati (ruscha nomlar)
+    const groups = [
+        { value: '', label: 'Все группы' },
+        { value: 'Дизайн', label: 'Дизайн' },
+        { value: 'Ремонт', label: 'Ремонт' },
+        { value: 'Поставщик', label: 'Поставщик' },
+        { value: 'Медиа', label: 'Медиа' }
+    ]
 
     // Abort controller uchun ref
     const abortControllerRef = useRef(null)
@@ -58,7 +68,7 @@ export default function Users() {
                 abortControllerRef.current.abort()
             }
         }
-    }, [filters.search, filters.limit, filters.offset])
+    }, [filters.search, filters.group, filters.limit, filters.offset])
 
     const fetchUsers = async (currentFilters, signal) => {
         // Agar so'rov abort qilingan bo'lsa
@@ -84,6 +94,11 @@ export default function Users() {
             // Qidiruv qo'shamiz
             if (currentFilters.search) {
                 params.search = currentFilters.search
+            }
+
+            // Guruh filterini qo'shamiz
+            if (currentFilters.group) {
+                params.group = currentFilters.group
             }
 
             const response = await axios.get(
@@ -147,13 +162,18 @@ export default function Users() {
         setFilters(prev => ({
             ...prev,
             [key]: value,
-            offset: key === 'search' ? 0 : prev.offset // Search o'zgarganda offsetni 0 qilish
+            offset: key === 'search' || key === 'group' ? 0 : prev.offset // Search yoki group o'zgarganda offsetni 0 qilish
         }))
     }
 
     // Search input handler
     const handleSearchChange = (e) => {
         handleFilterChange('search', e.target.value)
+    }
+
+    // Group select handler
+    const handleGroupChange = (e) => {
+        handleFilterChange('group', e.target.value)
     }
 
     // Pagination handlerlari - faqat state o'zgartirish
@@ -241,18 +261,43 @@ export default function Users() {
                     ПОЛЬЗОВАТЕЛИ
                 </h1>
 
-                {/* Search Input */}
-                <div className="relative mr-20">
-                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                        <FaSearch className="text-gray-400" />
+                {/* Filterlar */}
+                <div className="flex items-center gap-4 mr-20">
+                    {/* Guruh filteri */}
+                    <div className="relative">
+                        <select
+                            value={filters.group}
+                            onChange={handleGroupChange}
+                            className="bg-[#56505080] text-white px-4 py-2 rounded-lg w-48 focus:outline-none focus:ring-2 focus:ring-yellow-400 appearance-none cursor-pointer hover:bg-[#565050CC] transition-colors"
+                            style={{
+                                backgroundImage: `url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%23ffffff' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e")`,
+                                backgroundPosition: 'right 0.75rem center',
+                                backgroundRepeat: 'no-repeat',
+                                backgroundSize: '1.5em 1.5em',
+                                paddingRight: '2.5rem'
+                            }}
+                        >
+                            {groups.map(group => (
+                                <option key={group.value} value={group.value}>
+                                    {group.label}
+                                </option>
+                            ))}
+                        </select>
                     </div>
-                    <input
-                        type="text"
-                        value={filters.search}
-                        onChange={handleSearchChange}
-                        placeholder="Поиск пользователей..."
-                        className="bg-[#56505080] text-white pl-10 pr-4 py-2 rounded-lg w-64 focus:outline-none focus:ring-2 focus:ring-yellow-400"
-                    />
+
+                    {/* Search Input */}
+                    <div className="relative">
+                        <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <FaSearch className="text-gray-400" />
+                        </div>
+                        <input
+                            type="text"
+                            value={filters.search}
+                            onChange={handleSearchChange}
+                            placeholder="Поиск пользователей..."
+                            className="bg-[#56505080] text-white pl-10 pr-4 py-2 rounded-lg w-64 focus:outline-none focus:ring-2 focus:ring-yellow-400 hover:bg-[#565050CC] transition-colors"
+                        />
+                    </div>
                 </div>
             </div>
 
@@ -304,7 +349,6 @@ export default function Users() {
                                             >
                                                 <td className="py-6 px-6 font-normal text-[20px] leading-[1] tracking-normal">
                                                     <div className="flex items-center">
-
                                                         <div>
                                                             <div className="font-medium">{user.full_name || "Не указано"}</div>
                                                             {user.company_name && (
@@ -316,7 +360,6 @@ export default function Users() {
 
                                                 <td className="py-6 px-6 font-normal text-[20px] leading-[1] tracking-normal">
                                                     <div className="flex items-center">
-
                                                         {formatGroups(user.groups)}
                                                     </div>
                                                 </td>
@@ -472,7 +515,7 @@ export default function Users() {
                                 <button
                                     onClick={handlePrevPage}
                                     disabled={!pagination.previous}
-                                    className={`px-4 py-2 rounded-lg ${pagination.previous ? 'bg-[#56505080] hover:bg-[#746E6E80]' : 'bg-[#56505040] cursor-not-allowed'} text-yellow-400 transition-colors`}
+                                    className={`px-4 py-2 rounded-lg  ${pagination.previous ? 'bg-[#56505080] hover:bg-[#746E6E80]' : 'bg-[#56505040] cursor-not-allowed'} text-yellow-400 transition-colors`}
                                 >
                                     Назад
                                 </button>

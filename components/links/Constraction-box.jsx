@@ -28,7 +28,7 @@ export default function ConstructionBox() {
         vat_payment: '',
         guarantees: '',
         designer_supplier_terms: '',
-        magazine_cards: '',
+        magazine_cards: [],
         additional_info: '',
         data_processing_consent: false,
         company_logo: null,
@@ -82,7 +82,14 @@ export default function ConstructionBox() {
                 : [...prev.segments, segmentValue]
         }));
     };
-
+    const handleMagazineCardsToggle = (cardValue) => {
+        setFormData(prev => ({
+            ...prev,
+            magazine_cards: prev.magazine_cards.includes(cardValue)
+                ? prev.magazine_cards.filter(c => c !== cardValue)
+                : [...prev.magazine_cards, cardValue]
+        }));
+    };
     const addRepresentativeCity = () => {
         setFormData(prev => ({
             ...prev,
@@ -241,7 +248,7 @@ export default function ConstructionBox() {
             toast.error('Пожалуйста, укажите условия работы с дизайнерами/поставщиками');
             return;
         }
-        if (!formData.magazine_cards) {
+        if (formData.magazine_cards.length === 0) {  // ✅ YANGI
             toast.error('Пожалуйста, укажите выдачу карточек журналов');
             return;
         }
@@ -266,13 +273,19 @@ export default function ConstructionBox() {
                     const filteredValues = value.filter(v => v.trim() !== '');
                     if (filteredValues.length > 0) submitFormData.append(key, JSON.stringify(filteredValues));
                 } else if (key === 'segments') {
+                    console.log(value);
+
                     if (value.length > 0) submitFormData.append(key, JSON.stringify(value));
                 } else if (key === 'data_processing_consent') {
                     submitFormData.append(key, value.toString());
                 } else if (value !== '' && value !== null) {
                     submitFormData.append(key, value);
+                } else if (key === 'magazine_cards') {
+                    if (value.length > 0) submitFormData.append(key, JSON.stringify(value));
                 }
             });
+            console.log(formData);
+
 
             await axios.post('https://api.reiting-profi.ru/api/v1/accounts/questionnaires/', submitFormData, {
                 headers: {
@@ -308,7 +321,7 @@ export default function ConstructionBox() {
                 vat_payment: '',
                 guarantees: '',
                 designer_supplier_terms: '',
-                magazine_cards: '',
+                magazine_cards: [],
                 additional_info: '',
                 data_processing_consent: false,
                 company_logo: null,
@@ -947,15 +960,14 @@ export default function ConstructionBox() {
                                 Гарантии и их сроки:   <span className="text-red-400">*</span>
                             </label>
                             <p className="text-white/60 text-sm mb-2">
-                                Мы предоставляем гарантии на всю нашу продукцию, чтобы обеспечить надежность и удовлетворение наших клиентов.
+                                Мы предоставляем гарантии на все этапы работ, чтобы обеспечить надежность и спокоиствие наших клиентов.
                             </p>
                             <p className="text-white/50 text-xs mb-3 italic">
                                 Например: <br />
-                                - Гарантия на все люстры — 1 год. <br />
-                                - Гарантия на фурнитуру — 5 лет. <br />
-                                - Гарантия на металл — 10 лет. <br />
-                                - Гарантия на межкомнатные двери — 1 год. <br />
-                                - Гарантия на электрические приборы — 2 года. <br />
+                                - Работы по электрике — 1 год. <br />
+                                - Работы по сантехнике — 6 лет. <br />
+                                - Чистовые работы — 10 лет. <br />
+                                - Гарантия на все виды работ — 1 год.
 
                             </p>
                             <textarea
@@ -977,23 +989,22 @@ export default function ConstructionBox() {
                             <p className="text-white/60 text-sm mb-2">
                                 Укажите:<br />
                                 – процент вознаграждения, <br />
-                                – условия фиксации клиента, <br />
+                                – условия фиксации клиента,  <br />
                                 – все возможные варианты сотрудничества при разных условиях включая роли <br />
-                                – сроки выплат при заключении договора.
+                                – сроки выплат при заключении договора. <br />
 
                             </p>
                             <p className="text-white/50 text-xs mb-3 italic">
                                 Например:<br />
-                                - Процент вознаграждения:  <br />
-                                – Декор — 30%  <br />
-                                – Люстры — 25%  <br />
-                                – Прочая продукция — до 30% <br /> <br />
+                                - Процент вознаграждения: <br />
+                                – Ремонт под ключ - 5% <br />
+                                –  Отдельные виды работ - 3% <br /> <br />
 
                                 - Условия фиксации клиента:  <br />
-                                Для фиксации клиента необходимо предоставить защиту проекта в мессенджер, указав ФИ заказчика и визуализацию проекта. Также требуется одно сопровождение клиента в салоне. <br /> <br />
+                                Для фиксации клиента необходимо предоставить защиту проекта в мессенджер, указав ФИ заказчика и визуализацию проекта и адрес объекта.  <br /> <br />
 
                                 - Сроки выплат при заключении договора:  <br />
-                                Выплаты производятся в течение 7 рабочих дней после завершения сделки и выполнения всех условий договора. <br />
+                                Выплаты производятся в течение 7 рабочих дней. <br />
 
                             </p>
                             <textarea
@@ -1016,13 +1027,11 @@ export default function ConstructionBox() {
                                 {magazineCardsOptions.map(option => (
                                     <label key={option.value} className="bg-glass2 px-4 py-3 rounded-lg cursor-pointer hover:bg-opacity-80 transition-all flex items-center gap-2">
                                         <input
-                                            type="radio"
-                                            name="magazine_cards"
-                                            value={option.value}
-                                            checked={formData.magazine_cards === option.value}
-                                            onChange={handleInputChange}
-                                            className="radio-glass"
-                                            required
+                                            type="checkbox"  // ✅ RADIO dan CHECKBOX ga
+                                            checked={formData.magazine_cards.includes(option.value)}  // ✅ includes bilan tekshirish
+                                            onChange={() => handleMagazineCardsToggle(option.value)}  // ✅ toggle funksiyasi
+                                            className="checkbox-glass"  // ✅ radio-glass dan checkbox-glass ga
+                                            required={formData.magazine_cards.length === 0}  // ✅ kamida bitta tanlangan bo'lishi kerak
                                         />
                                         <span className="text-white text-sm sm:text-base">{option.label}</span>
                                     </label>
@@ -1181,7 +1190,7 @@ export default function ConstructionBox() {
                                 </>
                             ) : (
                                 <>
-                                    <span className="text-sm sm:text-base">Клуб</span>
+                                    <span className="text-sm sm:text-base">Отправить заявку на вступление</span>
                                 </>
                             )}
                         </button>

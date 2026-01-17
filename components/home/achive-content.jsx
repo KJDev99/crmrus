@@ -5,11 +5,13 @@ import { FaSearch } from "react-icons/fa";
 import { BiSortAlt2 } from "react-icons/bi";
 import { BsChevronLeft } from "react-icons/bs";
 import { FiRefreshCw } from "react-icons/fi";
+import { MdDelete } from "react-icons/md";
 import debounce from "lodash/debounce";
+import Swal from 'sweetalert2';
 
 const API_BASE_URL = "https://api.reiting-profi.ru/api/v1/accounts";
 
-// URL generator funksiyasi
+// URL generator funksiyasi - restore uchun
 const getRestoreUrl = (requestName, id) => {
     const baseURL = API_BASE_URL;
 
@@ -22,6 +24,24 @@ const getRestoreUrl = (requestName, id) => {
             return `${baseURL}/supplier-questionnaires/${id}/restore/`;
         case 'MediaQuestionnaire':
             return `${baseURL}/media-questionnaires/${id}/restore/`;
+        default:
+            return null;
+    }
+};
+
+// URL generator funksiyasi - delete uchun
+const getDeleteUrl = (requestName, id) => {
+    const baseURL = API_BASE_URL;
+
+    switch (requestName) {
+        case 'DesignerQuestionnaire':
+            return `${baseURL}/questionnaires/${id}/delete/`;
+        case 'RepairQuestionnaire':
+            return `${baseURL}/repair-questionnaires/${id}/delete/`;
+        case 'SupplierQuestionnaire':
+            return `${baseURL}/supplier-questionnaires/${id}/delete/`;
+        case 'MediaQuestionnaire':
+            return `${baseURL}/media-questionnaires/${id}/delete/`;
         default:
             return null;
     }
@@ -46,6 +66,7 @@ export default function AchiveContent() {
     });
     const [sortReverse, setSortReverse] = useState(false);
     const [restoringId, setRestoringId] = useState(null);
+    const [deletingId, setDeletingId] = useState(null);
 
     // Debounce qidiruv funksiyasi
     const debouncedFetch = useCallback(
@@ -123,6 +144,31 @@ export default function AchiveContent() {
 
     // Archivdan chiqarish funksiyasi
     const handleRestoreFromArchive = async (id, requestName, fullName) => {
+        // Tasdiqlash modali
+        const result = await Swal.fire({
+            title: 'Восстановить анкету?',
+            html: `Вы уверены, что хотите восстановить анкету<br/><strong>${fullName}</strong>?`,
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonColor: '#D7B706',
+            cancelButtonColor: '#6c757d',
+            confirmButtonText: 'Да, восстановить',
+            cancelButtonText: 'Отмена',
+            background: '#1a1a1a',
+            color: '#ffffff',
+            customClass: {
+                popup: 'swal-custom-popup',
+                title: 'swal-custom-title',
+                htmlContainer: 'swal-custom-html',
+                confirmButton: 'swal-custom-confirm',
+                cancelButton: 'swal-custom-cancel'
+            }
+        });
+
+        if (!result.isConfirmed) {
+            return;
+        }
+
         try {
             // URL ni olish
             const restoreUrl = getRestoreUrl(requestName, id);
@@ -130,8 +176,6 @@ export default function AchiveContent() {
             if (!restoreUrl) {
                 throw new Error(`Неизвестный тип анкеты: ${requestName}`);
             }
-
-
 
             setRestoringId(id);
 
@@ -154,6 +198,18 @@ export default function AchiveContent() {
             );
 
             console.log("Восстановление успешно:", response.data);
+
+            // Muvaffaqiyatli xabar
+            await Swal.fire({
+                title: 'Успешно!',
+                text: `Анкета "${fullName}" успешно восстановлена`,
+                icon: 'success',
+                confirmButtonColor: '#D7B706',
+                background: '#1a1a1a',
+                color: '#ffffff',
+                timer: 2000,
+                showConfirmButton: false
+            });
 
             // Ma'lumotlarni yangilash
             fetchQuestionnaires(filters);
@@ -180,8 +236,128 @@ export default function AchiveContent() {
                 errorMessage = err.message;
             }
 
+            // Xatolik xabari
+            await Swal.fire({
+                title: 'Ошибка!',
+                text: errorMessage,
+                icon: 'error',
+                confirmButtonColor: '#D7B706',
+                background: '#1a1a1a',
+                color: '#ffffff'
+            });
+
         } finally {
             setRestoringId(null);
+        }
+    };
+
+    // O'chirish funksiyasi
+    const handleDeletePermanently = async (id, requestName, fullName) => {
+        // Birinchi tasdiqlash
+        const firstConfirm = await Swal.fire({
+            title: '⚠️ ВНИМАНИЕ!',
+            html: `Вы собираетесь ПОЛНОСТЬЮ УДАЛИТЬ анкету<br/><strong>${fullName}</strong><br/><br/>Это действие НЕОБРАТИМО!`,
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#dc3545',
+            cancelButtonColor: '#6c757d',
+            confirmButtonText: 'Продолжить',
+            cancelButtonText: 'Отмена',
+            background: '#1a1a1a',
+            color: '#ffffff',
+            customClass: {
+                popup: 'swal-custom-popup',
+                title: 'swal-custom-title',
+                htmlContainer: 'swal-custom-html',
+                confirmButton: 'swal-custom-confirm-danger',
+                cancelButton: 'swal-custom-cancel'
+            }
+        });
+
+        if (!firstConfirm.isConfirmed) {
+            return;
+        }
+
+
+
+        try {
+            // URL ni olish
+            const deleteUrl = getDeleteUrl(requestName, id);
+
+            if (!deleteUrl) {
+                throw new Error(`Неизвестный тип анкеты: ${requestName}`);
+            }
+
+            setDeletingId(id);
+
+            const token = localStorage.getItem("accessToken");
+
+            if (!token) {
+                throw new Error("Токен не найден. Пожалуйста, войдите в систему.");
+            }
+
+            // DELETE so'rovini yuborish
+            const response = await axios.delete(
+                `${deleteUrl}?confirm=true`,
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                        "Content-Type": "application/json",
+                    }
+                }
+            );
+
+            console.log("Удаление успешно:", response.data);
+
+            // Muvaffaqiyatli xabar
+            await Swal.fire({
+                title: 'Удалено!',
+                text: `Анкета "${fullName}" полностью удалена из базы данных`,
+                icon: 'success',
+                confirmButtonColor: '#D7B706',
+                background: '#1a1a1a',
+                color: '#ffffff',
+                timer: 2000,
+                showConfirmButton: false
+            });
+
+            // Ma'lumotlarni yangilash
+            fetchQuestionnaires(filters);
+
+        } catch (err) {
+            console.error("Ошибка при удалении:", err);
+
+            let errorMessage = "Ошибка при удалении анкеты";
+
+            if (err.response) {
+                // Serverdan kelgan xatolik
+                if (err.response.status === 401) {
+                    errorMessage = "Ошибка авторизации. Пожалуйста, войдите снова.";
+                } else if (err.response.status === 403) {
+                    errorMessage = "У вас нет прав для удаления анкет. Требуются права администратора.";
+                } else if (err.response.status === 404) {
+                    errorMessage = "Анкета не найдена.";
+                } else if (err.response.data?.message) {
+                    errorMessage = err.response.data.message;
+                } else if (err.response.data?.detail) {
+                    errorMessage = err.response.data.detail;
+                }
+            } else if (err.message) {
+                errorMessage = err.message;
+            }
+
+            // Xatolik xabari
+            await Swal.fire({
+                title: 'Ошибка!',
+                text: errorMessage,
+                icon: 'error',
+                confirmButtonColor: '#D7B706',
+                background: '#1a1a1a',
+                color: '#ffffff'
+            });
+
+        } finally {
+            setDeletingId(null);
         }
     };
 
@@ -306,10 +482,59 @@ export default function AchiveContent() {
         return pages;
     };
 
-
-
     return (
         <div className="text-white">
+            <style jsx global>{`
+                .swal-custom-popup {
+                    border-radius: 15px;
+                    padding: 2rem;
+                }
+                .swal-custom-title {
+                    font-size: 1.5rem;
+                    font-weight: 600;
+                }
+                .swal-custom-html {
+                    font-size: 1rem;
+                    margin: 1rem 0;
+                }
+                .swal-custom-confirm {
+                    padding: 0.75rem 2rem;
+                    border-radius: 25px;
+                    font-weight: 500;
+                    transition: all 0.3s;
+                }
+                .swal-custom-confirm:hover {
+                    transform: translateY(-2px);
+                    box-shadow: 0 4px 12px rgba(215, 183, 6, 0.3);
+                }
+                .swal-custom-confirm-danger {
+                    padding: 0.75rem 2rem;
+                    border-radius: 25px;
+                    font-weight: 500;
+                    transition: all 0.3s;
+                }
+                .swal-custom-confirm-danger:hover {
+                    transform: translateY(-2px);
+                    box-shadow: 0 4px 12px rgba(220, 53, 69, 0.3);
+                }
+                .swal-custom-cancel {
+                    padding: 0.75rem 2rem;
+                    border-radius: 25px;
+                    font-weight: 500;
+                }
+                .swal-custom-input {
+                    background: #2d3748 !important;
+                    border: 1px solid #4a5568 !important;
+                    color: #ffffff !important;
+                    border-radius: 10px;
+                    padding: 0.75rem 1rem;
+                    margin-top: 1rem;
+                }
+                .swal-custom-input::placeholder {
+                    color: #a0aec0 !important;
+                }
+            `}</style>
+
             <div className="px-4 py-3 flex items-center gap-7 mt-14 ml-20">
                 <div className='relative grow flex h-9.25 bg-[#B7B2B299] rounded-2xl px-5 flex items-center'>
                     <input
@@ -344,7 +569,6 @@ export default function AchiveContent() {
                     </div>
                 )}
 
-
                 {loading ? (
                     <div className="flex justify-center items-center h-64">
                         <div className="text-2xl text-yellow-400">Загрузка данных...</div>
@@ -354,7 +578,7 @@ export default function AchiveContent() {
                         <div className="overflow-x-auto">
                             <table className="w-full">
                                 <thead>
-                                    <tr className="text-left text-white text-sm grid grid-cols-15">
+                                    <tr className="text-left text-white text-sm grid grid-cols-16">
                                         <th className="col-span-1 pb-4 px-4 text-[18px] font-normal leading-[100%] border-b border-white tracking-normal">
                                             ID
                                         </th>
@@ -376,7 +600,7 @@ export default function AchiveContent() {
                                         <th className="col-span-2 pb-4 px-4 text-[18px] font-normal leading-[100%] border-b border-white tracking-normal">
                                             Дата создания
                                         </th>
-                                        <th className="col-span-2 pb-4 px-4 text-[18px] font-normal leading-[100%] border-b border-white tracking-normal">
+                                        <th className="col-span-3 pb-4 px-4 text-[18px] font-normal leading-[100%] border-b border-white tracking-normal">
                                             Действия
                                         </th>
                                     </tr>
@@ -384,7 +608,7 @@ export default function AchiveContent() {
                                 <tbody>
                                     {data.length === 0 ? (
                                         <tr>
-                                            <td colSpan="15" className="text-center py-8 text-xl text-gray-400">
+                                            <td colSpan="16" className="text-center py-8 text-xl text-gray-400">
                                                 Нет данных для отображения
                                             </td>
                                         </tr>
@@ -392,7 +616,7 @@ export default function AchiveContent() {
                                         data.map((row, index) => (
                                             <tr
                                                 key={`${row.id}-${row.request_name}-${index}`}
-                                                className="text-white hover:bg-gray-750 grid grid-cols-15 items-center"
+                                                className="text-white hover:bg-gray-750 grid grid-cols-16 items-center"
                                             >
                                                 <td className="col-span-1 h-20 flex items-center px-4 font-normal text-[16px] leading-[100%] tracking-normal border-b border-white/30">
                                                     {index + 1}
@@ -415,15 +639,15 @@ export default function AchiveContent() {
                                                 <td className="col-span-2 h-20 flex items-center px-4 font-normal not-italic text-[16px] leading-[100%] tracking-normal border-b border-white/30">
                                                     {formatDate(row.created_at)}
                                                 </td>
-                                                <td className="col-span-2 h-20 flex items-center px-4 border-b border-white/30">
+                                                <td className="col-span-3 h-20 flex items-center gap-2 px-4 border-b border-white/30">
                                                     <button
                                                         onClick={() => handleRestoreFromArchive(
                                                             row.id,
                                                             row.request_name,
                                                             row.full_name || "Неизвестный"
                                                         )}
-                                                        disabled={restoringId === row.id}
-                                                        className={`font-normal not-italic text-sm leading-[100%] tracking-normal w-48 h-11 rounded-[25px] flex items-center justify-center transition-colors gap-2 ${restoringId === row.id
+                                                        disabled={restoringId === row.id || deletingId === row.id}
+                                                        className={`font-normal not-italic text-sm leading-[100%] tracking-normal w-40 h-11 rounded-[25px] flex items-center justify-center transition-colors gap-2 ${restoringId === row.id || deletingId === row.id
                                                             ? 'bg-[#4a5568] cursor-not-allowed'
                                                             : 'bg-[#2d3748] hover:bg-[#4a5568] hover:shadow-lg'
                                                             }`}
@@ -435,7 +659,27 @@ export default function AchiveContent() {
                                                                 Восстановление...
                                                             </>
                                                         ) : (
-                                                            <>Pазархив</>
+                                                            <>Разархивировать</>
+                                                        )}
+                                                    </button>
+
+                                                    <button
+                                                        onClick={() => handleDeletePermanently(
+                                                            row.id,
+                                                            row.request_name,
+                                                            row.full_name || "Неизвестный"
+                                                        )}
+                                                        disabled={restoringId === row.id || deletingId === row.id}
+                                                        className={`font-normal not-italic text-sm leading-[100%] tracking-normal w-11 h-11 rounded-[25px] flex items-center justify-center transition-colors ${restoringId === row.id || deletingId === row.id
+                                                            ? 'bg-[#4a5568] cursor-not-allowed'
+                                                            : 'bg-[#dc3545] hover:bg-[#c82333] hover:shadow-lg'
+                                                            }`}
+                                                        title="Удалить навсегда"
+                                                    >
+                                                        {deletingId === row.id ? (
+                                                            <FiRefreshCw className="animate-spin" size={18} />
+                                                        ) : (
+                                                            <MdDelete size={20} />
                                                         )}
                                                     </button>
                                                 </td>

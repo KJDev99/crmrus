@@ -1,5 +1,5 @@
 'use client'
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import axios from 'axios'
 import { BiSortAlt2 } from 'react-icons/bi'
@@ -11,6 +11,7 @@ import DesignerEditForm from '../forms/DesignerEditForm'
 import RepairEditForm from '../forms/RepairEditForm'
 import SupplierEditForm from '../forms/SupplierEditForm'
 import MediaEditForm from '../forms/MediaEditForm'
+import Image from 'next/image'
 
 export default function DetailUsers() {
     const params = useParams()
@@ -25,6 +26,10 @@ export default function DetailUsers() {
     const [searchText, setSearchText] = useState('')
     const [requestName, setRequestName] = useState('')
     const [saving, setSaving] = useState(false)
+    const [uploadingImage, setUploadingImage] = useState(false)
+    const [selectedFile, setSelectedFile] = useState(null)
+    const [previewUrl, setPreviewUrl] = useState('')
+    const fileInputRef = useRef(null)
 
     // URL endpointlarini aniqlash
     const getEndpoints = (type) => {
