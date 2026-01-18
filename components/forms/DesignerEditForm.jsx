@@ -1,6 +1,6 @@
 // forms/DesignerEditForm.jsx
-import React, { useState } from 'react'
-import { FiSave, FiX } from 'react-icons/fi'
+import React, { useState, useRef } from 'react'
+import { FiSave, FiX, FiUpload } from 'react-icons/fi'
 
 const serviceOptions = [
     { value: 'author_supervision', label: 'Авторский надзор' },
@@ -37,6 +37,9 @@ const vatOptions = [
 
 export default function DesignerEditForm({ data, onChange, onSave, onCancel, saving }) {
     const [localData, setLocalData] = useState(data || {})
+    const [imagePreview, setImagePreview] = useState(data?.photo || null)
+    const [imageFile, setImageFile] = useState(null) // File ob'ektini alohida saqlash
+    const fileInputRef = useRef(null)
 
     const handleChange = (field, value) => {
         const newData = { ...localData, [field]: value }
@@ -55,13 +58,101 @@ export default function DesignerEditForm({ data, onChange, onSave, onCancel, sav
         handleChange(field, newArray)
     }
 
+    const handleImageChange = (e) => {
+        const file = e.target.files[0]
+        if (file) {
+            if (file.size > 5 * 1024 * 1024) {
+                alert('Размер файла не должен превышать 5MB')
+                return
+            }
+
+            // File ob'ektini saqlash (binary data)
+            setImageFile(file)
+
+            // Faqat preview uchun base64 yaratish
+            const reader = new FileReader()
+            reader.onloadend = () => {
+                setImagePreview(reader.result)
+            }
+            reader.readAsDataURL(file)
+        }
+    }
+
     const handleSubmit = (e) => {
         e.preventDefault()
-        onSave(localData)
+
+        // FormData yaratish
+        const formData = new FormData()
+
+        // Agar yangi rasm yuklangan bo'lsa, uni qo'shish
+        if (imageFile) {
+            formData.append('photo', imageFile)
+        }
+
+        // Qolgan barcha maydonlarni qo'shish
+        Object.keys(localData).forEach(key => {
+            const value = localData[key]
+
+            // photo ni ikki marta qo'shmaslik uchun skip qilamiz
+            if (key === 'photo') {
+                return
+            }
+
+            // Array maydonlarni JSON stringga aylantirish
+            if (Array.isArray(value)) {
+                if (value.length > 0) {
+                    formData.append(key, JSON.stringify(value))
+                }
+            }
+            // Oddiy maydonlar
+            else if (value !== null && value !== undefined && value !== '') {
+                formData.append(key, value)
+            }
+        })
+
+        // FormData ni yuborish
+        onSave(formData)
     }
 
     return (
         <form onSubmit={handleSubmit} className="space-y-4">
+            {/* Rasm yuklash qismi */}
+            <div className="space-y-3">
+                <h3 className="text-lg font-semibold text-white mb-2">Фото</h3>
+                <div className="flex items-center gap-4">
+                    <div className="flex-shrink-0">
+                        {imagePreview ? (
+                            <img
+                                src={imagePreview}
+                                alt="User Photo"
+                                className="w-32 h-32 object-cover rounded-lg border-2 border-white/30"
+                            />
+                        ) : (
+                            <div className="w-32 h-32 bg-white/10 rounded-lg border-2 border-dashed border-white/30 flex items-center justify-center">
+                                <span className="text-white/50 text-sm">Нет фото</span>
+                            </div>
+                        )}
+                    </div>
+                    <div className="flex-1">
+                        <input
+                            type="file"
+                            ref={fileInputRef}
+                            onChange={handleImageChange}
+                            accept="image/*"
+                            className="hidden"
+                        />
+                        <button
+                            type="button"
+                            onClick={() => fileInputRef.current?.click()}
+                            className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded text-white text-sm font-medium"
+                        >
+                            <FiUpload /> Загрузить новое фото
+                        </button>
+                        <p className="text-white/50 text-xs mt-2">Максимальный размер: 5MB</p>
+                    </div>
+                </div>
+            </div>
+
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {/* Asosiy ma'lumotlar */}
                 <div className="space-y-3">

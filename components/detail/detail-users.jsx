@@ -421,6 +421,7 @@ export default function DetailUsers() {
             onCancel: () => setShowEditModal(false),
             saving: saving
         }
+        console.log(requestName);
 
         switch (requestName) {
             case 'DesignerQuestionnaire':
@@ -507,7 +508,7 @@ export default function DetailUsers() {
                 <EditModal
                     isOpen={showEditModal}
                     onClose={() => setShowEditModal(false)}
-                    title={`Редактирование анкеты (ID: ${data.id})`}
+                    title={`Редактирование анкеты`}
                 >
                     {renderEditForm()}
                 </EditModal>
@@ -562,7 +563,7 @@ export default function DetailUsers() {
                                 </div>
 
                                 <div className="col-span-3 h-20 max-md:h-16 flex items-center px-4 max-md:px-2 font-normal text-[20px] max-md:text-xs leading-[100%] tracking-normal">
-                                    {data.full_name || 'Не указано'}
+                                    {data.brand_name || data.full_name || 'Не указано'}
                                 </div>
 
                                 <div className="col-span-2 h-20 max-md:h-16 flex items-center px-4 max-md:px-2 font-normal text-[20px] max-md:text-xs leading-[100%] tracking-normal not-italic">

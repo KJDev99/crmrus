@@ -287,7 +287,7 @@ export default function ConstructionBox() {
             console.log(formData);
 
 
-            await axios.post('https://api.reiting-profi.ru/api/v1/accounts/questionnaires/', submitFormData, {
+            await axios.post('https://api.reiting-profi.ru/api/v1/accounts/repair-questionnaires/', submitFormData, {
                 headers: {
                     'Content-Type': 'multipart/form-data'
                 }
@@ -1057,7 +1057,7 @@ export default function ConstructionBox() {
                         {/* Data Processing Consent */}
                         <div>
                             <label className="block text-sm font-medium mb-2 text-white">
-                                Согласие на обработку берем для всех анкет одинаковое  <span className="text-red-400">*</span>
+                                Согласие на обработку данных  <span className="text-red-400">*</span>
                             </label>
                             <p className="text-white/60 text-sm mb-3">
                                 При заполнении данной формы вы подтверждаете свое согласие на хранение, использование и передачу предоставленных данных в рамках проекта.

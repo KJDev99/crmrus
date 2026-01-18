@@ -28,7 +28,7 @@ export default function SupplierBox() {
         vat_payment: '',
         guarantees: '',
         designer_contractor_terms: '',
-        magazine_cards: '',
+        magazine_cards: [],
         data_processing_consent: false,
         company_logo: null,
         legal_entity_card: null
@@ -81,7 +81,14 @@ export default function SupplierBox() {
             [name]: type === 'checkbox' ? checked : value
         }));
     };
-
+    const handleMagazineCardsToggle = (cardValue) => {
+        setFormData(prev => ({
+            ...prev,
+            magazine_cards: prev.magazine_cards.includes(cardValue)
+                ? prev.magazine_cards.filter(c => c !== cardValue)
+                : [...prev.magazine_cards, cardValue]
+        }));
+    };
     const handleSegmentToggle = (segmentValue) => {
         setFormData(prev => ({
             ...prev,
@@ -241,7 +248,7 @@ export default function SupplierBox() {
             toast.error('Пожалуйста, укажите условия работы с дизайнерами/подрядчиками');
             return;
         }
-        if (!formData.magazine_cards) {
+        if (formData.magazine_cards.length === 0) {  // ✅ YANGI
             toast.error('Пожалуйста, укажите выдачу карточек журналов');
             return;
         }
@@ -271,8 +278,11 @@ export default function SupplierBox() {
                     submitFormData.append(key, value.toString());
                 } else if (value !== '' && value !== null) {
                     submitFormData.append(key, value);
+                } else if (key === 'magazine_cards') {
+                    if (value.length > 0) submitFormData.append(key, JSON.stringify(value));
                 }
             });
+            console.log(formData, submitFormData);
 
             await axios.post('https://api.reiting-profi.ru/api/v1/accounts/supplier-questionnaires/', submitFormData, {
                 headers: {
@@ -306,7 +316,7 @@ export default function SupplierBox() {
                 vat_payment: '',
                 guarantees: '',
                 designer_contractor_terms: '',
-                magazine_cards: '',
+                magazine_cards: [],
                 data_processing_consent: false,
                 company_logo: null,
                 legal_entity_card: null
@@ -981,13 +991,11 @@ export default function SupplierBox() {
                                 {magazineCardsOptions.map(option => (
                                     <label key={option.value} className="bg-glass2 px-4 py-3 rounded-lg cursor-pointer hover:bg-opacity-80 transition-all flex items-center gap-2">
                                         <input
-                                            type="radio"
-                                            name="magazine_cards"
-                                            value={option.value}
-                                            checked={formData.magazine_cards === option.value}
-                                            onChange={handleInputChange}
-                                            className="radio-glass"
-                                            required
+                                            type="checkbox"  // ✅ RADIO dan CHECKBOX ga
+                                            checked={formData.magazine_cards.includes(option.value)}  // ✅ includes bilan tekshirish
+                                            onChange={() => handleMagazineCardsToggle(option.value)}  // ✅ toggle funksiyasi
+                                            className="checkbox-glass"  // ✅ radio-glass dan checkbox-glass ga
+                                            required={formData.magazine_cards.length === 0}  // ✅ kamida bitta tanlangan bo'lishi kerak
                                         />
                                         <span className="text-white text-sm sm:text-base">{option.label}</span>
                                     </label>
@@ -998,7 +1006,7 @@ export default function SupplierBox() {
                         {/* Data Processing Consent */}
                         <div>
                             <label className="block text-sm font-medium mb-2 text-white">
-                                Согласие на обработку берем для всех анкет одинаковое  <span className="text-red-400">*</span>
+                                Согласие на обработку данных  <span className="text-red-400">*</span>
                             </label>
                             <p className="text-white/60 text-sm mb-3">
                                 При заполнении данной формы вы подтверждаете свое согласие на хранение, использование и передачу предоставленных данных в рамках проекта.

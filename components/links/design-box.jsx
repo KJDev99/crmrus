@@ -278,7 +278,7 @@ export default function DesignBox() {
                     submitFormData.append(key, value);
                 }
             });
-
+            console.log(formData);
             await axios.post('https://api.reiting-profi.ru/api/v1/accounts/questionnaires/', submitFormData, {
                 headers: {
                     'Content-Type': 'multipart/form-data'
