@@ -20,6 +20,7 @@ export default function MediaEditForm({ data, onChange, onSave, onCancel, saving
     const [localData, setLocalData] = useState(data || {})
     const [imagePreview, setImagePreview] = useState(data?.company_logo || null)
     const fileInputRef = useRef(null)
+    const [newImageFile, setNewImageFile] = useState(null)
 
     const handleChange = (field, value) => {
         const newData = { ...localData, [field]: value }
@@ -46,18 +47,52 @@ export default function MediaEditForm({ data, onChange, onSave, onCancel, saving
                 return
             }
 
+            // File ob'ektini alohida saqlash
+            setNewImageFile(file)
+
             const reader = new FileReader()
             reader.onloadend = () => {
                 setImagePreview(reader.result)
-                handleChange('company_logo', file)
             }
             reader.readAsDataURL(file)
         }
     }
 
+    // handleSubmit funksiyasini to'liq almashtiring:
     const handleSubmit = (e) => {
         e.preventDefault()
-        onSave(localData)
+
+        // FormData yaratish
+        const formData = new FormData()
+
+        // Barcha oddiy fieldlarni qo'shish
+        Object.keys(localData).forEach(key => {
+            const value = localData[key]
+
+            // File maydonlarini o'tkazib yuborish
+            if (key === 'company_logo') {
+                return
+            }
+
+            // Array fieldlar
+            if (key === 'segments' || key === 'representative_cities' || key === 'other_contacts') {
+                if (Array.isArray(value) && value.length > 0) {
+                    formData.append(key, JSON.stringify(value))
+                }
+            }
+            // Oddiy fieldlar
+            else if (value !== '' && value !== null && value !== undefined) {
+                formData.append(key, value)
+            }
+        })
+
+        // Yangi rasm qo'shish
+        if (newImageFile) {
+            formData.append('company_logo', newImageFile)
+        }
+
+        // FormData yuborish
+        onSave(formData)
     }
 
     return (

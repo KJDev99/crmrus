@@ -176,8 +176,8 @@ export default function DetailUsers() {
 
             await axios.put(endpoints.update, formData, {
                 headers: {
-                    Authorization: `Bearer ${token}`,
-                    'Content-Type': 'application/json'
+                    Authorization: `Bearer ${token}`
+                    // 'Content-Type': 'application/json'
                 }
             })
 
