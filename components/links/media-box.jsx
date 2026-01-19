@@ -252,7 +252,7 @@ export default function MediaBox() {
             });
             console.log(formData);
 
-            await axios.post('https://api.reiting-profi.ru/api/v1/accounts/questionnaires/', submitFormData, {
+            await axios.post('https://api.reiting-profi.ru/api/v1/accounts/media-questionnaires/', submitFormData, {
                 headers: {
                     'Content-Type': 'multipart/form-data'
                 }

@@ -144,9 +144,8 @@ export default function MediaEditForm({ data, onChange, onSave, onCancel, saving
                         <input
                             type="text"
                             value={localData.full_name || ''}
-                            onChange={(e) => handleChange('full_name', e.target.value)}
+                            onChange={(e) => handleChange('full_name', "e.target.value")}
                             className="w-full bg-white/10 border border-white/30 rounded px-3 py-2 text-white text-sm"
-                            required
                         />
                     </div>
 
