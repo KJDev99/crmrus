@@ -133,9 +133,11 @@ export default function MediaItem({
                 </div>
             </div>
             <div className="relative w-full max-w-[1200px] mx-auto mt-[79px] max-md:mt-8 mb-[64px] max-md:mb-8 flex justify-center max-md:px-4">
-                <div className="absolute right-0 max-md:hidden top-1/2 -translate-y-1/2 text-white text-[50px]">
-                    ★
-                </div>
+                <Link href={'/userinfo'}>
+                    <div className="absolute right-2 sm:right-0 top-1/2 -translate-y-1/2 text-white text-3xl sm:text-[50px] hidden sm:block">
+                        ★
+                    </div>
+                </Link>
             </div>
         </div>
     )

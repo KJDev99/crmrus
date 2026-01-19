@@ -170,9 +170,11 @@ export default function SupplierSelect({ filterChoices, selectedFilters, onFilte
                 >
                     {loading ? 'Загрузка...' : 'ИСКАТЬ'}
                 </button>
-                <div className="absolute right-0 top-1/2 -translate-y-1/2 text-white text-[50px]">
-                    ★
-                </div>
+                <Link href={'/userinfo'}>
+                    <div className="absolute right-2 sm:right-0 top-1/2 -translate-y-1/2 text-white text-3xl sm:text-[50px] hidden sm:block">
+                        ★
+                    </div>
+                </Link>
             </div>
         </div>
     )

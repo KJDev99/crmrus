@@ -348,8 +348,10 @@ export default function SupplierEditForm({ data, onChange, onSave, onCancel, sav
                     </div>
                 </div>
 
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-3">
-                    <h3 className="text-lg font-semibold text-white mb-2">Контакты</h3>
+                    <h3 className="text-lg font-semibold text-white mb-2">Социальные сети</h3>
 
                     <div>
                         <label className="block text-sm text-white/80 mb-1">VK</label>
@@ -372,11 +374,25 @@ export default function SupplierEditForm({ data, onChange, onSave, onCancel, sav
                     </div>
 
                     <div>
-                        <label className="block text-sm text-white/80 mb-1">Telegram</label>
+                        <label className="block text-sm text-white/80 mb-1">Telegram канал</label>
                         <input
                             type="url"
                             value={localData.telegram_channel || ''}
                             onChange={(e) => handleChange('telegram_channel', e.target.value)}
+                            className="w-full bg-white/10 border border-white/30 rounded px-3 py-2 text-white text-sm"
+                        />
+                    </div>
+                </div>
+
+                <div className="space-y-3">
+                    <h3 className="text-lg font-semibold text-white mb-2">Другие контакты</h3>
+
+                    <div>
+                        <label className="block text-sm text-white/80 mb-1">Pinterest</label>
+                        <input
+                            type="url"
+                            value={localData.pinterest || ''}
+                            onChange={(e) => handleChange('pinterest', e.target.value)}
                             className="w-full bg-white/10 border border-white/30 rounded px-3 py-2 text-white text-sm"
                         />
                     </div>
@@ -392,12 +408,15 @@ export default function SupplierEditForm({ data, onChange, onSave, onCancel, sav
                     </div>
 
                     <div>
-                        <label className="block text-sm text-white/80 mb-1">Pinterest</label>
-                        <input
-                            type="url"
-                            value={localData.pinterest || ''}
-                            onChange={(e) => handleChange('pinterest', e.target.value)}
+                        <label className="block text-sm text-white/80 mb-1">Другие контакты</label>
+                        <textarea
+                            value={Array.isArray(localData.other_contacts)
+                                ? localData.other_contacts.join(', ')
+                                : localData.other_contacts || ''}
+                            onChange={(e) => handleChange('other_contacts', e.target.value.split(',').map(s => s.trim()))}
+                            rows="2"
                             className="w-full bg-white/10 border border-white/30 rounded px-3 py-2 text-white text-sm"
+                            placeholder="Введите через запятую"
                         />
                     </div>
                 </div>

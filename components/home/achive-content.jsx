@@ -618,28 +618,28 @@ export default function AchiveContent() {
                                                 key={`${row.id}-${row.request_name}-${index}`}
                                                 className="text-white hover:bg-gray-750 grid grid-cols-16 items-center"
                                             >
-                                                <td className="col-span-1 h-20 flex items-center px-4 font-normal text-[16px] leading-[100%] tracking-normal border-b border-white/30">
+                                                <td className="overflow-hidden col-span-1 h-20 flex items-center px-4 font-normal text-[16px] leading-[100%] tracking-normal border-b border-white/30">
                                                     {index + 1}
                                                 </td>
-                                                <td className="col-span-3 h-20 flex items-center px-4 font-normal text-[16px] leading-[100%] tracking-normal border-b border-white/30">
+                                                <td className="overflow-hidden col-span-3 h-20 flex items-center px-4 font-normal text-[16px] leading-[100%] tracking-normal border-b border-white/30">
                                                     {row.full_name || "Не указано"}
                                                 </td>
-                                                <td className="col-span-2 h-20 flex items-center px-4 font-normal text-[16px] leading-[100%] tracking-normal not-italic border-b border-white/30">
+                                                <td className="overflow-hidden col-span-2 h-20 flex items-center px-4 font-normal text-[16px] leading-[100%] tracking-normal not-italic border-b border-white/30">
                                                     {formatRequestName(row.request_name)}
                                                 </td>
-                                                <td className="col-span-1 h-20 flex items-center px-4 font-normal text-[16px] leading-[100%] tracking-normal not-italic border-b border-white/30">
+                                                <td className="overflow-hidden col-span-1 h-20 flex items-center px-4 font-normal text-[16px] leading-[100%] tracking-normal not-italic border-b border-white/30">
                                                     {row.group_display || "Не указано"}
                                                 </td>
-                                                <td className="col-span-2 h-20 flex items-center px-4 font-normal text-[16px] leading-[100%] tracking-normal not-italic border-b border-white/30">
+                                                <td className="overflow-hidden col-span-2 h-20 flex items-center px-4 font-normal text-[16px] leading-[100%] tracking-normal not-italic border-b border-white/30">
                                                     {formatPhone(row.phone)}
                                                 </td>
-                                                <td className="col-span-2 h-20 flex items-center px-4 font-normal text-[16px] leading-[100%] tracking-normal not-italic border-b border-white/30">
+                                                <td className="overflow-hidden col-span-2 h-20 flex items-center px-4 font-normal text-[16px] leading-[100%] tracking-normal not-italic border-b border-white/30">
                                                     {row.brand_name || "Не указано"}
                                                 </td>
-                                                <td className="col-span-2 h-20 flex items-center px-4 font-normal not-italic text-[16px] leading-[100%] tracking-normal border-b border-white/30">
+                                                <td className="overflow-hidden col-span-2 h-20 flex items-center px-4 font-normal not-italic text-[16px] leading-[100%] tracking-normal border-b border-white/30">
                                                     {formatDate(row.created_at)}
                                                 </td>
-                                                <td className="col-span-3 h-20 flex items-center gap-2 px-4 border-b border-white/30">
+                                                <td className="overflow-hidden col-span-3 h-20 flex items-center gap-2 px-4 border-b border-white/30">
                                                     <button
                                                         onClick={() => handleRestoreFromArchive(
                                                             row.id,

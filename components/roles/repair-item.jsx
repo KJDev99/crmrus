@@ -93,7 +93,7 @@ export default function RepairItem({
                                             {questionnaire.brand_name || questionnaire.full_name || 'Название организации'}
                                         </h2>
                                         <p className='text-[#FFFFFF] text-sm max-md:text-xs line-clamp-1'>
-                                            {questionnaire?.about_company[2]?.value.join(', ') || ""} 
+                                            {questionnaire?.about_company[2]?.value.join(', ') || ""}
                                         </p>
                                         <p className='text-[#FFFFFF] text-sm max-md:text-xs mt-1 line-clamp-2'>
                                             {questionnaire?.about_company[0]?.value || ""}
@@ -136,9 +136,11 @@ export default function RepairItem({
                 </div>
             </div>
             <div className="relative w-full max-w-[1200px] mx-auto mt-[79px] mb-[64px] flex justify-center">
-                <div className="absolute right-0 top-1/2 -translate-y-1/2 text-white text-[50px]">
-                    ★
-                </div>
+                <Link href={'/userinfo'}>
+                    <div className="absolute right-2 sm:right-0 top-1/2 -translate-y-1/2 text-white text-3xl sm:text-[50px] hidden sm:block">
+                        ★
+                    </div>
+                </Link>
             </div>
         </div>
     )
