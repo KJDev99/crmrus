@@ -2,6 +2,7 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import { toast } from 'react-hot-toast';
+import { RiDeleteBin6Line } from 'react-icons/ri';
 
 export default function MediaBox() {
     const [formData, setFormData] = useState({
@@ -22,7 +23,7 @@ export default function MediaBox() {
         pinterest: '',
         instagram: '',
         website: '',
-        other_contacts: [''],
+        other_contacts: [{ type: '', value: '' }],
         vat_payment: '',
         additional_info: '',
         data_processing_consent: false,
@@ -62,7 +63,14 @@ export default function MediaBox() {
         { value: 'yes', label: 'Да' },
         { value: 'no', label: 'Нет' }
     ];
-
+    const socialMediaOptions = [
+        { value: 'vk', label: 'VK', placeholder: 'Ссылка на VK' },
+        { value: 'telegram', label: 'Telegram канал', placeholder: 'Ссылка на Telegram канал' },
+        { value: 'pinterest', label: 'Pinterest', placeholder: 'Ссылка на Pinterest' },
+        { value: 'instagram', label: 'Instagram', placeholder: 'Ссылка на Instagram' },
+        { value: 'website', label: 'Веб-сайт', placeholder: 'https://example.com' },
+        { value: 'other', label: 'Другое', placeholder: 'Другой контакт' }
+    ];
     const handleInputChange = (e) => {
         const { name, value, type, checked } = e.target;
         setFormData(prev => ({
@@ -121,11 +129,39 @@ export default function MediaBox() {
         }
     };
 
-    const updateOtherContact = (index, value) => {
+    const addSocialContact = () => {
+        setFormData(prev => ({
+            ...prev,
+            other_contacts: [...prev.other_contacts, { type: '', value: '' }]
+        }));
+    };
+
+    // Kontaktni o'chirish
+    const removeSocialContact = (index) => {
+        if (formData.other_contacts.length > 1) {
+            setFormData(prev => ({
+                ...prev,
+                other_contacts: prev.other_contacts.filter((_, i) => i !== index)
+            }));
+        }
+    };
+
+    // Kontakt type ni yangilash
+    const updateSocialContactType = (index, type) => {
         setFormData(prev => ({
             ...prev,
             other_contacts: prev.other_contacts.map((contact, i) =>
-                i === index ? value : contact
+                i === index ? { ...contact, type } : contact
+            )
+        }));
+    };
+
+    // Kontakt value ni yangilash
+    const updateSocialContactValue = (index, value) => {
+        setFormData(prev => ({
+            ...prev,
+            other_contacts: prev.other_contacts.map((contact, i) =>
+                i === index ? { ...contact, value } : contact
             )
         }));
     };
@@ -232,17 +268,22 @@ export default function MediaBox() {
         try {
             const submitFormData = new FormData();
 
-            // Add all fields to FormData
+            // Add all fields to FormDatasetShowModal
             Object.keys(formData).forEach(key => {
                 const value = formData[key];
 
                 if (key === 'company_logo' || key === 'legal_entity_card') {
                     if (value) submitFormData.append(key, value);
-                } else if (key === 'representative_cities' || key === 'other_contacts') {
-                    // Filter out empty strings
+                } else if (key === 'representative_cities') {
                     const filteredValues = value.filter(v => v.trim() !== '');
                     if (filteredValues.length > 0) submitFormData.append(key, JSON.stringify(filteredValues));
-                } else if (key === 'segments') {
+                } else if (key === 'other_contacts') {
+                    // ✅ Yangi format: { type: 'vk', value: 'https://...' }
+                    const filteredContacts = value.filter(c => c.type && c.value.trim() !== '');
+                    if (filteredContacts.length > 0) {
+                        submitFormData.append(key, JSON.stringify(filteredContacts));
+                    }
+                } else if (key === 'segments' || key === 'magazine_cards') {
                     if (value.length > 0) submitFormData.append(key, JSON.stringify(value));
                 } else if (key === 'data_processing_consent') {
                     submitFormData.append(key, value.toString());
@@ -250,7 +291,6 @@ export default function MediaBox() {
                     submitFormData.append(key, value);
                 }
             });
-            console.log(formData);
 
             await axios.post('https://api.reiting-profi.ru/api/v1/accounts/media-questionnaires/', submitFormData, {
                 headers: {
@@ -280,7 +320,7 @@ export default function MediaBox() {
                 pinterest: '',
                 instagram: '',
                 website: '',
-                other_contacts: [''],
+                other_contacts: [{ type: '', value: '' }],
                 vat_payment: '',
                 additional_info: '',
                 data_processing_consent: false,
@@ -730,111 +770,72 @@ export default function MediaBox() {
                                 Ссылки на социальные сети и другие каналы связи.
                             </h3>
 
-                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                <div>
-                                    <label className="block text-sm font-medium mb-2 text-white">
-                                        VK
-                                    </label>
-                                    <input
-                                        type="text"
-                                        name="vk"
-                                        value={formData.vk}
-                                        onChange={handleInputChange}
-                                        className="input-glass w-full px-4 py-2 rounded-lg transition-all text-sm sm:text-base"
-                                        placeholder="Ссылка на VK"
-                                    />
-                                </div>
-
-                                <div>
-                                    <label className="block text-sm font-medium mb-2 text-white">
-                                        Telegram канал
-                                    </label>
-                                    <input
-                                        type="text"
-                                        name="telegram_channel"
-                                        value={formData.telegram_channel}
-                                        onChange={handleInputChange}
-                                        className="input-glass w-full px-4 py-2 rounded-lg transition-all text-sm sm:text-base"
-                                        placeholder="Ссылка на Telegram канал"
-                                    />
-                                </div>
-
-                                <div>
-                                    <label className="block text-sm font-medium mb-2 text-white">
-                                        Pinterest
-                                    </label>
-                                    <input
-                                        type="text"
-                                        name="pinterest"
-                                        value={formData.pinterest}
-                                        onChange={handleInputChange}
-                                        className="input-glass w-full px-4 py-2 rounded-lg transition-all text-sm sm:text-base"
-                                        placeholder="Ссылка на Pinterest"
-                                    />
-                                </div>
-
-                                <div>
-                                    <label className="block text-sm font-medium mb-2 text-white">
-                                        Instagram
-                                    </label>
-                                    <input
-                                        type="text"
-                                        name="instagram"
-                                        value={formData.instagram}
-                                        onChange={handleInputChange}
-                                        className="input-glass w-full px-4 py-2 rounded-lg transition-all text-sm sm:text-base"
-                                        placeholder="Ссылка на Instagram"
-                                    />
-                                </div>
-
-                                <div className="sm:col-span-2">
-                                    <label className="block text-sm font-medium mb-2 text-white">
-                                        Ваш сайт
-                                    </label>
-                                    <input
-                                        type="url"
-                                        name="website"
-                                        value={formData.website}
-                                        onChange={handleInputChange}
-                                        className="input-glass w-full px-4 py-2 rounded-lg transition-all text-sm sm:text-base"
-                                        placeholder="https://example.com"
-                                    />
-                                </div>
-                            </div>
-
-                            {/* Other Contacts */}
-                            <div>
-                                <label className="block text-sm font-medium mb-2 text-white">
-                                    Другое
-                                </label>
-                                {formData.other_contacts.map((contact, index) => (
-                                    <div key={index} className="flex gap-2 mb-2 mobile-stack">
-                                        <input
-                                            type="text"
-                                            value={contact}
-                                            onChange={(e) => updateOtherContact(index, e.target.value)}
-                                            className="input-glass flex-1 px-4 py-2 rounded-lg transition-all text-sm sm:text-base"
-                                            placeholder="Дополнительный контакт"
-                                        />
-                                        {formData.other_contacts.length > 1 && (
-                                            <button
-                                                type="button"
-                                                onClick={() => removeOtherContact(index)}
-                                                className="bg-glass2 px-3 py-2 rounded-lg hover:bg-opacity-80 transition-all text-red-400 text-sm sm:text-base flex-shrink-0"
+                            {formData.other_contacts.map((contact, index) => (
+                                <div key={index} className="bg-glass2 p-4 rounded-lg space-y-3 ">
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                        {/* Type selector */}
+                                        <div>
+                                            <label className="block text-sm font-medium mb-2 text-white">
+                                                Тип контакта
+                                            </label>
+                                            <select
+                                                value={contact.type}
+                                                onChange={(e) => updateSocialContactType(index, e.target.value)}
+                                                className="input-glass w-full px-4 py-3 rounded-lg transition-all text-sm sm:text-base"
                                             >
-                                                Удалить
-                                            </button>
-                                        )}
+                                                <option value="" className="bg-[#122161]">Выберите тип</option>
+                                                {socialMediaOptions.map(option => (
+                                                    <option key={option.value} value={option.value} className="bg-[#122161]">
+                                                        {option.label}
+                                                    </option>
+                                                ))}
+                                            </select>
+                                        </div>
+
+                                        {/* Value input */}
+                                        <div className='flex gap-x-2 flex-col'>
+                                            <label className="block text-sm font-medium mb-2 text-white">
+                                                Ссылка или контакт
+                                            </label>
+                                            <div className='flex gap-x-2'>
+                                                <input
+                                                    type="text"
+                                                    value={contact.value}
+                                                    onChange={(e) => updateSocialContactValue(index, e.target.value)}
+                                                    className="input-glass w-full px-4 py-2 rounded-lg transition-all text-sm sm:text-base"
+                                                    placeholder={
+                                                        contact.type
+                                                            ? socialMediaOptions.find(opt => opt.value === contact.type)?.placeholder
+                                                            : 'Введите ссылку или контакт'
+                                                    }
+                                                />
+                                                {formData.other_contacts.length > 1 && (
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => removeSocialContact(index)}
+                                                        className="bg-glass2 px-4 py-2 rounded-lg hover:bg-opacity-80 transition-all text-red-400 text-sm sm:text-base w-full sm:w-auto"
+                                                    >
+                                                        <RiDeleteBin6Line />
+                                                    </button>
+                                                )}
+                                            </div>
+                                        </div>
                                     </div>
-                                ))}
-                                <button
-                                    type="button"
-                                    onClick={addOtherContact}
-                                    className="bg-glass2 w-full px-4 py-2 rounded-lg hover:bg-opacity-80 transition-all text-sm sm:text-base"
-                                >
-                                    + Добавить контакт
-                                </button>
-                            </div>
+
+                                    {/* Delete button */}
+
+                                </div>
+                            ))}
+
+                            {/* Add new contact button */}
+                            <button
+                                type="button"
+                                onClick={addSocialContact}
+                                className="bg-glass2 w-full px-4 py-2 rounded-lg hover:bg-opacity-80 transition-all text-sm sm:text-base flex items-center justify-center gap-2"
+                            >
+                                <span className="text-xl">+</span>
+                                <span>Добавить контакт</span>
+                            </button>
                         </div>
 
                         {/* VAT Payment */}
@@ -1033,12 +1034,12 @@ export default function MediaBox() {
                             <p className="text-white/70 mb-4 sm:mb-6 text-sm sm:text-base">
                                 Ваша анкета успешно отправлена. Мы свяжемся с вами в ближайшее время.
                             </p>
-                            <button
+                            {/* <button
                                 onClick={closeModal}
                                 className="bg-glass2 w-full px-4 py-2 sm:px-6 sm:py-3 rounded-lg hover:bg-opacity-80 transition-all font-medium text-sm sm:text-base"
                             >
                                 Закрыть
-                            </button>
+                            </button> */}
                         </div>
                     </div>
                 </div>

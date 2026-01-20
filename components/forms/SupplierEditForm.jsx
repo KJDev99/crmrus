@@ -1,6 +1,6 @@
 // forms/SupplierEditForm.jsx
 import React, { useState, useRef } from 'react'
-import { FiSave, FiX, FiUpload } from 'react-icons/fi'
+import { FiSave, FiX, FiUpload, FiPlus, FiTrash2 } from 'react-icons/fi'
 
 const businessFormOptions = [
     { value: 'own_business', label: 'Собственный бизнес' },
@@ -28,8 +28,68 @@ const magazineCardsOptions = [
     { value: 'other', label: 'Другое' }
 ]
 
+// ✅ YANGI: Contact type options
+const contactTypeOptions = [
+    { value: 'vk', label: 'VK', placeholder: 'https://vk.com/...' },
+    { value: 'telegram', label: 'Telegram', placeholder: 'https://t.me/...' },
+    { value: 'instagram', label: 'Instagram', placeholder: 'https://instagram.com/...' },
+    { value: 'pinterest', label: 'Pinterest', placeholder: 'https://pinterest.com/...' },
+    { value: 'website', label: 'Website', placeholder: 'https://example.com' },
+    { value: 'other', label: 'Другое', placeholder: 'Введите контакт' }
+]
+
 export default function SupplierEditForm({ data, onChange, onSave, onCancel, saving }) {
-    const [localData, setLocalData] = useState(data || {})
+    // ✅ YANGI: other_contacts ni to'g'ri parse qilish
+    const parseOtherContacts = (contacts) => {
+        if (!contacts) return [{ type: '', value: '' }]
+
+        if (Array.isArray(contacts)) {
+            if (contacts.length === 0) return [{ type: '', value: '' }]
+
+            // Har bir elementni tekshirish
+            const parsed = contacts.map(item => {
+                // Agar allaqachon object bo'lsa
+                if (typeof item === 'object' && item !== null && item.type && item.value) {
+                    return item
+                }
+
+                // Agar string bo'lsa (masalan: "{'type': 'telegram', 'value': 'asdasd'}")
+                if (typeof item === 'string') {
+                    try {
+                        // Python dict formatidan JSON formatga o'tkazish
+                        const jsonString = item
+                            .replace(/'/g, '"')  // ' -> "
+                            .replace(/None/g, 'null')  // Python None -> JSON null
+                            .replace(/True/g, 'true')  // Python True -> JSON true
+                            .replace(/False/g, 'false')  // Python False -> JSON false
+
+                        const parsed = JSON.parse(jsonString)
+
+                        if (parsed.type && parsed.value) {
+                            return parsed
+                        }
+                    } catch (e) {
+                        console.warn('Failed to parse contact:', item, e)
+                        // Agar parse bo'lmasa, "other" type bilan qaytarish
+                        return { type: 'other', value: item }
+                    }
+                }
+
+                // Agar hech narsa mos kelmasa
+                return { type: 'other', value: String(item) }
+            })
+
+            return parsed.filter(item => item.type && item.value) // Bo'sh elementlarni o'chirish
+        }
+
+        return [{ type: '', value: '' }]
+    }
+
+    const [localData, setLocalData] = useState({
+        ...data,
+        other_contacts: parseOtherContacts(data?.other_contacts)
+    })
+
     const [imagePreview, setImagePreview] = useState(data?.company_logo || null)
     const fileInputRef = useRef(null)
     const [newImageFile, setNewImageFile] = useState(null)
@@ -51,6 +111,33 @@ export default function SupplierEditForm({ data, onChange, onSave, onCancel, sav
         handleChange(field, newArray)
     }
 
+    // ✅ YANGI: Contact management functions
+    const addContact = () => {
+        const newContacts = [...(localData.other_contacts || []), { type: '', value: '' }]
+        handleChange('other_contacts', newContacts)
+    }
+
+    const removeContact = (index) => {
+        if (localData.other_contacts.length > 1) {
+            const newContacts = localData.other_contacts.filter((_, i) => i !== index)
+            handleChange('other_contacts', newContacts)
+        }
+    }
+
+    const updateContactType = (index, type) => {
+        const newContacts = localData.other_contacts.map((contact, i) =>
+            i === index ? { ...contact, type } : contact
+        )
+        handleChange('other_contacts', newContacts)
+    }
+
+    const updateContactValue = (index, value) => {
+        const newContacts = localData.other_contacts.map((contact, i) =>
+            i === index ? { ...contact, value } : contact
+        )
+        handleChange('other_contacts', newContacts)
+    }
+
     const handleImageChange = (e) => {
         const file = e.target.files[0]
         if (file) {
@@ -59,7 +146,6 @@ export default function SupplierEditForm({ data, onChange, onSave, onCancel, sav
                 return
             }
 
-            // File ob'ektini alohida saqlash
             setNewImageFile(file)
 
             const reader = new FileReader()
@@ -70,24 +156,25 @@ export default function SupplierEditForm({ data, onChange, onSave, onCancel, sav
         }
     }
 
-    // handleSubmit funksiyasini to'liq almashtiring:
     const handleSubmit = (e) => {
         e.preventDefault()
 
-        // FormData yaratish
         const formData = new FormData()
 
-        // Barcha oddiy fieldlarni qo'shish
+        // ✅ other_contacts'ni JSON formatda qo'shish
+        const filteredContacts = (localData.other_contacts || [])
+            .filter(c => c.type && c.value && c.value.trim() !== '')
+
         Object.keys(localData).forEach(key => {
             const value = localData[key]
 
-            // File maydonlarini o'tkazib yuborish
-            if (key === 'company_logo') {
+            // File va other_contacts'ni o'tkazib yuborish
+            if (key === 'company_logo' || key === 'other_contacts') {
                 return
             }
 
             // Array fieldlar
-            if (key === 'segments' || key === 'representative_cities' || key === 'other_contacts') {
+            if (key === 'segments' || key === 'magazine_cards' || key === 'representative_cities') {
                 if (Array.isArray(value) && value.length > 0) {
                     formData.append(key, JSON.stringify(value))
                 }
@@ -98,12 +185,16 @@ export default function SupplierEditForm({ data, onChange, onSave, onCancel, sav
             }
         })
 
+        // ✅ other_contacts'ni JSON formatda qo'shish
+        if (filteredContacts.length > 0) {
+            formData.append('other_contacts', JSON.stringify(filteredContacts))
+        }
+
         // Yangi rasm qo'shish
         if (newImageFile) {
             formData.append('company_logo', newImageFile)
         }
 
-        // FormData yuborish
         onSave(formData)
     }
 
@@ -244,7 +335,6 @@ export default function SupplierEditForm({ data, onChange, onSave, onCancel, sav
                         </select>
                     </div>
 
-                    {/* Magazine Cards - CHECKBOX (multiple selection) */}
                     <div>
                         <label className="block text-sm text-white/80 mb-2">Карточки журнала</label>
                         <div className="grid grid-cols-2 gap-2 p-2 bg-white/5 rounded">
@@ -329,97 +419,86 @@ export default function SupplierEditForm({ data, onChange, onSave, onCancel, sav
                 </div>
             </div>
 
-            {/* Сегменты и контакты */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="space-y-3">
-                    <h3 className="text-lg font-semibold text-white mb-2">Сегменты работы</h3>
-                    <div className="grid grid-cols-2 gap-2 p-2 bg-white/5 rounded">
-                        {segmentOptions.map(option => (
-                            <label key={option.value} className="flex items-center space-x-2">
-                                <input
-                                    type="checkbox"
-                                    checked={(localData.segments || []).includes(option.value)}
-                                    onChange={(e) => handleArrayChange('segments', option.value, e.target.checked)}
-                                    className="rounded border-white/30 bg-white/10"
-                                />
-                                <span className="text-sm text-white/90">{option.label}</span>
-                            </label>
-                        ))}
-                    </div>
+            {/* Сегменты */}
+            <div className="space-y-3">
+                <h3 className="text-lg font-semibold text-white mb-2">Сегменты работы</h3>
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-2 p-2 bg-white/5 rounded">
+                    {segmentOptions.map(option => (
+                        <label key={option.value} className="flex items-center space-x-2">
+                            <input
+                                type="checkbox"
+                                checked={(localData.segments || []).includes(option.value)}
+                                onChange={(e) => handleArrayChange('segments', option.value, e.target.checked)}
+                                className="rounded border-white/30 bg-white/10"
+                            />
+                            <span className="text-sm text-white/90">{option.label}</span>
+                        </label>
+                    ))}
                 </div>
-
             </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="space-y-3">
-                    <h3 className="text-lg font-semibold text-white mb-2">Социальные сети</h3>
 
-                    <div>
-                        <label className="block text-sm text-white/80 mb-1">VK</label>
-                        <input
-                            type="url"
-                            value={localData.vk || ''}
-                            onChange={(e) => handleChange('vk', e.target.value)}
-                            className="w-full bg-white/10 border border-white/30 rounded px-3 py-2 text-white text-sm"
-                        />
+            {/* ✅ YANGI: Dynamic Contact Management */}
+            <div className="space-y-3">
+                <h3 className="text-lg font-semibold text-white mb-2">Контакты и социальные сети</h3>
+
+                {(localData.other_contacts || []).map((contact, index) => (
+                    <div key={index} className="bg-white/5 p-3 rounded-lg space-y-2">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                            {/* Type selector */}
+                            <div>
+                                <label className="block text-sm text-white/80 mb-1">Тип контакта</label>
+                                <select
+                                    value={contact.type || ''}
+                                    onChange={(e) => updateContactType(index, e.target.value)}
+                                    className="w-full bg-white/10 border border-white/30 rounded px-3 py-2 text-white text-sm"
+                                >
+                                    <option className='text-black' value="">Выберите тип</option>
+                                    {contactTypeOptions.map(option => (
+                                        <option key={option.value} value={option.value} className='text-black'>
+                                            {option.label}
+                                        </option>
+                                    ))}
+                                </select>
+                            </div>
+
+                            {/* Value input */}
+                            <div>
+                                <label className="block text-sm text-white/80 mb-1">Ссылка или контакт</label>
+                                <input
+                                    type="text"
+                                    value={contact.value || ''}
+                                    onChange={(e) => updateContactValue(index, e.target.value)}
+                                    className="w-full bg-white/10 border border-white/30 rounded px-3 py-2 text-white text-sm"
+                                    placeholder={
+                                        contact.type
+                                            ? contactTypeOptions.find(opt => opt.value === contact.type)?.placeholder
+                                            : 'Введите ссылку или контакт'
+                                    }
+                                />
+                            </div>
+                        </div>
+
+                        {/* Delete button */}
+                        {localData.other_contacts.length > 1 && (
+                            <button
+                                type="button"
+                                onClick={() => removeContact(index)}
+                                className="flex items-center gap-1 text-red-400 hover:text-red-300 text-sm"
+                            >
+                                <FiTrash2 /> Удалить контакт
+                            </button>
+                        )}
                     </div>
+                ))}
 
-                    <div>
-                        <label className="block text-sm text-white/80 mb-1">Instagram</label>
-                        <input
-                            type="url"
-                            value={localData.instagram || ''}
-                            onChange={(e) => handleChange('instagram', e.target.value)}
-                            className="w-full bg-white/10 border border-white/30 rounded px-3 py-2 text-white text-sm"
-                        />
-                    </div>
-
-                    <div>
-                        <label className="block text-sm text-white/80 mb-1">Telegram канал</label>
-                        <input
-                            type="url"
-                            value={localData.telegram_channel || ''}
-                            onChange={(e) => handleChange('telegram_channel', e.target.value)}
-                            className="w-full bg-white/10 border border-white/30 rounded px-3 py-2 text-white text-sm"
-                        />
-                    </div>
-                </div>
-
-                <div className="space-y-3">
-                    <h3 className="text-lg font-semibold text-white mb-2">Другие контакты</h3>
-
-                    <div>
-                        <label className="block text-sm text-white/80 mb-1">Pinterest</label>
-                        <input
-                            type="url"
-                            value={localData.pinterest || ''}
-                            onChange={(e) => handleChange('pinterest', e.target.value)}
-                            className="w-full bg-white/10 border border-white/30 rounded px-3 py-2 text-white text-sm"
-                        />
-                    </div>
-
-                    <div>
-                        <label className="block text-sm text-white/80 mb-1">Website</label>
-                        <input
-                            type="url"
-                            value={localData.website || ''}
-                            onChange={(e) => handleChange('website', e.target.value)}
-                            className="w-full bg-white/10 border border-white/30 rounded px-3 py-2 text-white text-sm"
-                        />
-                    </div>
-
-                    <div>
-                        <label className="block text-sm text-white/80 mb-1">Другие контакты</label>
-                        <textarea
-                            value={Array.isArray(localData.other_contacts)
-                                ? localData.other_contacts.join(', ')
-                                : localData.other_contacts || ''}
-                            onChange={(e) => handleChange('other_contacts', e.target.value.split(',').map(s => s.trim()))}
-                            rows="2"
-                            className="w-full bg-white/10 border border-white/30 rounded px-3 py-2 text-white text-sm"
-                            placeholder="Введите через запятую"
-                        />
-                    </div>
-                </div>
+                {/* Add new contact button */}
+                <button
+                    type="button"
+                    onClick={addContact}
+                    className="w-full flex items-center justify-center gap-2 px-4 py-2 bg-white/10 hover:bg-white/20 border border-white/30 rounded text-white text-sm font-medium"
+                >
+                    <FiPlus /> Добавить контакт
+                </button>
             </div>
 
             {/* Кнопки */}

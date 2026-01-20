@@ -376,17 +376,57 @@ export default function DetailUsers() {
         }
 
         // Kontaktlar
-        const contacts = []
-        if (data.vk) contacts.push(`VK: ${data.vk}`)
-        if (data.instagram) contacts.push(`Instagram: ${data.instagram}`)
-        if (data.telegram_channel) contacts.push(`Telegram: ${data.telegram_channel}`)
-        if (data.pinterest) contacts.push(`Pinterest: ${data.pinterest}`)
-        if (data.website) contacts.push(`Website: ${data.website}`)
+        if (data.other_contacts && Array.isArray(data.other_contacts) && data.other_contacts.length > 0) {
+            info += `\nКонтакты:\n`
 
-        if (contacts.length > 0) {
-            info += `\nКонтакты:\n${contacts.join('\n')}\n`
+            data.other_contacts.forEach(contact => {
+                let contactObj = contact
+
+                // Agar string bo'lsa, parse qilish
+                if (typeof contact === 'string') {
+                    try {
+                        const jsonString = contact
+                            .replace(/'/g, '"')
+                            .replace(/None/g, 'null')
+                            .replace(/True/g, 'true')
+                            .replace(/False/g, 'false')
+
+                        contactObj = JSON.parse(jsonString)
+                    } catch (e) {
+                        console.warn('Failed to parse contact in DetailUsers:', contact)
+                        contactObj = { type: 'other', value: contact }
+                    }
+                }
+
+                if (contactObj.type && contactObj.value) {
+                    let label = contactObj.type
+
+                    // Type'ni human-readable qilish
+                    switch (contactObj.type) {
+                        case 'vk':
+                            label = 'VK'
+                            break
+                        case 'telegram':
+                            label = 'Telegram'
+                            break
+                        case 'instagram':
+                            label = 'Instagram'
+                            break
+                        case 'pinterest':
+                            label = 'Pinterest'
+                            break
+                        case 'website':
+                            label = 'Website'
+                            break
+                        case 'other':
+                            label = 'Другое'
+                            break
+                    }
+
+                    info += `  • ${label}: ${contactObj.value}\n`
+                }
+            })
         }
-
         // Shaharlar
         if (data.representative_cities) {
             if (Array.isArray(data.representative_cities) && data.representative_cities.length > 0) {
