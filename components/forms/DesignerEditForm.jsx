@@ -7,7 +7,7 @@ const serviceOptions = [
     { value: 'author_supervision', label: 'Авторский надзор' },
     { value: 'architecture', label: 'Архитектура' },
     { value: 'decorator', label: 'Декоратор' },
-    { value: 'designer_horika', label: 'Дизайнер Хорика' },
+    { value: 'designer_horika', label: 'Направление HoReCa' },
     { value: 'residential_designer', label: 'Дизайнер жилой недвижимости' },
     { value: 'commercial_designer', label: 'Дизайнер коммерческой недвижимости' },
     { value: 'completing', label: 'Комплектация' },

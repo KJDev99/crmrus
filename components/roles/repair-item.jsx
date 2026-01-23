@@ -63,7 +63,7 @@ export default function RepairItem({
                 <div className="max-w-xl mx-auto space-y-4 max-md:space-y-3">
                     {questionnaires.length === 0 && !loading ? (
                         <div className="text-center text-white py-10">
-                            <p>Результаты не найдены</p>
+                            <p>По вашему запросу ничего не найдено</p>
                         </div>
                     ) : (
                         <>

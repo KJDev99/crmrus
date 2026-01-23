@@ -206,9 +206,7 @@ export default function UserInfoBox() {
                 <h1 className="text-5xl font-light mb-3 text-white tracking-tight">
                     МОИ АНКЕТЫ
                 </h1>
-                <p className="text-xl text-white/60 font-light">
-                    Всего анкет: <span className="text-[#D7B706] font-medium">{pagination.count}</span>
-                </p>
+
             </div>
 
             {/* Content Section */}
@@ -347,8 +345,15 @@ export default function UserInfoBox() {
                         <div className="relative border-b border-white/10 p-8">
                             <div className="flex items-start justify-between">
                                 <div className="flex items-center gap-4">
-                                    <div className="bg-[#0a1038] p-4 rounded-xl border border-[#D7B706]/50">
-                                        {getGroupIcon(selectedQuestionnaire.group)}
+                                    <div className="bg-[#0a1038] p-0 rounded-xl border border-[#D7B706]/50">
+                                        {
+                                            selectedQuestionnaire.photo ?
+                                                <img
+                                                    src={selectedQuestionnaire.photo}
+                                                    alt="Фото анкеты"
+                                                    className="rounded-xl border border-white/10 max-w-md w-16 h-16"
+                                                /> : <div className="w-16 h-16 flex items-center justify-center"><FaUser /></div>
+                                        }
                                     </div>
                                     <div>
                                         <h2 className="text-3xl font-normal text-white mb-2">
@@ -366,12 +371,12 @@ export default function UserInfoBox() {
                                     </div>
                                 </div>
 
-                                <button
+                                {/* <button
                                     onClick={closeModal}
                                     className="bg-red-500/20 hover:bg-red-500/30 p-3 rounded-full transition-colors duration-300 border border-red-500/30"
                                 >
                                     <FaTimes className="text-red-400" size={24} />
-                                </button>
+                                </button> */}
                             </div>
 
                             <div className="mt-4">
@@ -393,13 +398,13 @@ export default function UserInfoBox() {
                                             <p className="text-lg text-white">{selectedQuestionnaire.full_name}</p>
                                         </div>
                                     )}
-
+                                    {/* 
                                     {selectedQuestionnaire.full_name_en && (
                                         <div className="space-y-1">
                                             <p className="text-sm text-white/40 font-light uppercase tracking-wider">ФИО (English)</p>
                                             <p className="text-lg text-white">{selectedQuestionnaire.full_name_en}</p>
                                         </div>
-                                    )}
+                                    )} */}
 
                                     {selectedQuestionnaire.brand_name && (
                                         <div className="space-y-1">
@@ -435,13 +440,13 @@ export default function UserInfoBox() {
                                             <p className="text-lg text-white">{selectedQuestionnaire.city}</p>
                                         </div>
                                     )}
-
+                                    {/* 
                                     {selectedQuestionnaire.responsible_person && (
                                         <div className="space-y-1">
                                             <p className="text-sm text-white/40 font-light uppercase tracking-wider">Ответственное лицо</p>
                                             <p className="text-lg text-white">{selectedQuestionnaire.responsible_person}</p>
                                         </div>
-                                    )}
+                                    )} */}
 
                                     {selectedQuestionnaire.work_type_display && (
                                         <div className="space-y-1">
@@ -592,6 +597,24 @@ export default function UserInfoBox() {
                                     />
                                 </div>
                             )}
+
+                            {
+                                selectedQuestionnaire.reviews_list.length > 0 && (
+                                    <div className="mb-8">
+                                        <h3 className="text-xl text-[#D7B706] font-medium mb-4 uppercase tracking-wider">
+                                            Отзывы
+                                        </h3>
+                                        <div className="space-y-6">
+                                            {selectedQuestionnaire.reviews_list.map((review, idx) => (
+                                                <div key={idx} className="bg-[#0a1038] p-4 rounded-xl border border-white/10">
+                                                    <p className="text-white/80 italic mb-2">"{review.text}"</p>
+                                                    {/* <p className="text-white/60 text-sm">- {review.author}</p> */}
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
+                                )
+                            }
 
                             {/* Dates */}
                             <div className="pt-6 border-t border-white/10">

@@ -264,18 +264,18 @@ export default function Anketa() {
                     <th className="col-span-1 pb-4 px-4 text-[20px] font-normal leading-[100%] border-b border-white tracking-normal">
                       ID
                     </th>
-                    <th className="col-span-3 pb-4 px-4 text-[20px] font-normal leading-[100%] border-b border-white tracking-normal">
-                      ФИО / Название
+                    <th className="col-span-4 pb-4 px-4 text-[20px] font-normal leading-[100%] border-b border-white tracking-normal">
+                      Название органи-зации ФИ
                     </th>
                     <th className="col-span-2 pb-4 px-4 text-[20px] font-normal leading-[100%] border-b border-white tracking-normal">
                       Группа
                     </th>
-                    <th className="col-span-2 pb-4 px-4 text-[20px] font-normal leading-[100%] border-b border-white tracking-normal">
+                    <th className="col-span-3 pb-4 px-4 text-[20px] font-normal leading-[100%] border-b border-white tracking-normal">
                       Телефон
                     </th>
-                    <th className="col-span-2 pb-4 px-4 text-[20px] font-normal leading-[100%] border-b border-white tracking-normal">
+                    {/* <th className="col-span-2 pb-4 px-4 text-[20px] font-normal leading-[100%] border-b border-white tracking-normal">
                       Бренд
-                    </th>
+                    </th> */}
                     <th className="col-span-2 pb-4 px-4 text-[20px] font-normal leading-[100%] border-b border-white tracking-normal">
                       Дата создания
                     </th>
@@ -298,18 +298,18 @@ export default function Anketa() {
                         <td className="col-span-1 h-20 flex items-center px-4 font-normal text-[20px] leading-[100%] tracking-normal border-b border-white/30">
                           {index + 1}
                         </td>
-                        <td className="col-span-3 h-20 flex items-center px-4 font-normal text-[20px] leading-[100%] tracking-normal border-b border-white/30">
+                        <td className="col-span-4 h-20 flex items-center px-4 font-normal text-[20px] leading-[100%] tracking-normal border-b border-white/30">
                           {row.full_name || "Не указано"}
                         </td>
                         <td className="col-span-2 h-20 flex items-center px-4 font-normal text-[20px] leading-[100%] tracking-normal not-italic border-b border-white/30">
                           {row.group_display || row.group || "Не указано"}
                         </td>
-                        <td className="col-span-2 h-20 flex items-center px-4 font-normal text-[20px] leading-[100%] tracking-normal not-italic border-b border-white/30">
+                        <td className="col-span-3 h-20 flex items-center px-4 font-normal text-[20px] leading-[100%] tracking-normal not-italic border-b border-white/30">
                           {formatPhone(row.phone)}
                         </td>
-                        <td className="col-span-2 overflow-hidden h-20 flex items-center px-4 font-normal text-[20px] leading-[100%] tracking-normal not-italic border-b border-white/30">
+                        {/* <td className="col-span-2 overflow-hidden h-20 flex items-center px-4 font-normal text-[20px] leading-[100%] tracking-normal not-italic border-b border-white/30">
                           {row.brand_name || "Не указано"}
-                        </td>
+                        </td> */}
                         <td className="col-span-2 h-20 flex items-center px-4 font-normal not-italic text-[20px] leading-[100%] tracking-normal border-b border-white/30">
                           {formatDate(row.created_at)}
                         </td>

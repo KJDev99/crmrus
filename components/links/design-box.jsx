@@ -56,7 +56,7 @@ export default function DesignBox() {
         { value: 'author_supervision', label: 'Авторский надзор' },
         { value: 'architecture', label: 'Архитектура' },
         { value: 'decorator', label: 'Декоратор' },
-        { value: 'designer_horika', label: 'Дизайнер Хорика' },
+        { value: 'designer_horika', label: 'Направление HoReCa' },
         { value: 'residential_designer', label: 'Дизайнер жилой недвижимости' },
         { value: 'commercial_designer', label: 'Дизайнер коммерческой недвижимости' },
         { value: 'completing', label: 'Комплектация' },
@@ -1128,17 +1128,18 @@ export default function DesignBox() {
                                 <div className="text-green-400 text-xl sm:text-3xl">✓</div>
                             </div>
                             <h2 className="text-xl sm:text-2xl font-bold text-white mb-2">
-                                Успешно отправлено!
+                                Ваша заявка принята!
                             </h2>
                             <p className="text-white/70 mb-4 sm:mb-6 text-sm sm:text-base">
-                                Ваша анкета успешно отправлена. Мы свяжемся с вами в ближайшее время.
+                                Анкета отправлена и находится на рассмотрении.
+                                Мы свяжемся с вами в течении 3х рабочих дней.
                             </p>
-                            <button
-                                // onClick={closeModal}
+                            {/* <button
+                                onClick={closeModal}
                                 className="bg-glass2 w-full px-4 py-2 sm:px-6 sm:py-3 rounded-lg hover:bg-opacity-80 transition-all font-medium text-sm sm:text-base"
                             >
                                 Закрыть
-                            </button>
+                            </button> */}
                         </div>
                     </div>
                 </div>

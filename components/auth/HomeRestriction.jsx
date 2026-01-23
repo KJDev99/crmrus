@@ -144,9 +144,9 @@ export default function HomeRestriction() {
             <img src="/icons/support.svg" alt="support" className='w-10 h-10 sm:w-14 sm:h-14' />
           </a>
 
-          <Link href={'/role/settings'}>
+          {/* <Link href={'/role/settings'}>
             <FaRegUserCircle size={28} className='sm:w-9 sm:h-9' />
-          </Link>
+          </Link> */}
           <div
             className="cursor-pointer hover:opacity-80 transition-opacity group"
             onClick={handleLogout}
@@ -195,20 +195,20 @@ export default function HomeRestriction() {
 
       <div className="relative w-full max-w-[1200px] mx-auto mt-10 sm:mt-[79px] mb-12 sm:mb-[64px] flex justify-center px-4 sm:px-0">
         <div className="text-center text-white space-y-3 sm:space-y-4">
-          <Link href={'/events'} className="font-normal text-sm sm:text-[20px] leading-[100%] tracking-[0%] text-center uppercase hover:underline hover:cursor-pointer block">
+          <Link href={'/events'} className="font-normal text-sm sm:text-[20px] leading-[100%] tracking-[0%] text-center uppercase hover:underline hover:cursor-pointer block underline">
             Ближайшие мероприятия
           </Link>
 
           <div>
-            <Link href={'/role/media'} className="font-normal text-sm sm:text-[20px] leading-[100%] tracking-[0%] text-center hover:underline hover:cursor-pointer block">
+            <Link href={'/role/media'} className="font-normal text-sm sm:text-[20px] leading-[100%] tracking-[0%] text-center hover:underline hover:cursor-pointer block underline">
               Интерьерные журналы
             </Link>
           </div>
 
-          <p className="font-[JejuMyeongjo] font-normal text-xs sm:text-[16px] leading-[120%] sm:leading-[100%] tracking-[0%] text-center mt-8 sm:mt-[52px]">
-            ИП Кудряшова М.А<br />
-            и оферта с<br />
-            конфиденциальностью
+          <p className="font-[JejuMyeongjo] font-normal text-xs sm:text-[16px]  tracking-[0%] text-center mt-8 sm:mt-[52px] flex flex-col">
+            <span>ИП Кудряшова М.А.</span>
+            <span>ИНН 272590690830</span>
+            <a target='_blank' className='underline pb-1' href='https://reiting-profi-info.taplink.ws/p/1078773/'>  ПОЛИТИКА КОНФИДЕНЦИАЛЬНОСТИ</a>
           </p>
         </div>
         <Link href={'/userinfo'}>

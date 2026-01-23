@@ -826,9 +826,7 @@ export default function AllEvents() {
                                 <div className="pt-4 border-t border-gray-700">
                                     <div className="text-gray-400 text-sm space-y-1">
                                         <p>Создано: {formatDate(selectedEvent.created_at)}</p>
-                                        {selectedEvent.created_by_name && (
-                                            <p>Создатель: {selectedEvent.created_by_name}</p>
-                                        )}
+
                                         <p>Обновлено: {formatDate(selectedEvent.updated_at)}</p>
                                     </div>
                                 </div>

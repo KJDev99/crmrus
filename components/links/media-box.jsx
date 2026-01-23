@@ -1029,10 +1029,11 @@ export default function MediaBox() {
                                 <div className="text-green-400 text-xl sm:text-3xl">✓</div>
                             </div>
                             <h2 className="text-xl sm:text-2xl font-bold text-white mb-2">
-                                Успешно отправлено!
+                                Ваша заявка принята!
                             </h2>
                             <p className="text-white/70 mb-4 sm:mb-6 text-sm sm:text-base">
-                                Ваша анкета успешно отправлена. Мы свяжемся с вами в ближайшее время.
+                                Анкета отправлена и находится на рассмотрении.
+                                Мы свяжемся с вами в течении 3х рабочих дней.
                             </p>
                             {/* <button
                                 onClick={closeModal}
