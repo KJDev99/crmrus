@@ -103,7 +103,7 @@ export default function RepairSelect({ filterChoices, selectedFilters, onFilterC
         { key: 'magazine_cards', label: 'Карточки журналов' },
         { key: 'execution_speed', label: 'Скорость исполнения' },
         { key: 'cooperation_terms', label: 'Условия сотрудничества' },
-        { key: 'business_form', label: 'Форма бизнеса' },
+        // { key: 'business_form', label: 'Форма бизнеса' },
     ];
 
     return (

@@ -203,10 +203,10 @@ export default function DetailUsers() {
             const token = getToken()
             const endpoints = getEndpoints(requestName)
 
-            if (!endpoints) {
-                toast.error('Неверный тип анкеты')
-                return
-            }
+            // if (!endpoints) {
+            //     toast.error('Неверный тип анкеты')
+            //     return
+            // }
 
             await axios.patch(endpoints.moderation, {}, {
                 headers: {
@@ -215,9 +215,9 @@ export default function DetailUsers() {
                 }
             })
 
-            toast.success('Модерация пройдена успешно')
-            setShowActionModal(false)
-            fetchData()
+            // toast.success('Модерация пройдена успешно')
+            // setShowActionModal(false)
+            // fetchData()
         } catch (error) {
             console.error('Ошибка при модерации:', error)
             toast.error(error.response?.data?.message || 'Ошибка при модерации')
@@ -241,8 +241,8 @@ export default function DetailUsers() {
                     'Content-Type': 'application/json'
                 }
             })
-
-            toast.success(`Статус изменен на: ${status}`)
+            handleModeration()
+            toast.success(`Статус изменен на опубликовано`)
             setShowActionModal(false)
             fetchData()
         } catch (error) {
