@@ -89,12 +89,22 @@ export default function MediaItem({
                                 >
                                     <div className='w-[120px] h-[100px] card_img flex-shrink-0 max-md:w-full max-md:h-20'>
                                         <div className="w-full h-full rounded-lg flex items-center justify-center">
-                                            <span className="text-white text-2xl uppercase font-bold max-md:text-lg">
-                                                {questionnaire.brand_name ? questionnaire.brand_name.charAt(0) : 'M'}
-                                            </span>
+                                            {questionnaire.company_logo ? (
+                                                <img
+                                                    src={questionnaire.company_logo}
+                                                    alt={questionnaire.brand_name}
+                                                    className="w-full h-full object-cover rounded-lg"
+                                                />
+                                            ) : (
+                                                <div className="w-full h-full card_img rounded-lg flex items-center justify-center">
+                                                    <span className="text-white text-2xl max-md:text-lg uppercase">
+                                                        {questionnaire.brand_name ? questionnaire.brand_name.charAt(0) : '?'}
+                                                    </span>
+                                                </div>
+                                            )}
                                         </div>
                                     </div>
-                                    <div className="flex flex-col border-b border-b-[#FFFFFF91] pl-6 ml-4 flex-grow max-md:pl-3 max-md:ml-0 max-md:border-b-0 max-md:border-t max-md:pt-3 max-md:mt-2">
+                                    <div className="flex flex-col border-b border-b-[#FFFFFF91] pl-12 ml-[-16px] flex-grow max-md:pl-3 max-md:ml-0 max-md:border-b-0 max-md:border-t max-md:pt-3 max-md:mt-2">
                                         <h2 className='mb-0.5 text-[#FFFFFF] text-[22px] max-md:text-base'>
                                             {questionnaire.brand_name || questionnaire.full_name || 'Медиа пространство'}
                                         </h2>
@@ -103,7 +113,7 @@ export default function MediaItem({
                                         </p>
 
 
-                                        <p className='text-[#FFFFFF] text-sm mt-1 max-md:text-xs'>
+                                        <p className='text-[#FFFFFF] text-sm mt-1 max-md:text-xs line-clamp-2'>
                                             {getBusinessFormDisplay(questionnaire.business_form)}
                                         </p>
 

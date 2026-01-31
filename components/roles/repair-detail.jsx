@@ -253,13 +253,13 @@ export default function RepairDetail({ questionnaire, onBack }) {
                         </div>
                     </div>
 
-                    <h2 className='mt-4 mb-4 text-center text-lg text-[#FFFFFF]'>Контактная информация</h2>
+                    {/* <h2 className='mt-4 mb-4 text-center text-lg text-[#FFFFFF]'>Контактная информация</h2>
                     <div className='text-lg border-y border-[#FFFFFF91] px-2 py-4 text-[#FFFFFF] space-y-2'>
                         <p><strong>Бренд:</strong> {questionnaire.brand_name || 'Не указан'}</p>
                         <p><strong>Ответственное лицо:</strong> {questionnaire.responsible_person || 'Не указано'}</p>
                         <p><strong>Телефон:</strong> {questionnaire.phone || 'Не указан'}</p>
                         <p><strong>Email:</strong> {questionnaire.email || 'Не указан'}</p>
-                    </div>
+                    </div> */}
 
                     {/* Tabs */}
                     <div className='mt-6'>

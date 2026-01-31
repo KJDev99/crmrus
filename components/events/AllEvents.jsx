@@ -4,6 +4,7 @@ import { IoIosArrowBack } from 'react-icons/io'
 import { format, parseISO } from 'date-fns'
 import { ru } from 'date-fns/locale'
 import axios from 'axios'
+import Link from 'next/link'
 
 export default function AllEvents({ setStep, selectedCity, selectedDate, onEventSelect }) {
     const [events, setEvents] = useState([])
@@ -110,7 +111,7 @@ export default function AllEvents({ setStep, selectedCity, selectedDate, onEvent
                                         </div>
                                     )}
                                 </div>
-                                <div className="flex flex-col border-b border-b-[#FFFFFF91] pl-6 ml-4 flex-grow">
+                                <div className="flex flex-col border-b border-b-[#FFFFFF91]  pl-12 ml-[-16px]  flex-grow">
                                     <h2 className='mb-0.5 text-[#FFFFFF] text-[22px]'>
                                         {event.organization_name || 'Название организации'}
                                     </h2>

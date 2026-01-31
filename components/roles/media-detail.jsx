@@ -1,4 +1,5 @@
 'use client';
+import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import React, { useState } from 'react'
 import toast from 'react-hot-toast';
@@ -264,7 +265,7 @@ export default function MediaDetail({ questionnaire, onBack }) {
                         </div>
                     </div>
 
-                    <h2 className='mt-4 mb-4 text-center text-lg text-[#FFFFFF] max-md:text-base max-md:mb-2 max-md:mt-3'>Контактная информация</h2>
+                    {/* <h2 className='mt-4 mb-4 text-center text-lg text-[#FFFFFF] max-md:text-base max-md:mb-2 max-md:mt-3'>Контактная информация</h2>
                     <div className='text-lg border-y border-[#FFFFFF91] px-2 py-4 text-[#FFFFFF] space-y-2 max-md:text-base max-md:px-1 max-md:py-2 max-md:space-y-1'>
                         <p className='max-md:text-sm'><strong>Бренд:</strong> {questionnaire.brand_name || 'Не указан'}</p>
                         <p className='max-md:text-sm'><strong>ФИО:</strong> {questionnaire.full_name || 'Не указано'}</p>
@@ -273,7 +274,7 @@ export default function MediaDetail({ questionnaire, onBack }) {
                         <p className='max-md:text-sm'><strong>Email:</strong> {questionnaire.email || 'Не указан'}</p>
                         <p className='max-md:text-sm'><strong>Форма бизнеса:</strong> {getBusinessFormDisplay(questionnaire.business_form)}</p>
                         <p className='max-md:text-sm'><strong>НДС:</strong> {questionnaire.vat_payment_display || 'Не указано'}</p>
-                    </div>
+                    </div> */}
 
                     <h2 className='mt-4 mb-4 text-center text-lg text-[#FFFFFF] max-md:text-base max-md:mb-2 max-md:mt-3'>О медиа пространстве</h2>
                     <div className='space-y-4 max-md:space-y-2'>

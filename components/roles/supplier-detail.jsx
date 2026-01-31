@@ -245,7 +245,7 @@ export default function SupplierDetail({ questionnaire, onBack }) {
                         </div>
                     </div>
 
-                    <h2 className='mt-4 mb-4 text-center text-lg text-[#FFFFFF]'>Контактная информация</h2>
+                    {/* <h2 className='mt-4 mb-4 text-center text-lg text-[#FFFFFF]'>Контактная информация</h2>
                     <div className='text-lg border-y border-[#FFFFFF91] px-2 py-4 text-[#FFFFFF] space-y-2'>
                         <p><strong>Бренд:</strong> {questionnaire.brand_name || 'Не указан'}</p>
                         <p><strong>Ответственное лицо:</strong> {questionnaire.responsible_person || 'Не указано'}</p>
@@ -254,7 +254,7 @@ export default function SupplierDetail({ questionnaire, onBack }) {
                         <p><strong>Форма бизнеса:</strong> {questionnaire.business_form_display || 'Не указана'}</p>
                         <p><strong>НДС:</strong> {questionnaire.vat_payment_display || 'Не указано'}</p>
                         <p><strong>Карточки журнала:</strong> {questionnaire.magazine_cards_display || 'Не указаны'}</p>
-                    </div>
+                    </div> */}
 
                     {/* Tabs */}
                     <div className='mt-6'>

@@ -87,7 +87,7 @@ export default function SupplierItem({
                                             </div>
                                         )}
                                     </div>
-                                    <div className="flex flex-col border-b border-b-[#FFFFFF91] pl-6 ml-4 flex-grow">
+                                    <div className="flex flex-col border-b border-b-[#FFFFFF91]  pl-12 ml-[-16px]  flex-grow">
                                         <h2 className='mb-0.5 text-[#FFFFFF] text-[22px] line-clamp-1'>
                                             {questionnaire.brand_name || questionnaire.full_name || 'Название организации'}
                                         </h2>

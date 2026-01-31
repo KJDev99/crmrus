@@ -270,7 +270,7 @@ export default function DesignDetail({ questionnaire, onBack }) {
                         </div>
                     </div>
 
-                    <h2 className='mt-4 mb-4 text-center text-lg text-[#FFFFFF]'>Контактная информация</h2>
+                    {/* <h2 className='mt-4 mb-4 text-center text-lg text-[#FFFFFF]'>Контактная информация</h2>
                     <div className='text-lg border-y border-[#FFFFFF91] px-2 py-4 text-[#FFFFFF] space-y-2'>
                         <p><strong>ФИО:</strong> {questionnaire.full_name || 'Не указано'}</p>
                         <p><strong>Английское имя:</strong> {questionnaire.full_name_en || 'Не указано'}</p>
@@ -278,7 +278,7 @@ export default function DesignDetail({ questionnaire, onBack }) {
                         <p><strong>Email:</strong> {questionnaire.email || 'Не указан'}</p>
                         <p><strong>Город:</strong> {questionnaire.city || 'Не указан'}</p>
                         <p><strong>Дата рождения:</strong> {questionnaire.birth_date || 'Не указана'}</p>
-                    </div>
+                    </div> */}
 
                     {/* Tabs */}
                     <div className='mt-6'>

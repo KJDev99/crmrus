@@ -121,8 +121,8 @@ export default function SupplierSelect({ filterChoices, selectedFilters, onFilte
                         <button
                             onClick={() => toggleDropdown(item.key)}
                             className={`
-                                w-full h-20 text-[17px]
-                                rounded-2xl transition-all duration-200
+                                w-full h-[58px] text-[17px]
+                                rounded-[25px] transition-all duration-200
                                 bg-glass2 text-white hover:bg-white/40 text-left px-5
                                 flex items-center justify-between
                                 ${selectedFilters[item.key] ? 'border border-yellow-400' : ''}

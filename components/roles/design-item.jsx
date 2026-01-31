@@ -2,6 +2,7 @@
 import React from 'react'
 import { IoIosArrowBack } from 'react-icons/io'
 import GlassButton from '../ui/GlassButton1'
+import Link from 'next/link';
 
 export default function DesignItem({
     questionnaires,
@@ -84,14 +85,14 @@ export default function DesignItem({
                                             </div>
                                         )}
                                     </div>
-                                    <div className="flex flex-col border-b border-b-[#FFFFFF91] pl-6 ml-4 flex-grow max-md:pl-3 max-md:ml-0 max-md:border-b-0 max-md:border-t max-md:pt-3 max-md:mt-2">
+                                    <div className="flex flex-col border-b border-b-[#FFFFFF91] pl-12 ml-[-16px] flex-grow max-md:pl-3 max-md:ml-0 max-md:border-b-0 max-md:border-t max-md:pt-3 max-md:mt-2">
                                         <h2 className='mb-0.5 text-[#FFFFFF] text-[22px] max-md:text-base'>
                                             {questionnaire.full_name || 'Название организации'}
                                         </h2>
                                         <p className='text-sm max-md:text-xs text-[#FFFFFF] mt-1'>
                                             {questionnaire.city || 'Город не указан'}
                                         </p>
-                                        <p className='text-[#FFFFFF] uppercase text-sm max-md:text-xs leading-[100%] mt-2'>
+                                        <p className='text-[#FFFFFF] uppercase text-sm max-md:text-xs leading-[100%] mt-2 line-clamp-2'>
                                             {getServiceDisplay(questionnaire.services)}
                                         </p>
 

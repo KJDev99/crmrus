@@ -637,7 +637,7 @@ export default function DetailUsers() {
                                         редактировать
                                     </button>
 
-                                    {data.status !== 'published' && (
+                                    {data.status !== 'Опубликовано' && (
                                         <button
                                             onClick={() => openActionModal('publish')}
                                             className="font-normal not-italic text-base max-md:text-xs leading-[100%] tracking-normal bg-blue-600 hover:bg-blue-700 w-40 max-md:w-20 h-11 max-md:h-8 rounded-[25px] transition-colors"

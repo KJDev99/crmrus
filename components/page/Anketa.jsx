@@ -299,7 +299,7 @@ export default function Anketa() {
                           {index + 1}
                         </td>
                         <td className="col-span-4 h-20 flex items-center px-4 font-normal text-[20px] leading-[100%] tracking-normal border-b border-white/30">
-                          {row.full_name || "Не указано"}
+                          {(row.full_name == "без имени" && row.brand_name) || row.full_name || row.brand_name || "Не указано"}
                         </td>
                         <td className="col-span-2 h-20 flex items-center px-4 font-normal text-[20px] leading-[100%] tracking-normal not-italic border-b border-white/30">
                           {row.group_display || row.group || "Не указано"}

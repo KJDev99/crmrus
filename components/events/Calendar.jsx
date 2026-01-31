@@ -16,6 +16,7 @@ import { IoIosArrowBack, IoIosArrowForward } from "react-icons/io"
 import { ru } from "date-fns/locale"
 import { MdCalendarToday } from 'react-icons/md'
 import axios from 'axios'
+import Link from "next/link"
 
 export default function Calendar({ setStep, selectedCity, onDateSelect }) {
   const [currentMonth, setCurrentMonth] = useState(new Date())
