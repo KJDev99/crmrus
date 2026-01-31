@@ -98,6 +98,7 @@ export default function DesignerEditForm({ data, onChange, onSave, onCancel, sav
     const [imagePreview, setImagePreview] = useState(data?.photo || null)
     const [imageFile, setImageFile] = useState(null) // File ob'ektini alohida saqlash
     const fileInputRef = useRef(null)
+    const [newImageFile, setNewImageFile] = useState(null)
 
     const handleChange = (field, value) => {
         const newData = { ...localData, [field]: value }
@@ -148,9 +149,8 @@ export default function DesignerEditForm({ data, onChange, onSave, onCancel, sav
                 alert('Размер файла не должен превышать 5MB')
                 return
             }
-
+            setNewImageFile(file)
             // File ob'ektini saqlash (binary data)
-            setImageFile(file)
 
             // Faqat preview uchun base64 yaratish
             const reader = new FileReader()
