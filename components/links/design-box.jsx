@@ -86,12 +86,32 @@ export default function DesignBox() {
     ];
 
     const experienceOptions = [
-        { value: 0, label: 'Новичок' },
-        { value: 1, label: 'До 2 лет' },
-        { value: 2, label: '2-5 лет' },
-        { value: 3, label: '5-10 лет' },
-        { value: 4, label: 'Свыше 10 лет' }
+        { value: 'Новичок', label: 'Новичок' },
+        { value: 'До 2 лет', label: 'До 2 лет' },
+        { value: '2-5 лет', label: '2-5 лет' },
+        { value: '5-10 лет', label: '5-10 лет' },
+        { value: 'Свыше 10 лет', label: 'Свыше 10 лет' }
     ];
+
+    const areaOptions = [
+        { value: 'до 10 м2', label: 'до 10 м2' },
+        { value: 'до 40 м2', label: 'до 40 м2' },
+        { value: 'до 80 м2', label: 'до 80 м2' },
+        { value: 'дома', label: 'дома' },
+    ]
+
+    const costOptions = [
+        { value: 'До 1500 р ', label: 'До 1500 р ' },
+        { value: 'до 2500р', label: 'до 2500р' },
+        {
+            value: 'до 4000 р ', label: 'до 4000 р '
+        },
+        {
+            value: 'свыше 4000 р ', label: 'свыше 4000 р '
+        }
+
+    ];
+
     const vatPaymentOptions = [
         { value: 'yes', label: 'Да' },
         { value: 'no', label: 'Нет' }
@@ -893,43 +913,67 @@ export default function DesignBox() {
                         </div>
                         <div>
                             <label className="block text-sm font-medium mb-2 text-white">
-                                Площадь объекта (м²)
+                                Площадь объекта (м²) <span className="text-red-400">*</span>
                             </label>
-                            <input
-                                type="number"
-                                name="area_of_object"
-                                value={formData.area_of_object}
-                                onChange={handleInputChange}
-                                className="input-glass w-full px-4 py-3 rounded-lg transition-all text-sm sm:text-base"
-                                placeholder="Введите площадь объекта"
-                            />
+                            <div className="flex flex-col sm:flex-row gap-3">
+                                {areaOptions.map(option => (
+                                    <label key={option.value} className="bg-glass2 px-4 py-3 rounded-lg cursor-pointer hover:bg-opacity-80 transition-all flex items-center gap-2 mobile-full">
+                                        <input
+                                            type="radio"
+                                            name="area_of_object"
+                                            value={option.value}
+                                            checked={formData.area_of_object === option.value}
+                                            onChange={handleInputChange}
+                                            className="radio-glass"
+                                            required
+                                        />
+                                        <span className="text-white text-sm sm:text-base">{option.label}</span>
+                                    </label>
+                                ))}
+                            </div>
                         </div>
+
                         <div>
                             <label className="block text-sm font-medium mb-2 text-white">
                                 Стоимость за м² (₽)
                             </label>
-                            <input
-                                type="number"
-                                name="cost_per_m2"
-                                value={formData.cost_per_m2}
-                                onChange={handleInputChange}
-                                className="input-glass w-full px-4 py-3 rounded-lg transition-all text-sm sm:text-base"
-                                placeholder="Введите стоимость за м²"
-                            />
+                            <div className="flex flex-col sm:flex-row gap-3">
+                                {costOptions.map(option => (
+                                    <label key={option.value} className="bg-glass2 px-4 py-3 rounded-lg cursor-pointer hover:bg-opacity-80 transition-all flex items-center gap-2 mobile-full">
+                                        <input
+                                            type="radio"
+                                            name="cost_per_m2"
+                                            value={option.value}
+                                            checked={formData.cost_per_m2 === option.value}
+                                            onChange={handleInputChange}
+                                            className="radio-glass"
+                                            required
+                                        />
+                                        <span className="text-white text-sm sm:text-base">{option.label}</span>
+                                    </label>
+                                ))}
+                            </div>
                         </div>
                         <div>
                             <label className="block text-sm font-medium mb-2 text-white">
                                 Ваш опыт в годах <span className="text-red-400">*</span>
                             </label>
-                            <input
-                                type="number"
-                                name="experience"
-                                value={formData.experience}
-                                onChange={handleInputChange}
-                                className="input-glass w-full px-4 py-3 rounded-lg transition-all text-sm sm:text-base"
-                                placeholder="Введите ваш опыт в годах"
-                                required
-                            />
+                            <div className="flex flex-col sm:flex-row gap-3">
+                                {experienceOptions.map(option => (
+                                    <label key={option.value} className="bg-glass2 px-4 py-3 rounded-lg cursor-pointer hover:bg-opacity-80 transition-all flex items-center gap-2 mobile-full">
+                                        <input
+                                            type="radio"
+                                            name="experience"
+                                            value={option.value}
+                                            checked={formData.experience === option.value}
+                                            onChange={handleInputChange}
+                                            className="radio-glass"
+                                            required
+                                        />
+                                        <span className="text-white text-sm sm:text-base">{option.label}</span>
+                                    </label>
+                                ))}
+                            </div>
                         </div>
                         <div>
                             <label className="block text-sm font-medium mb-2 text-white">
@@ -1115,6 +1159,7 @@ export default function DesignBox() {
                                 ))}
                             </div>
                         </div>
+
 
                         {/* Supplier Contractor Recommendation Terms */}
                         <div>

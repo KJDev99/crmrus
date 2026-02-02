@@ -29,12 +29,9 @@ export default function UserInfoBox() {
 
             const response = await axios.get(
                 "https://api.reiting-profi.ru/api/v1/accounts/questionnaires/my-questionnaires/",
-                {
-                    headers: { Authorization: `Bearer ${token}` }
-                }
+                { headers: { Authorization: `Bearer ${token}` } }
             );
 
-            // Birinchi anketani avtomatik tanlab olamiz
             if (response.data.results && response.data.results.length > 0) {
                 setQuestionnaire(response.data.results[0]);
             }
@@ -44,6 +41,47 @@ export default function UserInfoBox() {
             setLoading(false);
         }
     };
+
+    // --- UNIVERSAL MAPPING FUNKSIYALARI ---
+
+    // 1. Bir nechta kalitlardan birinchi qiymatga ega bo'lganini qaytaradi
+    const getFirstAvailable = (keys) => {
+        if (!questionnaire) return null;
+        for (let key of keys) {
+            if (questionnaire[key] && (Array.isArray(questionnaire[key]) ? questionnaire[key].length > 0 : true)) {
+                return questionnaire[key];
+            }
+        }
+        return null;
+    };
+
+    // 2. Rasm uchun (photo yoki company_logo)
+    const getAvatar = () => getFirstAvailable(['photo', 'company_logo']);
+
+    // 3. Ism/Brend uchun
+    const getName = () => getFirstAvailable(['brand_name', 'full_name']) || 'Без названия';
+
+    // 4. UTP yoki Tavsif uchun
+    const getDescription = () => getFirstAvailable([
+        'unique_trade_proposal',
+        'activity_description',
+        'product_assortment',
+        'work_list',
+        'welcome_message'
+    ]);
+
+    // 5. Xizmatlar/Paketlar uchun
+    const getServicePackages = () => getFirstAvailable(['service_packages_description', 'project_timelines', 'delivery_terms']);
+
+    // 6. Hamkorlik shartlari uchun
+    const getCooperationTerms = () => getFirstAvailable([
+        'cooperation_terms',
+        'supplier_contractor_recommendation_terms',
+        'designer_supplier_terms',
+        'designer_contractor_terms'
+    ]);
+
+    // --- UI YORDAMCHI FUNKSIYALAR ---
 
     const toggleSection = (sectionKey) => {
         setExpandedSections(prev => ({ ...prev, [sectionKey]: !prev[sectionKey] }));
@@ -69,22 +107,6 @@ export default function UserInfoBox() {
         );
     };
 
-    const getAboutValue = (type) => {
-        const item = questionnaire?.about_company?.find(i => i.type === type);
-        return item?.value || null;
-    };
-
-    const getTermValue = (type) => {
-        const item = questionnaire?.terms_of_cooperation?.find(i => i.type === type);
-        return item?.value || null;
-    };
-
-    const handleLogout = () => {
-        localStorage.removeItem('access_token');
-        router.push('/login');
-        toast.success('Вышли iz sistemi');
-    };
-
     if (loading) {
         return (
             <div className="min-h-screen flex items-center justify-center bg-[#122161]">
@@ -104,29 +126,29 @@ export default function UserInfoBox() {
     return (
         <div className='min-h-screen bg-[#122161] text-white max-md:px-4 pb-10 max-w-7xl mx-auto'>
             {/* Header */}
-            <div className="text-white flex justify-between items-center py-4  mx-auto">
+            <div className="text-white flex justify-between items-center py-4 mx-auto">
                 <button onClick={() => router.back()} className="cursor-pointer">
                     <IoIosArrowBack size={40} className='max-md:w-6 max-md:h-6' />
                 </button>
                 <img src="/icons/logo.svg" alt="logo" className='max-md:w-20' />
-                <div></div>
+                <div className="w-10"></div>
             </div>
 
             <div className="max-w-xl mx-auto space-y-6">
                 {/* Top Info Section */}
                 <div className="flex mb-6">
                     <div className='w-[125px] h-[100px] flex-shrink-0 bg-white/10 rounded-lg overflow-hidden border border-white/20'>
-                        {questionnaire.photo ? (
-                            <img src={questionnaire.photo} alt="avatar" className="w-full h-full object-cover" />
+                        {getAvatar() ? (
+                            <img src={getAvatar()} alt="avatar" className="w-full h-full object-cover" />
                         ) : (
                             <div className="w-full h-full flex items-center justify-center text-3xl font-bold bg-[#D7B706]/20">
-                                {questionnaire.full_name?.charAt(0) || questionnaire.brand_name?.charAt(0)}
+                                {getName().charAt(0)}
                             </div>
                         )}
                     </div>
                     <div className="flex flex-col border-b border-white/40 pl-6 ml-4 flex-grow relative pb-2">
                         <h2 className='text-[22px] font-normal leading-tight'>
-                            {questionnaire.full_name || questionnaire.brand_name || 'Без названия'}
+                            {getName()}
                         </h2>
                         <div className='w-full h-[1px] bg-white/30 my-1'></div>
                         <p className='text-sm opacity-80'>
@@ -151,7 +173,7 @@ export default function UserInfoBox() {
                             onClick={() => setActiveTab('cooperation')}
                             className={`flex-1 py-3 text-center transition-all ${activeTab === 'cooperation' ? 'border-b-2 border-white font-semibold' : 'opacity-60'}`}
                         >
-                            Условия сотрудничества
+                            Условия
                         </button>
                     </div>
 
@@ -159,25 +181,31 @@ export default function UserInfoBox() {
                     <div className='mt-6 space-y-4'>
                         {activeTab === 'company' ? (
                             <div className='space-y-4'>
-                                <div className='border-b border-white/20 pb-4'>
-                                    <strong className="block text-[#D7B706] mb-1">Уникальное торговое предложение:</strong>
-                                    <div className="text-sm leading-relaxed">
-                                        {renderExpandableContent(questionnaire.unique_trade_proposal, 'utp')}
-                                    </div>
-                                </div>
-                                <div className='border-b border-white/20 pb-4'>
-                                    <strong className="block text-[#D7B706] mb-1">Услуги:</strong>
-                                    <div className="flex flex-wrap gap-2 mt-2">
-                                        {questionnaire.services?.map((s, i) => (
-                                            <span key={i} className="bg-white/10 px-3 py-1 rounded-full text-xs border border-white/20">{s}</span>
-                                        ))}
-                                    </div>
-                                </div>
-                                {getAboutValue('service_packages') && (
+                                {getDescription() && (
                                     <div className='border-b border-white/20 pb-4'>
-                                        <strong className="block text-[#D7B706] mb-1">Пакеты услуг:</strong>
+                                        <strong className="block text-[#D7B706] mb-1">Описание / УТП:</strong>
+                                        <div className="text-sm leading-relaxed">
+                                            {renderExpandableContent(getDescription(), 'desc')}
+                                        </div>
+                                    </div>
+                                )}
+
+                                {questionnaire.services && questionnaire.services.length > 0 && (
+                                    <div className='border-b border-white/20 pb-4'>
+                                        <strong className="block text-[#D7B706] mb-1">Услуги:</strong>
+                                        <div className="flex flex-wrap gap-2 mt-2">
+                                            {questionnaire.services.map((s, i) => (
+                                                <span key={i} className="bg-white/10 px-3 py-1 rounded-full text-xs border border-white/20">{s}</span>
+                                            ))}
+                                        </div>
+                                    </div>
+                                )}
+
+                                {getServicePackages() && (
+                                    <div className='border-b border-white/20 pb-4'>
+                                        <strong className="block text-[#D7B706] mb-1">Пакеты / Сроки / Ассортимент:</strong>
                                         <div className="text-sm whitespace-pre-line">
-                                            {renderExpandableContent(getAboutValue('service_packages'), 'packages')}
+                                            {renderExpandableContent(getServicePackages(), 'packages')}
                                         </div>
                                     </div>
                                 )}
@@ -186,18 +214,22 @@ export default function UserInfoBox() {
                             <div className='space-y-4'>
                                 <div className='border-b border-white/20 pb-4'>
                                     <strong className="block text-[#D7B706] mb-1">НДС:</strong>
-                                    <p className="text-sm">{questionnaire.vat_payment_display}</p>
+                                    <p className="text-sm">{questionnaire.vat_payment_display || (questionnaire.vat_payment === 'yes' ? 'Да' : 'Нет')}</p>
                                 </div>
-                                <div className='border-b border-white/20 pb-4'>
-                                    <strong className="block text-[#D7B706] mb-1">Тип работы:</strong>
-                                    <p className="text-sm">{questionnaire.work_type_display}</p>
-                                </div>
-                                {getTermValue('recommendation_terms') && (
+
+                                {getCooperationTerms() && (
                                     <div className='border-b border-white/20 pb-4'>
-                                        <strong className="block text-[#D7B706] mb-1">Условия по рекомендациям:</strong>
+                                        <strong className="block text-[#D7B706] mb-1">Условия сотрудничества:</strong>
                                         <div className="text-sm leading-relaxed">
-                                            {renderExpandableContent(getTermValue('recommendation_terms'), 'rec_terms')}
+                                            {renderExpandableContent(getCooperationTerms(), 'coop')}
                                         </div>
+                                    </div>
+                                )}
+
+                                {questionnaire.guarantees && (
+                                    <div className='border-b border-white/20 pb-4'>
+                                        <strong className="block text-[#D7B706] mb-1">Гарантии:</strong>
+                                        <p className="text-sm">{questionnaire.guarantees}</p>
                                     </div>
                                 )}
                             </div>
@@ -215,8 +247,6 @@ export default function UserInfoBox() {
                         </div>
                     </div>
                 </div>
-
-
             </div>
         </div>
     );
