@@ -31,7 +31,12 @@ export default function DesignBox() {
         supplier_contractor_recommendation_terms: '',
         additional_info: '',
         data_processing_consent: false,
-        photo: null
+        photo: null,
+        categories: [],
+        purpose_of_property: [],
+        area_of_object: '',
+        cost_per_m2: '',
+        experience: ''
     });
 
     const [showModal, setShowModal] = useState(false);
@@ -74,7 +79,19 @@ export default function DesignBox() {
         { value: 'medium', label: 'Средний' },
         { value: 'economy', label: 'Эконом' }
     ];
+    const propertyPurposeOptions = [
+        { value: 'Постоянное проживание', label: 'Постоянное проживание' },
+        { value: 'Коммерческая недвижимость', label: 'Коммерческая недвижимость' },
+        { value: 'Под сдачу', label: 'Под сдачу' }
+    ];
 
+    const experienceOptions = [
+        { value: 0, label: 'Новичок' },
+        { value: 1, label: 'До 2 лет' },
+        { value: 2, label: '2-5 лет' },
+        { value: 3, label: '5-10 лет' },
+        { value: 4, label: 'Свыше 10 лет' }
+    ];
     const vatPaymentOptions = [
         { value: 'yes', label: 'Да' },
         { value: 'no', label: 'Нет' }
@@ -88,6 +105,15 @@ export default function DesignBox() {
         { value: 'other', label: 'Другое', placeholder: 'Другой контакт' }
     ];
 
+    const categoryOptions = [
+        { value: 'Основные категории', label: 'Основные категоии' },
+        { value: 'Черновые материалы', label: 'Черновые материалы' },
+        { value: 'Чистовые материалы', label: 'Чистовые материалы' },
+        { value: 'Мягкая мебель', label: 'Мягкая мебель' },
+        { value: 'Корпусная мебель', label: 'Корпусная мебель' },
+        { value: 'Техника', label: 'Техника' },
+        { value: 'Декор', label: 'Декор' }
+    ];
     const handleInputChange = (e) => {
         const { name, value, type, checked } = e.target;
         setFormData(prev => ({
@@ -111,6 +137,24 @@ export default function DesignBox() {
             segments: prev.segments.includes(segmentValue)
                 ? prev.segments.filter(s => s !== segmentValue)
                 : [...prev.segments, segmentValue]
+        }));
+    };
+
+    const handleCategoryToggle = (categoryValue) => {
+        setFormData(prev => ({
+            ...prev,
+            categories: prev.categories.includes(categoryValue)
+                ? prev.categories.filter(c => c !== categoryValue)
+                : [...prev.categories, categoryValue]
+        }));
+    };
+
+    const handlePurposeToggle = (purposeValue) => {
+        setFormData(prev => ({
+            ...prev,
+            purpose_of_property: prev.purpose_of_property.includes(purposeValue)
+                ? prev.purpose_of_property.filter(c => c !== purposeValue)
+                : [...prev.purpose_of_property, purposeValue]
         }));
     };
 
@@ -316,6 +360,10 @@ export default function DesignBox() {
                     if (value.length > 0) submitFormData.append(key, JSON.stringify(value));
                 } else if (key === 'data_processing_consent') {
                     submitFormData.append(key, value.toString());
+                } else if (key === 'categories') {
+                    submitFormData.append(key, JSON.stringify(value));
+                } else if (key === 'purpose_of_property') {
+                    submitFormData.append(key, JSON.stringify(value));
                 } else if (value !== '' && value !== null) {
                     submitFormData.append(key, value);
                 }
@@ -356,7 +404,12 @@ export default function DesignBox() {
                 supplier_contractor_recommendation_terms: '',
                 additional_info: '',
                 data_processing_consent: false,
-                photo: null
+                photo: null,
+                categories: [],
+                purpose_of_property: [],
+                area_of_object: '',
+                cost_per_m2: '',
+                experience: ''
             });
             setPhotoPreview(null);
         } catch (error) {
@@ -794,7 +847,6 @@ export default function DesignBox() {
                             </button>
                         </div>
 
-                        {/* Segments */}
                         <div>
                             <label className="block text-sm font-medium mb-3 text-white">
                                 Выберите один или несколько сегментов, в которых вы работаете. <span className="text-red-400">*</span>
@@ -811,6 +863,90 @@ export default function DesignBox() {
                                             onChange={() => handleSegmentToggle(option.value)}
                                             className="checkbox-glass"
                                             required={formData.segments.length === 0}
+                                        />
+                                        <span className="text-sm text-white">{option.label}</span>
+                                    </label>
+                                ))}
+                            </div>
+                        </div>
+                        <div>
+                            <label className="block text-sm font-medium mb-3 text-white">
+                                Цель собственности <span className="text-red-400">*</span>
+                            </label>
+                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                                {propertyPurposeOptions.map(option => (
+                                    <label
+                                        key={option.value}
+                                        className="bg-glass2 px-4 py-3 rounded-lg cursor-pointer hover:bg-opacity-80 transition-all flex items-center gap-2"
+                                    >
+                                        <input
+                                            type="checkbox"
+                                            checked={formData.purpose_of_property.includes(option.value)}
+                                            onChange={() => handlePurposeToggle(option.value)}
+                                            className="checkbox-glass"
+                                            required={formData.purpose_of_property.length === 0}
+                                        />
+                                        <span className="text-sm text-white">{option.label}</span>
+                                    </label>
+                                ))}
+                            </div>
+                        </div>
+                        <div>
+                            <label className="block text-sm font-medium mb-2 text-white">
+                                Площадь объекта (м²)
+                            </label>
+                            <input
+                                type="number"
+                                name="area_of_object"
+                                value={formData.area_of_object}
+                                onChange={handleInputChange}
+                                className="input-glass w-full px-4 py-3 rounded-lg transition-all text-sm sm:text-base"
+                                placeholder="Введите площадь объекта"
+                            />
+                        </div>
+                        <div>
+                            <label className="block text-sm font-medium mb-2 text-white">
+                                Стоимость за м² (₽)
+                            </label>
+                            <input
+                                type="number"
+                                name="cost_per_m2"
+                                value={formData.cost_per_m2}
+                                onChange={handleInputChange}
+                                className="input-glass w-full px-4 py-3 rounded-lg transition-all text-sm sm:text-base"
+                                placeholder="Введите стоимость за м²"
+                            />
+                        </div>
+                        <div>
+                            <label className="block text-sm font-medium mb-2 text-white">
+                                Ваш опыт в годах <span className="text-red-400">*</span>
+                            </label>
+                            <input
+                                type="number"
+                                name="experience"
+                                value={formData.experience}
+                                onChange={handleInputChange}
+                                className="input-glass w-full px-4 py-3 rounded-lg transition-all text-sm sm:text-base"
+                                placeholder="Введите ваш опыт в годах"
+                                required
+                            />
+                        </div>
+                        <div>
+                            <label className="block text-sm font-medium mb-2 text-white">
+                                Выберите категорий <span className="text-red-400">*</span>
+                            </label>
+                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                                {categoryOptions.map(option => (
+                                    <label
+                                        key={option.value}
+                                        className="bg-glass2 px-4 py-3 rounded-lg cursor-pointer hover:bg-opacity-80 transition-all flex items-center gap-2"
+                                    >
+                                        <input
+                                            type="checkbox"
+                                            checked={formData.categories.includes(option.value)}
+                                            onChange={() => handleCategoryToggle(option.value)}
+                                            className="checkbox-glass"
+                                            required={formData.categories.length === 0}
                                         />
                                         <span className="text-sm text-white">{option.label}</span>
                                     </label>

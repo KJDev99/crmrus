@@ -4,36 +4,36 @@ import { FiSave, FiX, FiUpload, FiPlus, FiTrash2 } from 'react-icons/fi'
 
 
 const serviceOptions = [
-    { value: 'author_supervision', label: 'Авторский надзор' },
-    { value: 'architecture', label: 'Архитектура' },
-    { value: 'decorator', label: 'Декоратор' },
-    { value: 'designer_horika', label: 'Направление HoReCa' },
-    { value: 'residential_designer', label: 'Дизайнер жилой недвижимости' },
-    { value: 'commercial_designer', label: 'Дизайнер коммерческой недвижимости' },
-    { value: 'completing', label: 'Комплектация' },
-    { value: 'landscape_design', label: 'Ландшафтный дизайн' },
-    { value: 'design', label: 'Проектирование' },
-    { value: 'light_designer', label: 'Светодизайнер' },
-    { value: 'home_stager', label: 'Хоумстейджер' }
+    { value: 'Авторский надзор', label: 'Авторский надзор' },
+    { value: 'Архитектура', label: 'Архитектура' },
+    { value: 'Декоратор', label: 'Декоратор' },
+    { value: 'Направление HoReCa', label: 'Направление HoReCa' },
+    { value: 'Дизайнер жилой недвижимости', label: 'Дизайнер жилой недвижимости' },
+    { value: 'Дизайнер коммерческой недвижимости', label: 'Дизайнер коммерческой недвижимости' },
+    { value: 'Комплектация', label: 'Комплектация' },
+    { value: 'Ландшафтный дизайн', label: 'Ландшафтный дизайн' },
+    { value: 'Проектирование', label: 'Проектирование' },
+    { value: 'Светодизайнер', label: 'Светодизайнер' },
+    { value: 'Хоумстейджер', label: 'Хоумстейджер' }
 ]
 
 const workTypeOptions = [
-    { value: 'own_name', label: 'Под собственным именем' },
-    { value: 'studio', label: 'В студии' }
+    { value: 'Под собственным именем', label: 'Под собственным именем' },
+    { value: 'В студии', label: 'В студии' }
 ]
 
 const segmentOptions = [
-    { value: 'horeca', label: 'HoReCa' },
-    { value: 'business', label: 'Бизнес' },
-    { value: 'comfort', label: 'Комфорт' },
-    { value: 'premium', label: 'Премиум' },
-    { value: 'medium', label: 'Средний' },
-    { value: 'economy', label: 'Эконом' }
+    { value: 'HoReCa', label: 'HoReCa' },
+    { value: 'Бизнес', label: 'Бизнес' },
+    { value: 'Комфорт', label: 'Комфорт' },
+    { value: 'Премиум', label: 'Премиум' },
+    { value: 'Средний', label: 'Средний' },
+    { value: 'Эконом', label: 'Эконом' }
 ]
 
 const vatOptions = [
-    { value: 'yes', label: 'Да' },
-    { value: 'no', label: 'Нет' }
+    { value: 'Да', label: 'Да' },
+    { value: 'Нет', label: 'Нет' }
 ]
 
 const contactTypeOptions = [
@@ -44,7 +44,20 @@ const contactTypeOptions = [
     { value: 'website', label: 'Website', placeholder: 'https://example.com' },
     { value: 'other', label: 'Другое', placeholder: 'Введите контакт' }
 ]
-
+const categoryOptions = [
+    { value: 'Основные категории', label: 'Основные категоии' },
+    { value: 'Черновые материалы', label: 'Черновые материалы' },
+    { value: 'Чистовые материалы', label: 'Чистовые материалы' },
+    { value: 'Мягкая мебель', label: 'Мягкая мебель' },
+    { value: 'Корпусная мебель', label: 'Корпусная мебель' },
+    { value: 'Техника', label: 'Техника' },
+    { value: 'Декор', label: 'Декор' }
+];
+const propertyPurposeOptions = [
+    { value: 'Постоянное проживание', label: 'Постоянное проживание' },
+    { value: 'Коммерческая недвижимость', label: 'Коммерческая недвижимость' },
+    { value: 'Под сдачу', label: 'Под сдачу' }
+];
 export default function DesignerEditForm({ data, onChange, onSave, onCancel, saving }) {
     const parseOtherContacts = (contacts) => {
         if (!contacts) return [{ type: '', value: '' }]
@@ -179,7 +192,7 @@ export default function DesignerEditForm({ data, onChange, onSave, onCancel, sav
             }
 
             // Array fieldlar
-            if (key === 'segments' || key === 'magazine_cards' || key === 'representative_cities') {
+            if (key === 'segments' || key === 'magazine_cards' || key === 'representative_cities' || key === 'services' || key === 'categories' || key === 'purpose_of_property') {
                 if (Array.isArray(value) && value.length > 0) {
                     formData.append(key, JSON.stringify(value))
                 }
@@ -315,14 +328,14 @@ export default function DesignerEditForm({ data, onChange, onSave, onCancel, sav
                     <h3 className="text-lg font-semibold text-white mb-2">Услуги и работа</h3>
 
                     <div>
-                        <label className="block text-sm text-white/80 mb-1">Услуги</label>
+                        <label className="block text-sm text-white/80 mb-1">Категории</label>
                         <div className="grid grid-cols-2 gap-2 max-h-40 overflow-y-auto p-2 bg-white/5 rounded">
-                            {serviceOptions.map(option => (
+                            {categoryOptions.map(option => (
                                 <label key={option.value} className="flex items-center space-x-2">
                                     <input
                                         type="checkbox"
-                                        checked={(localData.services || []).includes(option.value)}
-                                        onChange={(e) => handleArrayChange('services', option.value, e.target.checked)}
+                                        checked={(localData.categories || []).includes(option.value)}
+                                        onChange={(e) => handleArrayChange('categories', option.value, e.target.checked)}
                                         className="rounded border-white/30 bg-white/10"
                                     />
                                     <span className="text-sm text-white/90">{option.label}</span>
@@ -338,9 +351,9 @@ export default function DesignerEditForm({ data, onChange, onSave, onCancel, sav
                             onChange={(e) => handleChange('work_type', e.target.value)}
                             className="w-full bg-white/10 border border-white/30 rounded px-3 py-2 text-white text-sm"
                         >
-                            <option value="">Выберите тип работы</option>
+                            <option className='text-black' value="">Выберите тип работы</option>
                             {workTypeOptions.map(option => (
-                                <option key={option.value} value={option.value}>
+                                <option className='text-black' key={option.value} value={option.value}>
                                     {option.label}
                                 </option>
                             ))}
@@ -371,9 +384,9 @@ export default function DesignerEditForm({ data, onChange, onSave, onCancel, sav
                             onChange={(e) => handleChange('vat_payment', e.target.value)}
                             className="w-full bg-white/10 border border-white/30 rounded px-3 py-2 text-white text-sm"
                         >
-                            <option value="">Выберите вариант</option>
+                            <option className='text-black' value="">Выберите вариант</option>
                             {vatOptions.map(option => (
-                                <option key={option.value} value={option.value}>
+                                <option className='text-black' key={option.value} value={option.value}>
                                     {option.label}
                                 </option>
                             ))}
@@ -394,6 +407,67 @@ export default function DesignerEditForm({ data, onChange, onSave, onCancel, sav
                         rows="3"
                         className="w-full bg-white/10 border border-white/30 rounded px-3 py-2 text-white text-sm"
                     />
+                </div>
+
+                <div>
+                    <label className="block text-sm text-white/80 mb-1">Опыт работы</label>
+                    <input
+                        value={localData.experience || ''}
+                        onChange={(e) => handleChange('experience', e.target.value)}
+                        rows="3"
+                        className="w-full bg-white/10 border border-white/30 rounded px-3 py-2 text-white text-sm"
+                    />
+                </div>
+                <div>
+                    <label className="block text-sm text-white/80 mb-1">Область объекта</label>
+                    <input
+                        value={localData.area_of_object || ''}
+                        onChange={(e) => handleChange('area_of_object', e.target.value)}
+                        rows="3"
+                        className="w-full bg-white/10 border border-white/30 rounded px-3 py-2 text-white text-sm"
+                    />
+                </div>
+                <div>
+                    <label className="block text-sm text-white/80 mb-1">Стоимость за м2</label>
+                    <input
+                        value={localData.cost_per_m2 || ''}
+                        onChange={(e) => handleChange('cost_per_m2', e.target.value)}
+                        rows="3"
+                        className="w-full bg-white/10 border border-white/30 rounded px-3 py-2 text-white text-sm"
+                    />
+                </div>
+
+                <div>
+                    <label className="block text-sm text-white/80 mb-1">Услуги</label>
+                    <div className="grid grid-cols-2 gap-2 max-h-40 overflow-y-auto p-2 bg-white/5 rounded">
+                        {serviceOptions.map(option => (
+                            <label key={option.value} className="flex items-center space-x-2">
+                                <input
+                                    type="checkbox"
+                                    checked={(localData.services || []).includes(option.value)}
+                                    onChange={(e) => handleArrayChange('services', option.value, e.target.checked)}
+                                    className="rounded border-white/30 bg-white/10"
+                                />
+                                <span className="text-sm text-white/90">{option.label}</span>
+                            </label>
+                        ))}
+                    </div>
+                </div>
+                <div>
+                    <label className="block text-sm text-white/80 mb-1">Назначение объекта</label>
+                    <div className="grid grid-cols-2 gap-2 max-h-40 overflow-y-auto p-2 bg-white/5 rounded">
+                        {propertyPurposeOptions.map(option => (
+                            <label key={option.value} className="flex items-center space-x-2">
+                                <input
+                                    type="checkbox"
+                                    checked={(localData.purpose_of_property || []).includes(option.value)}
+                                    onChange={(e) => handleArrayChange('purpose_of_property', option.value, e.target.checked)}
+                                    className="rounded border-white/30 bg-white/10"
+                                />
+                                <span className="text-sm text-white/90">{option.label}</span>
+                            </label>
+                        ))}
+                    </div>
                 </div>
 
                 <div>

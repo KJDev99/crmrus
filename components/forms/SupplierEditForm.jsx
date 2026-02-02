@@ -3,29 +3,44 @@ import React, { useState, useRef } from 'react'
 import { FiSave, FiX, FiUpload, FiPlus, FiTrash2 } from 'react-icons/fi'
 
 const businessFormOptions = [
-    { value: 'own_business', label: 'Собственный бизнес' },
-    { value: 'franchise', label: 'Франшиза' }
+    { value: 'Собственный бизнес', label: 'Собственный бизнес' },
+    { value: 'Франшиза', label: 'Франшиза' }
 ]
-
 const segmentOptions = [
-    { value: 'horeca', label: 'HoReCa' },
-    { value: 'business', label: 'Бизнес' },
-    { value: 'comfort', label: 'Комфорт' },
-    { value: 'premium', label: 'Премиум' },
-    { value: 'medium', label: 'Средний' },
-    { value: 'economy', label: 'Эконом' }
+    { value: 'HoReCa', label: 'HoReCa' },
+    { value: 'Бизнес', label: 'Бизнес' },
+    { value: 'Комфорт', label: 'Комфорт' },
+    { value: 'Премиум', label: 'Премиум' },
+    { value: 'Средний', label: 'Средний' },
+    { value: 'Эконом', label: 'Эконом' }
 ]
-
 const vatOptions = [
-    { value: 'yes', label: 'Да' },
-    { value: 'no', label: 'Нет' }
+    { value: 'Да', label: 'Да' },
+    { value: 'Нет', label: 'Нет' }
 ]
 
 const magazineCardsOptions = [
-    { value: 'hi_home', label: 'Hi Home' },
-    { value: 'in_home', label: 'IN HOME' },
-    { value: 'no', label: 'Нет' },
-    { value: 'other', label: 'Другое' }
+    { value: 'Hi Home', label: 'Hi Home' },
+    { value: 'IN HOME', label: 'IN HOME' },
+    { value: 'Нет', label: 'Нет' },
+    { value: 'Другое', label: 'Другое' }
+]
+const speedOptions = [
+    { value: 'В наличии ', label: 'В наличии ' },
+    { value: 'до 2х недель ', label: 'до 2х недель' },
+    { value: 'до 1 месяца ', label: 'до 1 месяца' },
+    { value: 'до 3x месяцев ', label: 'до 3x месяцев' },
+]
+const categoryOptions = [
+    { value: 'Основные категории', label: 'Основные категории' },
+    {
+        value: 'Черновые материалы', label: 'Черновые материалы'
+    },
+    { value: 'Чистовые материалы', label: 'Чистовые материалы' },
+    { value: 'Мягкая мебель', label: 'Мягкая мебель' },
+    { value: 'Корпусная мебель', label: 'Корпусная мебель' },
+    { value: 'Техника', label: 'Техника' },
+    { value: 'Декор', label: 'Декор' },
 ]
 
 // ✅ YANGI: Contact type options
@@ -179,6 +194,17 @@ export default function SupplierEditForm({ data, onChange, onSave, onCancel, sav
                     formData.append(key, JSON.stringify(value))
                 }
             }
+            else if (key === 'categories') {
+                if (Array.isArray(value) && value.length > 0) {
+                    formData.append(key, JSON.stringify(value))
+                }
+            }
+            // ✅ YANGI: speed_of_execution oddiy string (select element)
+            else if (key === 'speed_of_execution') {
+                if (value && value.trim() !== '') {
+                    formData.append(key, value)
+                }
+            }
             // Oddiy fieldlar
             else if (value !== '' && value !== null && value !== undefined) {
                 formData.append(key, value)
@@ -286,6 +312,22 @@ export default function SupplierEditForm({ data, onChange, onSave, onCancel, sav
                             required
                         />
                     </div>
+                    <div>
+                        <label className="block text-sm text-white/80 mb-2">Карточки журнала</label>
+                        <div className="grid grid-cols-2 gap-2 p-2 bg-white/5 rounded">
+                            {magazineCardsOptions.map(option => (
+                                <label key={option.value} className="flex items-center space-x-2">
+                                    <input
+                                        type="checkbox"
+                                        checked={(localData.magazine_cards || []).includes(option.value)}
+                                        onChange={(e) => handleArrayChange('magazine_cards', option.value, e.target.checked)}
+                                        className="rounded border-white/30 bg-white/10"
+                                    />
+                                    <span className="text-sm text-white/90">{option.label}</span>
+                                </label>
+                            ))}
+                        </div>
+                    </div>
                 </div>
 
                 {/* Бизнес информация */}
@@ -310,9 +352,9 @@ export default function SupplierEditForm({ data, onChange, onSave, onCancel, sav
                             onChange={(e) => handleChange('business_form', e.target.value)}
                             className="w-full bg-white/10 border border-white/30 rounded px-3 py-2 text-white text-sm"
                         >
-                            <option value="">Выберите форму</option>
+                            <option className='text-black' value="">Выберите форму</option>
                             {businessFormOptions.map(option => (
-                                <option key={option.value} value={option.value}>
+                                <option className='text-black' key={option.value} value={option.value}>
                                     {option.label}
                                 </option>
                             ))}
@@ -326,9 +368,9 @@ export default function SupplierEditForm({ data, onChange, onSave, onCancel, sav
                             onChange={(e) => handleChange('vat_payment', e.target.value)}
                             className="w-full bg-white/10 border border-white/30 rounded px-3 py-2 text-white text-sm"
                         >
-                            <option value="">Выберите вариант</option>
+                            <option className='text-black' value="">Выберите вариант</option>
                             {vatOptions.map(option => (
-                                <option key={option.value} value={option.value}>
+                                <option className='text-black' key={option.value} value={option.value}>
                                     {option.label}
                                 </option>
                             ))}
@@ -336,21 +378,21 @@ export default function SupplierEditForm({ data, onChange, onSave, onCancel, sav
                     </div>
 
                     <div>
-                        <label className="block text-sm text-white/80 mb-2">Карточки журнала</label>
-                        <div className="grid grid-cols-2 gap-2 p-2 bg-white/5 rounded">
-                            {magazineCardsOptions.map(option => (
-                                <label key={option.value} className="flex items-center space-x-2">
-                                    <input
-                                        type="checkbox"
-                                        checked={(localData.magazine_cards || []).includes(option.value)}
-                                        onChange={(e) => handleArrayChange('magazine_cards', option.value, e.target.checked)}
-                                        className="rounded border-white/30 bg-white/10"
-                                    />
-                                    <span className="text-sm text-white/90">{option.label}</span>
-                                </label>
+                        <label className="block text-sm text-white/80 mb-1">Скорость выполнения</label>
+                        <select
+                            value={localData.speed_of_execution || ''}
+                            onChange={(e) => handleChange('speed_of_execution', e.target.value)}
+                            className="w-full bg-white/10 border border-white/30 rounded px-3 py-2 text-white text-sm"
+                        >
+                            <option className='text-black' value="">Выберите вариант</option>
+                            {speedOptions.map(option => (
+                                <option className='text-black' key={option.value} value={option.value}>
+                                    {option.label}
+                                </option>
                             ))}
-                        </div>
+                        </select>
                     </div>
+
                 </div>
             </div>
 
@@ -429,6 +471,22 @@ export default function SupplierEditForm({ data, onChange, onSave, onCancel, sav
                                 type="checkbox"
                                 checked={(localData.segments || []).includes(option.value)}
                                 onChange={(e) => handleArrayChange('segments', option.value, e.target.checked)}
+                                className="rounded border-white/30 bg-white/10"
+                            />
+                            <span className="text-sm text-white/90">{option.label}</span>
+                        </label>
+                    ))}
+                </div>
+            </div>
+            <div className="space-y-3">
+                <h3 className="text-lg font-semibold text-white mb-2">Категории</h3>
+                <div className="grid grid-cols-2 gap-2 p-2 bg-white/5 rounded">
+                    {categoryOptions.map(option => (
+                        <label key={option.value} className="flex items-center space-x-2">
+                            <input
+                                type="checkbox"
+                                checked={(localData.categories || []).includes(option.value)}
+                                onChange={(e) => handleArrayChange('categories', option.value, e.target.checked)}
                                 className="rounded border-white/30 bg-white/10"
                             />
                             <span className="text-sm text-white/90">{option.label}</span>

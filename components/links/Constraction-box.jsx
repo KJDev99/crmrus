@@ -33,7 +33,9 @@ export default function ConstructionBox() {
         additional_info: '',
         data_processing_consent: false,
         company_logo: null,
-        legal_entity_card: null
+        legal_entity_card: null,
+        categories: [],
+        speed_of_execution: '',
     });
 
     const [showModal, setShowModal] = useState(false);
@@ -76,6 +78,22 @@ export default function ConstructionBox() {
         { value: 'other', label: 'Другое', placeholder: 'Другой контакт' }
     ];
 
+    const categoryOptions = [
+        { value: 'ПОД КЛЮЧ', label: 'ПОД КЛЮЧ' },
+        { value: 'черновые работы', label: 'черновые работы' },
+        { value: 'чистовые работы', label: 'чистовые работы' },
+        { value: 'Сантехника и плитка', label: 'Сантехника и плитка' },
+        { value: 'Пол', label: 'Пол' },
+        { value: 'Стены', label: 'Стены' },
+        { value: 'Комнаты под ключ', label: 'Комнаты под ключ' },
+        { value: 'Электрика', label: 'Электрика' },
+    ]
+
+    const speedOptions = [
+        { value: 'Предварительная запись', label: 'Предварительная запись' },
+        { value: 'быстрый старт', label: 'быстрый старт' },
+    ]
+
     const handleInputChange = (e) => {
         const { name, value, type, checked } = e.target;
         setFormData(prev => ({
@@ -92,6 +110,16 @@ export default function ConstructionBox() {
                 : [...prev.segments, segmentValue]
         }));
     };
+
+    const handleCategoryToggle = (categoryValue) => {
+        setFormData(prev => ({
+            ...prev,
+            categories: prev.categories.includes(categoryValue)
+                ? prev.categories.filter(c => c !== categoryValue)
+                : [...prev.categories, categoryValue]
+        }));
+    };
+
     const handleMagazineCardsToggle = (cardValue) => {
         setFormData(prev => ({
             ...prev,
@@ -305,22 +333,29 @@ export default function ConstructionBox() {
             Object.keys(formData).forEach(key => {
                 const value = formData[key];
 
+                // 1. Fayllar
                 if (key === 'company_logo' || key === 'legal_entity_card') {
                     if (value) submitFormData.append(key, value);
-                } else if (key === 'representative_cities') {
-                    const filteredValues = value.filter(v => v.trim() !== '');
-                    if (filteredValues.length > 0) submitFormData.append(key, JSON.stringify(filteredValues));
-                } else if (key === 'other_contacts') {
-                    // ✅ Yangi format: { type: 'vk', value: 'https://...' }
-                    const filteredContacts = value.filter(c => c.type && c.value.trim() !== '');
-                    if (filteredContacts.length > 0) {
-                        submitFormData.append(key, JSON.stringify(filteredContacts));
+                }
+                // 2. JSON string formatida yuborilishi shart bo'lgan maxsus massivlar
+                else if (key === 'representative_cities' || key === 'other_contacts') {
+                    const filtered = Array.isArray(value) ? value.filter(v => v !== '') : value;
+                    submitFormData.append(key, JSON.stringify(filtered));
+                }
+                // 3. ASOSIY QISM: Backend array (massiv) sifatida kutadigan maydonlar
+                else if (['segments', 'categories', 'magazine_cards'].includes(key)) {
+                    if (Array.isArray(value)) {
+                        value.forEach(item => {
+                            // MUHIM: Har bir elementni alohida bitta kalit (key) bilan append qilish kerak
+                            submitFormData.append(key, item);
+                        });
                     }
-                } else if (key === 'segments' || key === 'magazine_cards') {
-                    if (value.length > 0) submitFormData.append(key, JSON.stringify(value));
-                } else if (key === 'data_processing_consent') {
+                }
+                // 4. Oddiy maydonlar
+                else if (key === 'data_processing_consent') {
                     submitFormData.append(key, value.toString());
-                } else if (value !== '' && value !== null) {
+                }
+                else if (value !== '' && value !== null) {
                     submitFormData.append(key, value);
                 }
             });
@@ -364,7 +399,9 @@ export default function ConstructionBox() {
                 additional_info: '',
                 data_processing_consent: false,
                 company_logo: null,
-                legal_entity_card: null
+                legal_entity_card: null,
+                categories: [],
+                speed_of_execution: '',
             });
             setLogoPreview(null);
             setCardFileName('');
@@ -807,6 +844,29 @@ export default function ConstructionBox() {
                             </div>
                         </div>
 
+                        <div>
+                            <label className="block text-sm font-medium mb-2 text-white">
+                                Выберите категории <span className="text-red-400">*</span>
+                            </label>
+                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                                {categoryOptions.map(option => (
+                                    <label
+                                        key={option.value}
+                                        className="bg-glass2 px-4 py-3 rounded-lg cursor-pointer hover:bg-opacity-80 transition-all flex items-center gap-2"
+                                    >
+                                        <input
+                                            type="checkbox"
+                                            checked={formData.categories.includes(option.value)}
+                                            onChange={() => handleCategoryToggle(option.value)}
+                                            className="checkbox-glass"
+                                        />
+                                        <span className="text-sm text-white">{option.label}</span>
+                                    </label>
+                                ))}
+                            </div>
+                        </div>
+
+
                         {/* Project Timelines */}
                         <div>
                             <label className="block text-sm font-medium mb-2 text-white">
@@ -945,6 +1005,27 @@ export default function ConstructionBox() {
                                             name="vat_payment"
                                             value={option.value}
                                             checked={formData.vat_payment === option.value}
+                                            onChange={handleInputChange}
+                                            className="radio-glass"
+                                            required
+                                        />
+                                        <span className="text-white text-sm sm:text-base">{option.label}</span>
+                                    </label>
+                                ))}
+                            </div>
+                        </div>
+                        <div>
+                            <label className="block text-sm font-medium mb-3 text-white">
+                                Скорость выполнения работ <span className="text-red-400">*</span>
+                            </label>
+                            <div className="flex flex-col sm:flex-row gap-3">
+                                {speedOptions.map(option => (
+                                    <label key={option.value} className="bg-glass2 px-4 py-3 rounded-lg cursor-pointer hover:bg-opacity-80 transition-all flex items-center gap-2 mobile-full">
+                                        <input
+                                            type="radio"
+                                            name="speed_of_execution"
+                                            value={option.value}
+                                            checked={formData.speed_of_execution === option.value}
                                             onChange={handleInputChange}
                                             className="radio-glass"
                                             required

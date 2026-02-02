@@ -32,7 +32,9 @@ export default function SupplierBox() {
         magazine_cards: [],
         data_processing_consent: false,
         company_logo: null,
-        legal_entity_card: null
+        legal_entity_card: null,
+        categories: [],
+        speed_of_execution: ''
     });
 
     const [showModal, setShowModal] = useState(false);
@@ -82,6 +84,26 @@ export default function SupplierBox() {
         { value: 'website', label: 'Веб-сайт', placeholder: 'https://example.com' },
         { value: 'other', label: 'Другое', placeholder: 'Другой контакт' }
     ];
+
+
+    const speedOptions = [
+        { value: 'В наличии ', label: 'В наличии ' },
+        { value: 'до 2х недель ', label: 'до 2х недель' },
+        { value: 'до 1 месяца ', label: 'до 1 месяца' },
+        { value: 'до 3x месяцев ', label: 'до 3x месяцев' },
+    ]
+    const categoryOptions = [
+        { value: 'Основные категории', label: 'Основные категории' },
+        {
+            value: 'Черновые материалы', label: 'Черновые материалы'
+        },
+        { value: 'Чистовые материалы', label: 'Чистовые материалы' },
+        { value: 'Мягкая мебель', label: 'Мягкая мебель' },
+        { value: 'Корпусная мебель', label: 'Корпусная мебель' },
+        { value: 'Техника', label: 'Техника' },
+        { value: 'Декор', label: 'Декор' },
+    ]
+
     const handleInputChange = (e) => {
         const { name, value, type, checked } = e.target;
         setFormData(prev => ({
@@ -89,6 +111,8 @@ export default function SupplierBox() {
             [name]: type === 'checkbox' ? checked : value
         }));
     };
+
+
     const handleMagazineCardsToggle = (cardValue) => {
         setFormData(prev => ({
             ...prev,
@@ -103,6 +127,14 @@ export default function SupplierBox() {
             segments: prev.segments.includes(segmentValue)
                 ? prev.segments.filter(s => s !== segmentValue)
                 : [...prev.segments, segmentValue]
+        }));
+    };
+    const handleCategoryToggle = (categoryValue) => {
+        setFormData(prev => ({
+            ...prev,
+            categories: prev.categories.includes(categoryValue)
+                ? prev.categories.filter(c => c !== categoryValue)
+                : [...prev.categories, categoryValue]
         }));
     };
 
@@ -314,8 +346,12 @@ export default function SupplierBox() {
                     if (filteredContacts.length > 0) {
                         submitFormData.append(key, JSON.stringify(filteredContacts));
                     }
-                } else if (key === 'segments' || key === 'magazine_cards') {
-                    if (value.length > 0) submitFormData.append(key, JSON.stringify(value));
+                } else if (['segments', 'magazine_cards', 'categories'].includes(key)) {
+                    if (Array.isArray(value) && value.length > 0) {
+                        value.forEach(item => {
+                            submitFormData.append(key, item); // Har bir elementni alohida qo'shadi
+                        });
+                    }
                 } else if (key === 'data_processing_consent') {
                     submitFormData.append(key, value.toString());
                 } else if (value !== '' && value !== null) {
@@ -358,7 +394,9 @@ export default function SupplierBox() {
                 magazine_cards: [],
                 data_processing_consent: false,
                 company_logo: null,
-                legal_entity_card: null
+                legal_entity_card: null,
+                categories: [],
+                speed_of_execution: ''
             });
             setLogoPreview(null);
             setCardFileName('');
@@ -787,6 +825,48 @@ export default function SupplierBox() {
                                             className="checkbox-glass"
                                         />
                                         <span className="text-white text-sm">{option.label}</span>
+                                    </label>
+                                ))}
+                            </div>
+                        </div>
+                        <div>
+                            <label className="block text-sm font-medium mb-2 text-white">
+                                Выберите категории <span className="text-red-400">*</span>
+                            </label>
+                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                                {categoryOptions.map(option => (
+                                    <label
+                                        key={option.value}
+                                        className="bg-glass2 px-4 py-3 rounded-lg cursor-pointer hover:bg-opacity-80 transition-all flex items-center gap-2"
+                                    >
+                                        <input
+                                            type="checkbox"
+                                            checked={formData.categories.includes(option.value)}
+                                            onChange={() => handleCategoryToggle(option.value)}
+                                            className="checkbox-glass"
+                                        />
+                                        <span className="text-sm text-white">{option.label}</span>
+                                    </label>
+                                ))}
+                            </div>
+                        </div>
+                        <div>
+                            <label className="block text-sm font-medium mb-3 text-white">
+                                Скорость выполнения работ <span className="text-red-400">*</span>
+                            </label>
+                            <div className="flex flex-col sm:flex-row gap-3">
+                                {speedOptions.map(option => (
+                                    <label key={option.value} className="bg-glass2 px-4 py-3 rounded-lg cursor-pointer hover:bg-opacity-80 transition-all flex items-center gap-2 mobile-full">
+                                        <input
+                                            type="radio"
+                                            name="speed_of_execution"
+                                            value={option.value}
+                                            checked={formData.speed_of_execution === option.value}
+                                            onChange={handleInputChange}
+                                            className="radio-glass"
+                                            required
+                                        />
+                                        <span className="text-white text-sm sm:text-base">{option.label}</span>
                                     </label>
                                 ))}
                             </div>
