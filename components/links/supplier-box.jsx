@@ -346,13 +346,16 @@ export default function SupplierBox() {
                     if (filteredContacts.length > 0) {
                         submitFormData.append(key, JSON.stringify(filteredContacts));
                     }
-                } else if (['segments', 'magazine_cards', 'categories'].includes(key)) {
-                    if (Array.isArray(value) && value.length > 0) {
+                } else if (['segments', 'magazine_cards'].includes(key)) {
+                    if (value.length > 0) submitFormData.append(key, JSON.stringify(value));
+                } else if (['categories'].includes(key)) {
+                    if (Array.isArray(value)) {
                         value.forEach(item => {
-                            submitFormData.append(key, item); // Har bir elementni alohida qo'shadi
+                            submitFormData.append(key, item);
                         });
                     }
-                } else if (key === 'data_processing_consent') {
+                }
+                else if (key === 'data_processing_consent') {
                     submitFormData.append(key, value.toString());
                 } else if (value !== '' && value !== null) {
                     submitFormData.append(key, value);

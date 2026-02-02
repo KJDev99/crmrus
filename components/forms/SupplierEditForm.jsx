@@ -26,10 +26,10 @@ const magazineCardsOptions = [
     { value: 'Другое', label: 'Другое' }
 ]
 const speedOptions = [
-    { value: 'В наличии ', label: 'В наличии ' },
-    { value: 'до 2х недель ', label: 'до 2х недель' },
-    { value: 'до 1 месяца ', label: 'до 1 месяца' },
-    { value: 'до 3x месяцев ', label: 'до 3x месяцев' },
+    { value: 'В наличии', label: 'В наличии' },
+    { value: 'до 2х недель', label: 'до 2х недель' },
+    { value: 'до 1 месяца', label: 'до 1 месяца' },
+    { value: 'до 3x месяцев', label: 'до 3x месяцев' },
 ]
 const categoryOptions = [
     { value: 'Основные категории', label: 'Основные категории' },

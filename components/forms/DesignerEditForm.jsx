@@ -58,6 +58,28 @@ const propertyPurposeOptions = [
     { value: 'Коммерческая недвижимость', label: 'Коммерческая недвижимость' },
     { value: 'Под сдачу', label: 'Под сдачу' }
 ];
+const experienceOptions = [
+    { value: 'Новичок', label: 'Новичок' },
+    { value: 'До 2 лет', label: 'До 2 лет' },
+    { value: '2-5 лет', label: '2-5 лет' },
+    { value: '5-10 лет', label: '5-10 лет' },
+    { value: 'Свыше 10 лет', label: 'Свыше 10 лет' }
+];
+
+const areaOptions = [
+    { value: 'до 10 м2', label: 'до 10 м2' },
+    { value: 'до 40 м2', label: 'до 40 м2' },
+    { value: 'до 80 м2', label: 'до 80 м2' },
+    { value: 'дома', label: 'дома' },
+]
+
+const costOptions = [
+    { value: 'До 1500 р', label: 'До 1500 р' },
+    { value: 'до 2500р', label: 'до 2500р' },
+    { value: 'до 4000 р', label: 'до 4000 р' },
+    { value: 'свыше 4000 р', label: 'свыше 4000 р' }
+
+];
 export default function DesignerEditForm({ data, onChange, onSave, onCancel, saving }) {
     const parseOtherContacts = (contacts) => {
         if (!contacts) return [{ type: '', value: '' }]
@@ -411,30 +433,49 @@ export default function DesignerEditForm({ data, onChange, onSave, onCancel, sav
 
                 <div>
                     <label className="block text-sm text-white/80 mb-1">Опыт работы</label>
-                    <input
+                    <select
                         value={localData.experience || ''}
                         onChange={(e) => handleChange('experience', e.target.value)}
-                        rows="3"
                         className="w-full bg-white/10 border border-white/30 rounded px-3 py-2 text-white text-sm"
-                    />
+                    >
+                        <option className='text-black' value="">Выберите вариант</option>
+                        {experienceOptions.map(option => (
+                            <option className='text-black' key={option.value} value={option.value}>
+                                {option.label}
+                            </option>
+                        ))}
+                    </select>
                 </div>
                 <div>
                     <label className="block text-sm text-white/80 mb-1">Область объекта</label>
-                    <input
+                    <select
                         value={localData.area_of_object || ''}
                         onChange={(e) => handleChange('area_of_object', e.target.value)}
-                        rows="3"
                         className="w-full bg-white/10 border border-white/30 rounded px-3 py-2 text-white text-sm"
-                    />
+                    >
+                        <option className='text-black' value="">Выберите вариант</option>
+                        {areaOptions.map(option => (
+                            <option className='text-black' key={option.value} value={option.value}>
+                                {option.label}
+                            </option>
+                        ))}
+                    </select>
                 </div>
                 <div>
                     <label className="block text-sm text-white/80 mb-1">Стоимость за м2</label>
-                    <input
+
+                    <select
                         value={localData.cost_per_m2 || ''}
                         onChange={(e) => handleChange('cost_per_m2', e.target.value)}
-                        rows="3"
                         className="w-full bg-white/10 border border-white/30 rounded px-3 py-2 text-white text-sm"
-                    />
+                    >
+                        <option className='text-black' value="">Выберите вариант</option>
+                        {costOptions.map(option => (
+                            <option className='text-black' key={option.value} value={option.value}>
+                                {option.label}
+                            </option>
+                        ))}
+                    </select>
                 </div>
 
                 <div>

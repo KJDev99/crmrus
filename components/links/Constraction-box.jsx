@@ -336,21 +336,27 @@ export default function ConstructionBox() {
                 // 1. Fayllar
                 if (key === 'company_logo' || key === 'legal_entity_card') {
                     if (value) submitFormData.append(key, value);
-                }
-                // 2. JSON string formatida yuborilishi shart bo'lgan maxsus massivlar
-                else if (key === 'representative_cities' || key === 'other_contacts') {
-                    const filtered = Array.isArray(value) ? value.filter(v => v !== '') : value;
-                    submitFormData.append(key, JSON.stringify(filtered));
-                }
-                // 3. ASOSIY QISM: Backend array (massiv) sifatida kutadigan maydonlar
-                else if (['segments', 'categories', 'magazine_cards'].includes(key)) {
-                    if (Array.isArray(value)) {
-                        value.forEach(item => {
-                            // MUHIM: Har bir elementni alohida bitta kalit (key) bilan append qilish kerak
-                            submitFormData.append(key, item);
-                        });
+                } else if (key === 'representative_cities') {
+                    const filteredValues = value.filter(v => v.trim() !== '');
+                    if (filteredValues.length > 0) submitFormData.append(key, JSON.stringify(filteredValues));
+                } else if (key === 'other_contacts') {
+                    // ✅ Yangi format: { type: 'vk', value: 'https://...' }
+                    const filteredContacts = value.filter(c => c.type && c.value.trim() !== '');
+                    if (filteredContacts.length > 0) {
+                        submitFormData.append(key, JSON.stringify(filteredContacts));
                     }
                 }
+                // 3. ASOSIY QISM: Backend array (massiv) sifatida kutadigan maydonlar
+                else if (['segments', 'magazine_cards', 'categories'].includes(key)) {
+                    if (value.length > 0) submitFormData.append(key, JSON.stringify(value));
+                }
+                // else if (['categories'].includes(key)) {
+                //     if (Array.isArray(value)) {
+                //         value.forEach(item => {
+                //             submitFormData.append(key, item);
+                //         });
+                //     }
+                // }
                 // 4. Oddiy maydonlar
                 else if (key === 'data_processing_consent') {
                     submitFormData.append(key, value.toString());
@@ -370,7 +376,6 @@ export default function ConstructionBox() {
             setShowModal(true);
             toast.success('Анкета успешно отправлена!');
 
-            // Reset form
             setFormData({
                 group: 'repair_team',
                 brand_name: '',
