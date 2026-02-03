@@ -6,7 +6,7 @@ import { IoIosArrowBack, IoIosArrowDown } from 'react-icons/io'
 
 export default function SupplierSelect({ filterChoices, selectedFilters, onFilterChange, onSearch, loading }) {
     const [dropdowns, setDropdowns] = useState({
-        group: false,
+        category: false,
         city: false,
         segment: false,
         vat_payment: false,
@@ -34,7 +34,7 @@ export default function SupplierSelect({ filterChoices, selectedFilters, onFilte
 
     const getPlaceholder = (filterName) => {
         const placeholders = {
-            group: 'основную категорию',
+            category: 'основную категорию',
             city: 'город',
             segment: 'сегмент',
             vat_payment: 'наличие НДС',
@@ -55,7 +55,7 @@ export default function SupplierSelect({ filterChoices, selectedFilters, onFilte
         if (!filterChoices) return [];
 
         switch (filterName) {
-            case 'group':
+            case 'category':
                 return filterChoices.categories || [];
             case 'city':
                 return filterChoices.cities || [];
@@ -94,7 +94,7 @@ export default function SupplierSelect({ filterChoices, selectedFilters, onFilte
     }
 
     const filterConfigs = [
-        { key: 'group', label: 'Выберете основную категорию' },
+        { key: 'category', label: 'Выберете основную категорию' },
         { key: 'city', label: 'Выберете город' },
         { key: 'segment', label: 'Выберете сегмент' },
         { key: 'vat_payment', label: 'Наличие НДС' },

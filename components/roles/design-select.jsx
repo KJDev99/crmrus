@@ -41,7 +41,7 @@ export default function DesignSelect({ filterChoices, selectedFilters, onFilterC
 
     const getPlaceholder = (filterName) => {
         const placeholders = {
-            group: 'основную категорию',
+            category: 'основную категорию',
             city: 'город',
             segment: 'сегмент',
             property_purpose: 'назначение недвижимости',
@@ -62,7 +62,7 @@ export default function DesignSelect({ filterChoices, selectedFilters, onFilterC
         if (!filterChoices) return [];
 
         switch (filterName) {
-            case 'group':
+            case 'category':
                 return filterChoices.categories || [];
             case 'city':
                 return filterChoices.cities || [];
@@ -111,7 +111,7 @@ export default function DesignSelect({ filterChoices, selectedFilters, onFilterC
                 <h2 className='text-xl text-white mb-4'>ДИЗАЙН</h2>
 
                 {[
-                    { key: 'group', label: 'Выберете основную категорию' },
+                    { key: 'category', label: 'Выберете основную категорию' },
                     { key: 'city', label: 'Выберете город' },
                     { key: 'segment', label: 'Выберете сегмент' },
                     { key: 'property_purpose', label: 'Назначение недвижимости' },
