@@ -127,11 +127,11 @@ export default function UserInfoBox() {
         <div className='min-h-screen bg-[#122161] text-white max-md:px-4 pb-10 max-w-7xl mx-auto'>
             {/* Header */}
             <div className="text-white flex justify-between items-center py-4 mx-auto">
-                <button onClick={() => router.back()} className="cursor-pointer">
+                <button onClick={() => router.back()} className="cursor-pointer md:w-30">
                     <IoIosArrowBack size={40} className='max-md:w-6 max-md:h-6' />
                 </button>
-                <img src="/icons/logo.svg" alt="logo" className='max-md:w-20' />
-                <div className="w-10"></div>
+                <img src="/icons/logo.svg" alt="logo" className='max-md:w-20 w-50' />
+                <div className="md:w-30"></div>
             </div>
 
             <div className="max-w-xl mx-auto space-y-6">

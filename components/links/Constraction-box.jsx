@@ -851,7 +851,7 @@ export default function ConstructionBox() {
 
                         <div>
                             <label className="block text-sm font-medium mb-2 text-white">
-                                Выберите категории <span className="text-red-400">*</span>
+                                Выберите основные категории фильтров для отображения в системе <span className="text-red-400">*</span>
                             </label>
                             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
                                 {categoryOptions.map(option => (
@@ -1021,7 +1021,7 @@ export default function ConstructionBox() {
                         </div>
                         <div>
                             <label className="block text-sm font-medium mb-3 text-white">
-                                Скорость выполнения работ <span className="text-red-400">*</span>
+                                Сроки поставки <span className="text-red-400">*</span>
                             </label>
                             <div className="flex flex-col sm:flex-row gap-3">
                                 {speedOptions.map(option => (

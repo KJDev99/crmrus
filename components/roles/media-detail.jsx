@@ -128,7 +128,7 @@ export default function MediaDetail({ questionnaire, onBack }) {
                     <button onClick={onBack} className="cursor-pointer max-md:w-8 max-md:h-8">
                         <IoIosArrowBack size={40} className='max-md:w-6 max-md:h-6' />
                     </button>
-                    <img src="/icons/logo.svg" alt="a" className='max-md:w-20 max-md:h-20' />
+                    <img src="/icons/logo.svg" alt="a" className='max-md:w-20 w-50' />
                     <div className='max-md:w-8 max-md:h-8'>
                         <img src="/icons/share.svg" alt="a" className='max-md:w-6 max-md:h-6' />
                     </div>
@@ -233,11 +233,11 @@ export default function MediaDetail({ questionnaire, onBack }) {
     return (
         <div className='max-md:px-4'>
             <div className="text-white flex justify-between items-center mt-[0px] max-md:px-0">
-                <button onClick={onBack} className="cursor-pointer max-md:w-8 max-md:h-8">
+                <button onClick={onBack} className="cursor-pointer max-md:w-8 max-md:h-8 md:w-30">
                     <IoIosArrowBack size={40} className='max-md:w-6 max-md:h-6' />
                 </button>
-                <img src="/icons/logo.svg" alt="a" className='max-md:w-20 max-md:h-20' />
-                <div className='max-md:w-8 max-md:h-8' onClick={handleLogout}>
+                <img src="/icons/logo.svg" alt="a" className='max-md:w-20 w-50' />
+                <div className='max-md:w-8 max-md:h-8 md:w-30' onClick={handleLogout}>
                     <img src="/icons/share.svg" alt="a" className='max-md:w-6 max-md:h-6' />
                 </div>
             </div>
@@ -251,11 +251,11 @@ export default function MediaDetail({ questionnaire, onBack }) {
                                 </span>
                             </div>
                         </div>
-                        <div className="flex flex-col border-b border-b-[#FFFFFF91] pl-6 ml-4 flex-grow max-md:pl-3 max-md:ml-0 max-md:border-b-0 max-md:border-t max-md:pt-3 max-md:mt-2 relative">
+                        <div className="flex flex-col border-b border-b-[#FFFFFF91]  pl-12 ml-[-16px] flex-grow max-md:pl-3 max-md:ml-0 max-md:border-b-0 max-md:border-t max-md:pt-3 max-md:mt-2 relative">
                             <h2 className='mb-0.5 text-[#FFFFFF] text-[22px] max-md:text-base'>
                                 {questionnaire.brand_name || questionnaire.full_name || 'Медиа пространство'}
                             </h2>
-                            <div className='w-full h-0.25 bg-[#FFFFFF4F]'></div>
+                            <div className='w-[calc(100% + 32px)] h-0.25 bg-[#FFFFFF4F]  ml-[-32px]'></div>
                             <p className='text-[#FFFFFF] uppercase text-sm leading-[100%] mt-3 max-md:text-xs'>
                                 {questionnaire.group_display || 'Медиа'}
                             </p>

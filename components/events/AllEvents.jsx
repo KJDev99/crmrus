@@ -66,13 +66,13 @@ export default function AllEvents({ setStep, selectedCity, selectedDate, onEvent
     }
 
     return (
-        <div>
+        <div className='relative'>
             <div className="text-white flex justify-between items-center mt-[0px]">
-                <button onClick={() => setStep(1)} className="cursor-pointer">
+                <button onClick={() => setStep(1)} className="cursor-pointer md:w-30">
                     <IoIosArrowBack size={40} />
                 </button>
-                <img src="/icons/logo.svg" alt="logo" />
-                <div></div>
+                <img src="/icons/logo.svg" alt="logo" className='max-md:w-20 w-50' />
+                <div className='md:w-30'></div>
             </div>
 
             <div className='mt-[0]'>
@@ -121,7 +121,7 @@ export default function AllEvents({ setStep, selectedCity, selectedDate, onEvent
 
 
                                     {event.announcement && (
-                                        <p className='text-[#B79F15] text-sm mt-2 line-clamp-2'>
+                                        <p className='text-[#B79F15] text-sm mt-2 line-clamp-1'>
                                             {event.announcement}
                                         </p>
                                     )}
@@ -132,13 +132,11 @@ export default function AllEvents({ setStep, selectedCity, selectedDate, onEvent
                 )}
             </div>
 
-            <div className="relative w-full max-w-[1200px] mx-auto mt-[79px] mb-[64px] flex justify-center">
-                <Link href={'/userinfo'}>
-                    <div className="absolute right-2 sm:right-0 top-1/2 -translate-y-1/2 text-white text-3xl sm:text-[50px] hidden sm:block">
-                        ★
-                    </div>
-                </Link>
-            </div>
+            <Link href={'/userinfo'}>
+                <div className="fixed right-20  bottom-20 text-white text-3xl sm:text-[50px] hidden sm:block">
+                    ★
+                </div>
+            </Link>
         </div>
     )
 }

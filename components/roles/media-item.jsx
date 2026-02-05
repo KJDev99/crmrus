@@ -67,11 +67,11 @@ export default function MediaItem({
     return (
         <div className='max-md:px-4 max-w-7xl mx-auto'>
             <div className="text-white flex justify-between items-center mt-[0px] max-md:px-0">
-                <Link href={'/role'} className="cursor-pointer max-md:w-8 max-md:h-8">
+                <Link href={'/role'} className="cursor-pointer max-md:w-8 max-md:h-8 md:w-30">
                     <IoIosArrowBack size={40} className='max-md:w-6 max-md:h-6' />
                 </Link>
-                <img src="/icons/logo.svg" alt="a" className='max-md:w-20 max-md:h-20' />
-                <div></div>
+                <img src="/icons/logo.svg" alt="a" className='max-md:w-20 w-50' />
+                <div className='md:w-30'></div>
             </div>
             <div className='mt-[0] max-md:mt-2'>
                 <div className="max-w-xl mx-auto space-y-4 max-md:space-y-3">

@@ -155,6 +155,24 @@ export default function DesignBox() {
             label: "Светодизайнер"
         }
     ];
+
+    const handleSelectAll = () => {
+        if (formData.services.length === serviceOptions.length) {
+            // Agar hammasi tanlangan bo'lsa, hammasini olib tashlash
+            setFormData(prev => ({
+                ...prev,
+                services: []
+            }));
+        } else {
+            // Aks holda hammasini tanlash
+            const allValues = serviceOptions.map(opt => opt.value);
+            setFormData(prev => ({
+                ...prev,
+                services: allValues
+            }));
+        }
+    };
+
     const handleInputChange = (e) => {
         const { name, value, type, checked } = e.target;
         setFormData(prev => ({
@@ -748,6 +766,19 @@ export default function DesignBox() {
                                         <span className="text-sm text-white">{option.label}</span>
                                     </label>
                                 ))}
+
+                                {/* VSE tugmasi */}
+                                <label
+                                    className="bg-glass2 px-4 py-3 rounded-lg cursor-pointer hover:bg-opacity-80 transition-all flex items-center gap-2 border-2 border-yellow-400"
+                                >
+                                    <input
+                                        type="checkbox"
+                                        checked={formData.services.length === serviceOptions.length}
+                                        onChange={handleSelectAll}
+                                        className="checkbox-glass"
+                                    />
+                                    <span className="text-sm text-white font-bold">ВСЕ</span>
+                                </label>
                             </div>
                         </div>
 
@@ -912,7 +943,7 @@ export default function DesignBox() {
                         </div>
                         <div>
                             <label className="block text-sm font-medium mb-3 text-white">
-                                Цель собственности <span className="text-red-400">*</span>
+                                С какими объектами вы работаете? <span className="text-red-400">*</span>
                             </label>
                             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
                                 {propertyPurposeOptions.map(option => (
@@ -934,7 +965,7 @@ export default function DesignBox() {
                         </div>
                         <div>
                             <label className="block text-sm font-medium mb-2 text-white">
-                                Площадь объекта (м²) <span className="text-red-400">*</span>
+                                С какой площадью объектов работаете? (м²) <span className="text-red-400">*</span>
                             </label>
                             <div className="flex flex-col sm:flex-row gap-3">
                                 {areaOptions.map(option => (

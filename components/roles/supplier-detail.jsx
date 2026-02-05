@@ -130,7 +130,7 @@ export default function SupplierDetail({ questionnaire, onBack }) {
                     <button onClick={onBack} className="cursor-pointer max-md:w-8 max-md:h-8">
                         <IoIosArrowBack size={40} className='max-md:w-6 max-md:h-6' />
                     </button>
-                    <img src="/icons/logo.svg" alt="a" className='max-md:w-20 max-md:h-20' />
+                    <img src="/icons/logo.svg" alt="a" className='max-md:w-20 w-50' />
                     <div className='max-md:w-8 max-md:h-8'>
                         <img src="/icons/share.svg" alt="a" className='max-md:w-6 max-md:h-6' />
                     </div>
@@ -142,26 +142,53 @@ export default function SupplierDetail({ questionnaire, onBack }) {
         );
     }
 
+
     const getAboutValue = (type) => {
         const item = questionnaire.about_company?.find(item => item.type === type);
         if (!item) return null;
 
-        if (typeof item.value === 'object') {
-            if (type === 'office_addresses') {
-                return Array.isArray(item.value) ? item.value.join(', ') : item.value;
-            } else if (type === 'social_networks') {
+        if (type === 'social_networks') {
+            const socialData = item.value;
+
+            if (socialData && Array.isArray(socialData.other_contacts)) {
                 return (
-                    <div className="space-y-1">
-                        {item.value.vk && <div>VK: {item.value.vk}</div>}
-                        {item.value.instagram && <div>Instagram: {item.value.instagram}</div>}
-                        {item.value.website && <div>Website: {item.value.website}</div>}
+                    <div className="space-y-2">
+                        {socialData.other_contacts.map((contactStr, index) => {
+                            try {
+                                // Backenddan ' (yagona tirnoq) bilan kelayotgani uchun uni " ga almashtiramiz
+                                const fixedJson = contactStr.replace(/'/g, '"');
+                                const contact = JSON.parse(fixedJson);
+
+                                return (
+                                    <div key={index} className="flex gap-2 items-center">
+                                        <span className="font-bold uppercase text-xs  px-px rounded">
+                                            {contact.type}:
+                                        </span>
+                                        {contact.type === 'telegram' || contact.value.startsWith('http') ? (
+                                            <a href={contact.value} target="_blank" rel="noreferrer" className="underline hover:text-blue-300">
+                                                {contact.value}
+                                            </a>
+                                        ) : (
+                                            <span>{contact.value}</span>
+                                        )}
+                                    </div>
+                                );
+                            } catch (e) {
+                                console.error("Parsing error:", e);
+                                return <div key={index}>{contactStr}</div>;
+                            }
+                        })}
                     </div>
                 );
             }
         }
+
+        if (type === 'office_addresses') {
+            return Array.isArray(item.value) ? item.value.join(', ') : item.value;
+        }
+
         return item.value;
     };
-
     const getTermValue = (type) => {
         const item = questionnaire.terms_of_cooperation?.find(item => item.type === type);
         return item?.value || null;
@@ -203,11 +230,11 @@ export default function SupplierDetail({ questionnaire, onBack }) {
     return (
         <div className='max-md:px-4'>
             <div className="text-white flex justify-between items-center mt-[0px] max-md:px-0">
-                <button onClick={onBack} className="cursor-pointer max-md:w-8 max-md:h-8">
+                <button onClick={onBack} className="cursor-pointer max-md:w-8 max-md:h-8 md:w-30">
                     <IoIosArrowBack size={40} className='max-md:w-6 max-md:h-6' />
                 </button>
-                <img src="/icons/logo.svg" alt="a" className='max-md:w-20 max-md:h-20' />
-                <div className='max-md:w-8 max-md:h-8' onClick={handleLogout}>
+                <img src="/icons/logo.svg" alt="a" className='max-md:w-20 w-50' />
+                <div className='max-md:w-8 max-md:h-8 md:w-30' onClick={handleLogout}>
                     <img src="/icons/share.svg" alt="a" className='max-md:w-6 max-md:h-6' />
                 </div>
             </div>
@@ -229,11 +256,11 @@ export default function SupplierDetail({ questionnaire, onBack }) {
                                 </div>
                             )}
                         </div>
-                        <div className="flex flex-col border-b border-b-[#FFFFFF91] pl-6 ml-4 flex-grow relative">
+                        <div className="flex flex-col border-b border-b-[#FFFFFF91]  pl-12 ml-[-16px] flex-grow relative">
                             <h2 className='mb-0.5 text-[#FFFFFF] text-[22px]'>
                                 {questionnaire.brand_name || questionnaire.full_name || 'Название организации'}
                             </h2>
-                            <div className='w-full h-0.25 bg-[#FFFFFF4F]'></div>
+                            <div className='w-[calc(100% + 32px)] h-0.25 bg-[#FFFFFF4F]  ml-[-32px]'></div>
 
                             <p className='text-[#FFFFFF] text-sm mt-1'>
                                 Сегменты: {getSegmentDisplay(questionnaire.segments)}

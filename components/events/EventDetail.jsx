@@ -96,7 +96,7 @@ export default function EventDetail({ setStep, selectedEvent }) {
                     <button onClick={() => setStep(2)} className="cursor-pointer">
                         <IoIosArrowBack size={40} />
                     </button>
-                    <img src="/icons/logo.svg" alt="logo" />
+                    <img src="/icons/logo.svg" alt="logo" className='max-md:w-20 w-50' />
                     <div>
                         <img src="/icons/share.svg" alt="share" />
                     </div>
@@ -111,11 +111,11 @@ export default function EventDetail({ setStep, selectedEvent }) {
     return (
         <div>
             <div className="text-white flex justify-between items-center mt-[0px]">
-                <button onClick={() => setStep(2)} className="cursor-pointer">
+                <button onClick={() => setStep(2)} className="cursor-pointer md:w-30">
                     <IoIosArrowBack size={40} />
                 </button>
-                <img src="/icons/logo.svg" alt="logo" />
-                <div onClick={handleLogout}>
+                <img src="/icons/logo.svg" alt="logo" className='max-md:w-20 w-50' />
+                <div onClick={handleLogout} className='md:w-30'>
                     <img src="/icons/share.svg" alt="share" className="cursor-pointer" />
                 </div>
             </div>
@@ -138,12 +138,12 @@ export default function EventDetail({ setStep, selectedEvent }) {
                                 </div>
                             )}
                         </div>
-                        <div className="flex flex-col border-b border-b-[#FFFFFF91] pl-6 ml-4 flex-grow">
+                        <div className="flex flex-col border-b border-b-[#FFFFFF91]  pl-12 ml-[-16px] flex-grow">
                             <h2 className='mb-0.5 text-[#FFFFFF] text-[22px]'>
                                 {eventDetail.organization_name || 'Название организации'}
                             </h2>
-                            <div className='w-full h-0.25 bg-[#FFFFFF4F]'></div>
-                            <p className='text-[#B79F15] uppercase text-sm leading-[100%] mt-3'>
+                            <div className='w-[calc(100% + 32px)] h-0.25 bg-[#FFFFFF4F]  ml-[-32px]'></div>
+                            <p className='text-[#B79F15] uppercase text-sm leading-[100%] mt-3 line-clamp-1'>
                                 {eventDetail.event_type_display || 'МЕРОПРИЯТИЕ'}
                             </p>
                         </div>
@@ -161,8 +161,8 @@ export default function EventDetail({ setStep, selectedEvent }) {
 
                     {eventDetail.announcement && (
                         <>
-                            <h2 className='mt-4 mb-4 text-center text-lg text-[#FFFFFF]'>Описание мероприятия</h2>
-                            <div className='text-lg px-2 py-4 text-[#FFFFFF] bg-white/5 rounded-lg'>
+                            <h2 className='mt-4 mb-4 text-center text-lg text-[#FFFFFF] '>Описание мероприятия</h2>
+                            <div className='text-lg text-[#FFFFFF] border-b'>
                                 {eventDetail.announcement}
                             </div>
                         </>
@@ -171,7 +171,7 @@ export default function EventDetail({ setStep, selectedEvent }) {
                     {eventDetail.about_event && (
                         <>
                             <h2 className='mt-4 mb-4 text-center text-lg text-[#FFFFFF]'>О мероприятии</h2>
-                            <div className='text-lg px-2 py-4 text-[#FFFFFF] bg-white/5 rounded-lg'>
+                            <div className='text-lg text-[#FFFFFF] border-b'>
                                 {eventDetail.about_event}
                             </div>
                         </>

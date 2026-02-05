@@ -71,11 +71,11 @@ export default function Event({ setStep, eventsData, onCitySelect }) {
     return (
         <div className='relative'>
             <div className="text-white flex justify-between items-center mt-[0px]">
-                <Link href={'/role'} className="cursor-pointer">
+                <Link href={'/role'} className="cursor-pointer md:w-30">
                     <IoIosArrowBack size={40} />
                 </Link>
-                <img src="/icons/logo.svg" alt="logo" />
-                <div></div>
+                <img src="/icons/logo.svg" alt="logo" className='max-md:w-20 w-50' />
+                <div className='md:w-30'></div>
             </div>
 
             <div className='text-center mt-[0]'>

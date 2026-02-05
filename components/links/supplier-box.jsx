@@ -93,7 +93,6 @@ export default function SupplierBox() {
         { value: 'до 3x месяцев ', label: 'до 3x месяцев' },
     ]
     const categoryOptions = [
-        { value: 'Основные категории', label: 'Основные категории' },
         {
             value: 'Черновые материалы', label: 'Черновые материалы'
         },
@@ -855,7 +854,7 @@ export default function SupplierBox() {
                         </div>
                         <div>
                             <label className="block text-sm font-medium mb-3 text-white">
-                                Скорость выполнения работ <span className="text-red-400">*</span>
+                                Сроки поставки <span className="text-red-400">*</span>
                             </label>
                             <div className="flex flex-col sm:flex-row gap-3">
                                 {speedOptions.map(option => (

@@ -6,7 +6,7 @@ import { IoIosArrowBack, IoIosArrowDown } from 'react-icons/io'
 
 export default function RepairSelect({ filterChoices, selectedFilters, onFilterChange, onSearch, loading }) {
     const [dropdowns, setDropdowns] = useState({
-        group: false,
+        category: false,
         city: false,
         segment: false,
         vat_payment: false,
@@ -24,17 +24,23 @@ export default function RepairSelect({ filterChoices, selectedFilters, onFilterC
     };
 
     const getSelectedLabel = (filterName) => {
-        const selectedValue = selectedFilters[filterName];
-        if (!selectedValue || !filterChoices) return `Выберете ${getPlaceholder(filterName)}`;
+        const values = selectedFilters[filterName];
+        if (!values || (Array.isArray(values) && values.length === 0)) {
+            return `Выберите ${getPlaceholder(filterName)}`;
+        }
 
-        // Sizda selectedFilters da label saqlanayapti, shuning uchun
-        // shu labelni qaytarish kifoya
-        return selectedValue;
+        const valuesArray = Array.isArray(values) ? values : [values];
+
+        if (valuesArray.length === 0) {
+            return `Выберите ${getPlaceholder(filterName)}`;
+        }
+
+        return valuesArray.join(', ');
     };
 
     const getPlaceholder = (filterName) => {
         const placeholders = {
-            group: 'основную категорию',
+            category: 'основную категорию',
             city: 'город',
             segment: 'сегмент',
             vat_payment: 'наличие НДС',
@@ -46,9 +52,26 @@ export default function RepairSelect({ filterChoices, selectedFilters, onFilterC
         return placeholders[filterName] || '';
     };
 
-    const handleSelect = (filterName, label) => {
-        onFilterChange(filterName, label); // Label ni saqlaymiz (hozirgi holat)
-        toggleDropdown(filterName);
+    const handleSelect = (filterName, choiceLabel) => {
+        const currentValues = selectedFilters[filterName];
+        const valuesArray = Array.isArray(currentValues) ? currentValues : (currentValues ? [currentValues] : []);
+
+        let newValues;
+        if (valuesArray.includes(choiceLabel)) {
+            // Agar allaqachon tanlangan bo'lsa, olib tashlaymiz
+            newValues = valuesArray.filter(v => v !== choiceLabel);
+        } else {
+            // Agar tanlanmagan bo'lsa, qo'shamiz
+            newValues = [...valuesArray, choiceLabel];
+        }
+
+        onFilterChange(filterName, newValues);
+    };
+
+    const isSelected = (filterName, choiceLabel) => {
+        const currentValues = selectedFilters[filterName];
+        const valuesArray = Array.isArray(currentValues) ? currentValues : (currentValues ? [currentValues] : []);
+        return valuesArray.includes(choiceLabel);
     };
 
     const getChoices = (filterName) => {
@@ -57,7 +80,7 @@ export default function RepairSelect({ filterChoices, selectedFilters, onFilterC
         if (!filterChoices) return [];
 
         switch (filterName) {
-            case 'group':
+            case 'category':
                 return filterChoices.categories || [];
             case 'city':
                 return filterChoices.cities || [];
@@ -85,7 +108,7 @@ export default function RepairSelect({ filterChoices, selectedFilters, onFilterC
                     <Link href={'/role'} className="cursor-pointer">
                         <IoIosArrowBack size={40} className='' />
                     </Link>
-                    <img src="/icons/logo.svg" alt="a" />
+                    <img src="/icons/logo.svg" alt="a" className='max-md:w-20 w-50' />
                     <div></div>
                 </div>
                 <div className='text-center mt-[13px] flex flex-col items-center'>
@@ -96,9 +119,9 @@ export default function RepairSelect({ filterChoices, selectedFilters, onFilterC
     }
 
     const filterConfigs = [
-        { key: 'group', label: 'Выберете основную категорию' },
-        { key: 'city', label: 'Выберете город' },
-        { key: 'segment', label: 'Выберете сегмент' },
+        { key: 'category', label: 'Выберите основную категорию' },
+        { key: 'city', label: 'Выберите город' },
+        { key: 'segment', label: 'Выберите сегмент' },
         { key: 'vat_payment', label: 'Наличие НДС' },
         { key: 'magazine_cards', label: 'Карточки журналов' },
         { key: 'execution_speed', label: 'Скорость исполнения' },
@@ -109,11 +132,11 @@ export default function RepairSelect({ filterChoices, selectedFilters, onFilterC
     return (
         <div className='max-w-7xl m-auto'>
             <div className="text-white flex justify-between items-center mt-[0px]">
-                <Link href={'/role'} className="cursor-pointer">
+                <Link href={'/role'} className="cursor-pointer md:w-30">
                     <IoIosArrowBack size={40} className='' />
                 </Link>
-                <img src="/icons/logo.svg" alt="a" />
-                <div></div>
+                <img src="/icons/logo.svg" alt="a" className='max-md:w-20 w-50' />
+                <div className='md:w-30'></div>
             </div>
             <div className='text-center mt-[13px] flex flex-col items-center'>
                 <h2 className='text-xl text-white mb-4'>РЕМОНТ</h2>
@@ -127,11 +150,11 @@ export default function RepairSelect({ filterChoices, selectedFilters, onFilterC
                                 rounded-[35px] transition-all duration-200
                                 bg-glass2 text-white hover:bg-white/40 text-left px-5
                                 flex items-center justify-between
-                                ${selectedFilters[item.key] ? 'border border-yellow-400' : ''}
+                                ${selectedFilters[item.key] && (Array.isArray(selectedFilters[item.key]) ? selectedFilters[item.key].length > 0 : true) ? 'border border-yellow-400' : ''}
                             `}
                         >
                             <span className='truncate'>{getSelectedLabel(item.key)}</span>
-                            <IoIosArrowDown className={selectedFilters[item.key] ? 'text-yellow-400' : ''} />
+                            <IoIosArrowDown className={selectedFilters[item.key] && (Array.isArray(selectedFilters[item.key]) ? selectedFilters[item.key].length > 0 : true) ? 'text-yellow-400' : ''} />
                         </button>
 
                         {dropdowns[item.key] && (
@@ -143,7 +166,7 @@ export default function RepairSelect({ filterChoices, selectedFilters, onFilterC
                                         className={`
                                             w-full text-left px-5 py-3 text-white
                                             hover:bg-white/20 transition-all
-                                            ${selectedFilters[item.key] === choice.label ?
+                                            ${isSelected(item.key, choice.label) ?
                                                 'bg-white/30 border-l-4 border-yellow-400' :
                                                 ''
                                             }

@@ -1,8 +1,9 @@
 'use client';
-import React from 'react'
+import React, { useState } from 'react'
 import { IoIosArrowBack } from 'react-icons/io'
 import GlassButton from '../ui/GlassButton1'
 import Link from 'next/link';
+import { MdConstruction } from 'react-icons/md';
 
 export default function DesignItem({
     questionnaires,
@@ -49,15 +50,52 @@ export default function DesignItem({
         return segments.map(segment => segmentMap[segment] || segment).join(' / ');
     };
 
+    const [showModal, setShowModal] = useState(false);
+
     return (
         <div className='max-md:px-4'>
             <div className="text-white flex justify-between items-center mt-[0px] max-md:px-0">
-                <button onClick={onResetFilter} className="cursor-pointer max-md:w-8 max-md:h-8">
+                <button onClick={onResetFilter} className="cursor-pointer max-md:w-8 max-md:h-8 md:w-30">
                     <IoIosArrowBack size={40} className='max-md:w-6 max-md:h-6' />
                 </button>
-                <img src="/icons/logo.svg" alt="a" className='max-md:w-20 max-md:h-20' />
-                <div></div>
+                <img src="/icons/logo.svg" alt="a" className='max-md:w-20 w-50' />
+                <div className='md:w-30'>
+                    <img
+                        src="/icons/filter.svg"
+                        alt="filter"
+                        className='w-7 h-7 cursor-pointer hover:opacity-80 transition-opacity'
+                        onClick={() => setShowModal(true)}
+                    />
+                </div>
             </div>
+            {showModal && (
+                <div
+                    className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 px-4"
+                    onClick={() => setShowModal(false)}
+                >
+                    <div
+                        className="bg-glass2 rounded-3xl p-8 max-w-md w-full border border-white/20 shadow-2xl"
+                        onClick={(e) => e.stopPropagation()}
+                    >
+                        <div className="flex flex-col items-center text-center">
+                            <MdConstruction className="text-yellow-400 text-6xl mb-4" />
+                            <h3 className="text-white text-xl font-bold mb-3">
+                                Страница в разработке
+                            </h3>
+                            <p className="text-white/80 text-sm mb-6">
+                                Дополнительные фильтры в данной категории пока не разработаны
+                            </p>
+                            <button
+                                onClick={() => setShowModal(false)}
+                                className="w-full h-12 rounded-full bg-glass2 text-white hover:bg-white/40 
+                                         border border-yellow-400 font-medium transition-all duration-200"
+                            >
+                                Понятно
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
             <div className='mt-[0] max-md:mt-2'>
                 <div className="max-w-xl mx-auto space-y-4 max-md:space-y-3">
                     {questionnaires.length === 0 && !loading ? (
