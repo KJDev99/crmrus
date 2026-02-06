@@ -350,10 +350,10 @@ export default function Users() {
                                                 <td className="py-6 px-6 font-normal text-[20px] leading-[1] tracking-normal">
                                                     <div className="flex items-center">
                                                         <div>
-                                                            <div className="font-medium">{user.full_name || "Не указано"}</div>
-                                                            {user.company_name && (
+                                                            <div className="font-medium">{user.full_name || user.company_name || "Не указано"}</div>
+                                                            {/* {user.company_name && (
                                                                 <div className="text-sm text-gray-400 mt-1">{user.company_name}</div>
-                                                            )}
+                                                            )} */}
                                                         </div>
                                                     </div>
                                                 </td>
