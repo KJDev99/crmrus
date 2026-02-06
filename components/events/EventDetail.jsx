@@ -123,7 +123,7 @@ export default function EventDetail({ setStep, selectedEvent }) {
             <div className="max-w-xl mx-auto space-y-6">
                 <div className="">
                     <div className="flex mb-6">
-                        <div className='w-[125px] h-[100px] card_img flex-shrink-0'>
+                        <div className='w-[125px] h-[100px] card_img flex-shrink-0 overflow-hidden'>
                             {eventDetail.poster ? (
                                 <img
                                     src={eventDetail.poster}

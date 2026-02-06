@@ -254,11 +254,11 @@ export default function RepairEditForm({ data, onChange, onSave, onCancel, savin
                 <div className="space-y-3">
                     <h3 className="text-lg font-semibold text-white mb-2">Основная информация</h3>
 
-                    <div className=''>
+                    <div className='hidden'>
                         <label className="block text-sm text-white/80 mb-1">ФИО *</label>
                         <input
                             type="text"
-                            value={localData.full_name || ''}
+                            value={localData.full_name || 'no name'}
                             onChange={(e) => handleChange('full_name', e.target.value)}
                             className="w-full bg-white/10 border border-white/30 rounded px-3 py-2 text-white text-sm"
                             required

@@ -96,7 +96,7 @@ export default function AllEvents({ setStep, selectedCity, selectedDate, onEvent
                                 onClick={() => onEventSelect(event)}
                                 className="flex mb-6 cursor-pointer hover:opacity-80 transition-opacity"
                             >
-                                <div className='w-[120px] h-[100px] card_img flex-shrink-0'>
+                                <div className='w-[120px] h-[100px] card_img flex-shrink-0 overflow-hidden'>
                                     {event.poster ? (
                                         <img
                                             src={event.poster}

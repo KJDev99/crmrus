@@ -50,20 +50,28 @@ export default function MediaItem({
         if (!representativeCities) return '';
 
         try {
-            // Agar string bo'lsa, JSON parse qilish
             const cities = typeof representativeCities === 'string'
                 ? JSON.parse(representativeCities)
                 : representativeCities;
 
             if (Array.isArray(cities) && cities.length > 0) {
-                return cities.map(city => city.city || '').filter(city => city).join(', ');
+                return cities
+                    .filter(city => city) // null/undefined ni olib tashlash
+                    .map(city => {
+                        if (typeof city === 'string') {
+                            // Yangi qator belgilarini vergul va probelga almashtiramiz
+                            return city.split('\n').map(part => part.trim()).filter(part => part).join(', ');
+                        }
+                        return city.city || '';
+                    })
+                    .filter(city => city) // bo'sh stringlarni olib tashlash
+                    .join(', ');
             }
             return '';
         } catch (error) {
             return '';
         }
     };
-
     return (
         <div className='max-md:px-4 max-w-7xl mx-auto'>
             <div className="text-white flex justify-between items-center mt-[0px] max-md:px-0">
@@ -87,7 +95,7 @@ export default function MediaItem({
                                     className="flex mb-4 max-md:mb-3 cursor-pointer hover:opacity-80 transition-opacity max-md:flex-col"
                                     onClick={() => onSelectQuestionnaire(questionnaire.id)}
                                 >
-                                    <div className='w-[120px] h-[100px] card_img flex-shrink-0 max-md:w-full max-md:h-20'>
+                                    <div className='w-[120px] h-[100px] card_img flex-shrink-0 overflow-hidden max-md:w-full max-md:h-20'>
                                         <div className="w-full h-full rounded-lg flex items-center justify-center">
                                             {questionnaire.company_logo ? (
                                                 <img
@@ -113,7 +121,7 @@ export default function MediaItem({
                                         </p>
 
 
-                                        <p className='text-[#FFFFFF] text-sm mt-1 max-md:text-xs line-clamp-2'>
+                                        <p className='text-[#FFFFFF] text-sm mt-1 max-md:text-xs line-clamp-1'>
                                             {getBusinessFormDisplay(questionnaire.business_form)}
                                         </p>
 

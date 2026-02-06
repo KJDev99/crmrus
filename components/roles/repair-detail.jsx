@@ -248,7 +248,7 @@ export default function RepairDetail({ questionnaire, onBack }) {
             <div className="max-w-xl mx-auto space-y-6">
                 <div className="">
                     <div className="flex mb-6">
-                        <div className='w-[125px] h-[100px] card_img flex-shrink-0'>
+                        <div className='w-[125px] h-[100px] card_img flex-shrink-0 overflow-hidden'>
                             {questionnaire.company_logo ? (
                                 <img
                                     src={questionnaire.company_logo}

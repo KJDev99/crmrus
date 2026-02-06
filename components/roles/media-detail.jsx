@@ -231,7 +231,7 @@ export default function MediaDetail({ questionnaire, onBack }) {
         : questionnaire.reviews_list?.slice(0, 3) || [];
 
     return (
-        <div className='max-md:px-4'>
+        <div className='max-md:px-4 max-w-7xl mx-auto'>
             <div className="text-white flex justify-between items-center mt-[0px] max-md:px-0">
                 <button onClick={onBack} className="cursor-pointer max-md:w-8 max-md:h-8 md:w-30">
                     <IoIosArrowBack size={40} className='max-md:w-6 max-md:h-6' />
@@ -244,11 +244,21 @@ export default function MediaDetail({ questionnaire, onBack }) {
             <div className="max-w-xl mx-auto space-y-4 max-md:space-y-3 max-md:mt-2">
                 <div className="">
                     <div className="flex mb-6 max-md:mb-3 max-md:flex-col">
-                        <div className='w-[125px] h-[100px] card_img flex-shrink-0 max-md:w-full max-md:h-20'>
+                        <div className='w-[120px] h-[100px] card_img flex-shrink-0 overflow-hidden max-md:w-full max-md:h-20'>
                             <div className="w-full h-full rounded-lg flex items-center justify-center">
-                                <span className="text-white text-2xl font-bold uppercase max-md:text-lg">
-                                    {questionnaire.brand_name ? questionnaire.brand_name.charAt(0) : 'M'}
-                                </span>
+                                {questionnaire.company_logo ? (
+                                    <img
+                                        src={questionnaire.company_logo}
+                                        alt={questionnaire.brand_name}
+                                        className="w-full h-full object-cover rounded-lg"
+                                    />
+                                ) : (
+                                    <div className="w-full h-full card_img rounded-lg flex items-center justify-center">
+                                        <span className="text-white text-2xl max-md:text-lg uppercase">
+                                            {questionnaire.brand_name ? questionnaire.brand_name.charAt(0) : '?'}
+                                        </span>
+                                    </div>
+                                )}
                             </div>
                         </div>
                         <div className="flex flex-col border-b border-b-[#FFFFFF91]  pl-12 ml-[-16px] flex-grow max-md:pl-3 max-md:ml-0 max-md:border-b-0 max-md:border-t max-md:pt-3 max-md:mt-2 relative">
@@ -256,8 +266,8 @@ export default function MediaDetail({ questionnaire, onBack }) {
                                 {questionnaire.brand_name || questionnaire.full_name || 'Медиа пространство'}
                             </h2>
                             <div className='w-[calc(100% + 32px)] h-0.25 bg-[#FFFFFF4F]  ml-[-32px]'></div>
-                            <p className='text-[#FFFFFF] uppercase text-sm leading-[100%] mt-3 max-md:text-xs'>
-                                {questionnaire.group_display || 'Медиа'}
+                            <p className='text-[#FFFFFF] uppercase text-sm leading-[100%] mt-3 max-md:text-xs line-clamp-2'>
+                                {questionnaire.welcome_message || 'Медиа'}
                             </p>
                             <div className="absolute bottom-1 right-1 text-white">
                                 <span className='text-yellow-400'>★</span> {questionnaire?.rating_count?.total || 0}
@@ -306,20 +316,58 @@ export default function MediaDetail({ questionnaire, onBack }) {
                     </div>
 
 
-                    <h2 className='mt-4 mb-4 text-center text-lg text-[#FFFFFF] max-md:text-base max-md:mb-2 max-md:mt-3'>Социальные сети и контакты</h2>
+                    <h2 className='mt-4 mb-4 text-center text-lg text-[#FFFFFF] max-md:text-base max-md:mb-2 max-md:mt-3'>Социальные сети</h2>
                     <div className='space-y-4 max-md:space-y-2'>
-                        <div className='text-[#FFFFFF] px-2 py-2 space-y-2 border-b border-[#FFFFFF91] max-md:text-sm max-md:px-1 max-md:space-y-1'>
-                            {questionnaire.vk && <p className='max-md:text-sm'><strong>VK:</strong> {questionnaire.vk}</p>}
-                            {questionnaire.instagram && <p className='max-md:text-sm'><strong>Instagram:</strong> {questionnaire.instagram}</p>}
-                            {questionnaire.telegram_channel && <p className='max-md:text-sm'><strong>Telegram канал:</strong> {questionnaire.telegram_channel}</p>}
-                            {questionnaire.pinterest && <p className='max-md:text-sm'><strong>Pinterest:</strong> {questionnaire.pinterest}</p>}
-                            {questionnaire.website && <p className='max-md:text-sm'><strong>Website:</strong> {questionnaire.website}</p>}
-                        </div>
+                        {questionnaire.other_contacts && questionnaire.other_contacts.length > 0 ? (
+                            <div className='text-[#FFFFFF] px-2 py-2 space-y-2 border-b border-[#FFFFFF91] max-md:text-sm max-md:px-1 max-md:space-y-1'>
+                                {questionnaire.other_contacts.map((contact, index) => {
+                                    try {
+                                        // JSON stringini parse qilish
+                                        let contactObj;
+                                        if (typeof contact === 'string') {
+                                            // String ichidagi qo'shtirnoqlarni to'g'rilash
+                                            const fixedString = contact.replace(/'/g, '"');
+                                            contactObj = JSON.parse(fixedString);
+                                        } else {
+                                            contactObj = contact;
+                                        }
 
-                        {getOtherContacts() && (
-                            <div className='text-[#FFFFFF] px-2 py-2 border-b border-[#FFFFFF91] max-md:text-sm max-md:px-1'>
-                                <strong>Другие контакты:</strong><br />
-                                {getOtherContacts()}
+                                        const { type, value } = contactObj;
+
+                                        // Type bo'yicha label aniqlash
+                                        const getLabel = (type) => {
+                                            const labels = {
+                                                vk: 'VK',
+                                                instagram: 'Instagram',
+                                                telegram: 'Telegram',
+                                                telegram_channel: 'Telegram канал',
+                                                pinterest: 'Pinterest',
+                                                website: 'Website',
+                                                facebook: 'Facebook',
+                                                youtube: 'YouTube',
+                                                tiktok: 'TikTok'
+                                            };
+                                            return labels[type] || type;
+                                        };
+
+                                        return (
+                                            <p key={index} className='max-md:text-sm'>
+                                                <strong>{getLabel(type)}:</strong> {value}
+                                            </p>
+                                        );
+                                    } catch (error) {
+                                        // Agar parse qilishda xatolik bo'lsa, oddiy ko'rsatish
+                                        return (
+                                            <p key={index} className='max-md:text-sm'>
+                                                <strong>Контакт:</strong> {typeof contact === 'string' ? contact : JSON.stringify(contact)}
+                                            </p>
+                                        );
+                                    }
+                                })}
+                            </div>
+                        ) : (
+                            <div className='text-[#FFFFFF] px-2 py-2 space-y-2 border-b border-[#FFFFFF91] max-md:text-sm max-md:px-1 max-md:space-y-1'>
+                                <p className='max-md:text-sm'>Контакты не указаны</p>
                             </div>
                         )}
                     </div>

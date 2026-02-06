@@ -111,7 +111,7 @@ export default function SupplierItem({
                                     className="flex mb-6 cursor-pointer hover:opacity-80 transition-opacity"
                                     onClick={() => onSelectQuestionnaire(questionnaire.id)}
                                 >
-                                    <div className='w-[120px] h-[100px] card_img flex-shrink-0'>
+                                    <div className='w-[120px] h-[100px] card_img flex-shrink-0 overflow-hidden'>
                                         {questionnaire.company_logo ? (
                                             <img
                                                 src={questionnaire.company_logo}

@@ -110,7 +110,7 @@ export default function DesignItem({
                                     className="flex mb-4 max-md:mb-3 cursor-pointer hover:opacity-80 transition-opacity max-md:flex-col"
                                     onClick={() => onSelectQuestionnaire(questionnaire.id)}
                                 >
-                                    <div className='w-[120px] h-[100px] card_img flex-shrink-0 max-md:w-full max-md:h-20'>
+                                    <div className='w-[120px] h-[100px] card_img flex-shrink-0 overflow-hidden max-md:w-full max-md:h-20'>
                                         {questionnaire.photo ? (
                                             <img
                                                 src={questionnaire.photo}
