@@ -157,7 +157,7 @@ export default function RepairDetail({ questionnaire, onBack }) {
 
             if (socialData && Array.isArray(socialData.other_contacts)) {
                 return (
-                    <div className="space-y-2">
+                    <div className="space-y-0">
                         {socialData.other_contacts.map((contactStr, index) => {
                             try {
                                 // Backenddan ' (yagona tirnoq) bilan kelayotgani uchun uni " ga almashtiramiz
@@ -174,7 +174,7 @@ export default function RepairDetail({ questionnaire, onBack }) {
                                                 {contact.value}
                                             </a>
                                         ) : (
-                                            <span>{contact.value}</span>
+                                            <span className=''>{contact.value}</span>
                                         )}
                                     </div>
                                 );
@@ -340,48 +340,62 @@ export default function RepairDetail({ questionnaire, onBack }) {
                                     {/* Описание компании */}
                                     {getAboutValue('company_description') && (
                                         <div className='text-[#FFFFFF] px-2 py-2 border-b border-[#FFFFFF91]'>
-                                            <p className='text-[19px] uppercase'>Описание компании:</p>
-                                            {renderExpandableContent(getAboutValue('company_description'), 'company_description')}
+                                            <span className='text-[19px] uppercase'>Описание компании: &nbsp;  </span>
+                                            <span className='leading-[100%]'>
+                                                {renderExpandableContent(getAboutValue('company_description'), 'company_description')}
+                                            </span>
                                         </div>
                                     )}
 
                                     {/* Пакеты услуг и стоимость */}
                                     {getAboutValue('service_packages') && (
                                         <div className='text-[#FFFFFF] px-2 py-2 border-b border-[#FFFFFF91]'>
-                                            <p className='text-[19px] uppercase'>Пакеты услуг и их стоимость:</p>
-                                            {renderExpandableContent(getAboutValue('service_packages'), 'service_packages')}
+                                            <span className='text-[19px] uppercase'>Пакеты услуг и их стоимость:  &nbsp;
+                                            </span>
+                                            <span className='leading-[100%]'>
+                                                {renderExpandableContent(getAboutValue('service_packages'), 'service_packages')}
+                                            </span>
                                         </div>
                                     )}
 
                                     {/* Перечень услуг */}
                                     {getAboutValue('services_list') && (
                                         <div className='text-[#FFFFFF] px-2 py-2 border-b border-[#FFFFFF91]'>
-                                            <p className='text-[19px] uppercase'>Перечень услуг:</p>
-                                            {renderExpandableContent(getAboutValue('services_list'), 'services_list')}
+                                            <span className='text-[19px] uppercase'>Перечень услуг:  &nbsp; </span>
+                                            <span className='leading-[100%]'>
+                                                {renderExpandableContent(getAboutValue('services_list'), 'services_list')}
+                                            </span>
                                         </div>
                                     )}
 
                                     {/* Акции и УТП */}
                                     {getAboutValue('promotions_utp') && (
                                         <div className='text-[#FFFFFF] px-2 py-2 border-b border-[#FFFFFF91]'>
-                                            <p className='text-[19px] uppercase'>Акции и УТП:</p>
-                                            {renderExpandableContent(getAboutValue('promotions_utp'), 'promotions_utp')}
+                                            <span className='text-[19px] uppercase'>Акции и УТП:  &nbsp;
+                                            </span>
+                                            <span className='leading-[100%]'>
+                                                {renderExpandableContent(getAboutValue('promotions_utp'), 'promotions_utp')}
+                                            </span>
                                         </div>
                                     )}
 
                                     {/* Условия договора и гарантии */}
                                     {getAboutValue('contract_guarantees') && (
                                         <div className='text-[#FFFFFF] px-2 py-2 border-b border-[#FFFFFF91]'>
-                                            <p className='text-[19px] uppercase'>Условия договора и гарантии:</p>
-                                            {renderExpandableContent(getAboutValue('contract_guarantees'), 'contract_guarantees')}
+                                            <span className='text-[19px] uppercase'>Условия договора и гарантии:  &nbsp;</span>
+                                            <span className='leading-[100%]'>
+                                                {renderExpandableContent(getAboutValue('contract_guarantees'), 'contract_guarantees')}
+                                            </span>
                                         </div>
                                     )}
 
                                     {/* Адреса офисов */}
                                     {getAboutValue('office_addresses') && (
                                         <div className='text-[#FFFFFF] px-2 py-2 border-b border-[#FFFFFF91]'>
-                                            <p className='text-[19px] uppercase'>Адреса офисов:</p>
-                                            {renderExpandableContent(getAboutValue('office_addresses'), 'office_addresses')}
+                                            <span className='text-[19px] uppercase'>Адреса офисов:  &nbsp;</span>
+                                            <span className='leading-[100%]'>
+                                                {renderExpandableContent(getAboutValue('office_addresses'), 'office_addresses')}
+                                            </span>
                                         </div>
                                     )}
 
@@ -408,7 +422,7 @@ export default function RepairDetail({ questionnaire, onBack }) {
                                     {/* Периоды выполнения проекта */}
                                     {getTermValue('project_periods') && (
                                         <div className='text-[#FFFFFF] px-2 py-2 border-b border-[#FFFFFF91]'>
-                                            <p className='text-[19px] uppercase'>В какие периоды осуществляется выполнение проекта:</p>
+                                            <p className='text-[19px] uppercase'>В какие периоды осуществляется выполнение проекта: &nbsp;</p>
                                             {renderExpandableContent(getTermValue('project_periods'), 'project_periods')}
                                         </div>
                                     )}
@@ -416,46 +430,65 @@ export default function RepairDetail({ questionnaire, onBack }) {
                                     {/* Сроки ремонта */}
                                     {getTermValue('repair_periods') && (
                                         <div className='text-[#FFFFFF] px-2 py-2 border-b border-[#FFFFFF91]'>
-                                            <p className='text-[19px] uppercase'>Сроки ремонта:</p>
-                                            {renderExpandableContent(getTermValue('repair_periods'), 'repair_periods')}
+                                            <span className='text-[19px] uppercase'>Сроки ремонта: &nbsp;</span>
+                                            <span className='leading-[100%]'>
+                                                {renderExpandableContent(getTermValue('repair_periods'), 'repair_periods')}
+                                            </span>
                                         </div>
                                     )}
 
                                     {/* НДС */}
                                     {getTermValue('vat_payment') && (
                                         <div className='text-[#FFFFFF] px-2 py-2 border-b border-[#FFFFFF91]'>
-                                            <p className='text-[19px] uppercase'>НДС:</p> {getTermValue('vat_payment')}
+                                            <span className='text-[19px] uppercase'>НДС: &nbsp;</span>
+                                            <span className='leading-[100%]'>
+                                                {getTermValue('vat_payment')}
+
+                                            </span>
                                         </div>
                                     )}
 
                                     {/* Гарантии */}
                                     {getTermValue('guarantees') && (
                                         <div className='text-[#FFFFFF] px-2 py-2 border-b border-[#FFFFFF91]'>
-                                            <p className='text-[19px] uppercase'>Гарантии:</p>
-                                            {renderExpandableContent(getTermValue('guarantees'), 'guarantees')}
+                                            <span className='text-[19px] uppercase'>Гарантии: &nbsp;</span>
+                                            <span>
+
+                                                {renderExpandableContent(getTermValue('guarantees'), 'guarantees')}
+                                            </span>
                                         </div>
                                     )}
 
                                     {/* Условия работы с другими городами */}
                                     {getTermValue('other_cities_terms') && (
                                         <div className='text-[#FFFFFF] px-2 py-2 border-b border-[#FFFFFF91]'>
-                                            <p className='text-[19px] uppercase'>Условия работы с другими городами:</p>
-                                            {renderExpandableContent(getTermValue('other_cities_terms'), 'other_cities_terms')}
+                                            <span className='text-[19px] uppercase'>Условия работы с другими городами: &nbsp;</span>
+                                            <span className='leading-[100%]'>
+
+                                                {renderExpandableContent(getTermValue('other_cities_terms'), 'other_cities_terms')}
+                                            </span>
                                         </div>
                                     )}
 
                                     {/* Карточки журнала */}
                                     {getTermValue('magazine_cards') && (
                                         <div className='text-[#FFFFFF] px-2 py-2 border-b border-[#FFFFFF91]'>
-                                            <p className='text-[19px] uppercase'>Карточки журнала:</p> {getTermValue('magazine_cards')}
+                                            <span className='text-[19px] uppercase'>Карточки журнала: &nbsp;</span>
+                                            <span className='leading-[100%]'>
+
+                                                {getTermValue('magazine_cards')}
+                                            </span>
                                         </div>
                                     )}
 
                                     {/* Условия для дизайнеров и поставщиков */}
                                     {getTermValue('designer_supplier_terms') && (
                                         <div className='text-[#FFFFFF] px-2 py-2 border-b border-[#FFFFFF91]'>
-                                            <p className='text-[19px] uppercase'>Условия работы с учетом рекомендации:</p>
-                                            {renderExpandableContent(getTermValue('designer_supplier_terms'), 'designer_supplier_terms')}
+                                            <span className='text-[19px] uppercase'>Условия работы с учетом рекомендации: &nbsp;</span>
+                                            <span className='leading-[100%]'>
+
+                                                {renderExpandableContent(getTermValue('designer_supplier_terms'), 'designer_supplier_terms')}
+                                            </span>
                                         </div>
                                     )}
 

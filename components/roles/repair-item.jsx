@@ -55,13 +55,13 @@ export default function RepairItem({
 
     const [showModal, setShowModal] = useState(false);
     return (
-        <div className='max-md:px-4'>
+        <div className='max-md:px-4 relative min-h-screen '>
             <div className="text-white flex justify-between items-center mt-[0px] max-md:px-0">
                 <button onClick={onResetFilter} className="cursor-pointer max-md:w-8 max-md:h-8 md:w-30">
                     <IoIosArrowBack size={40} className='max-md:w-6 max-md:h-6' />
                 </button>
                 <img src="/icons/logo.svg" alt="a" className='max-md:w-20 w-50' />
-                <div className='md:w-30'>
+                <div className='md:w-30 flex justify-end'>
                     <img
                         src="/icons/filter.svg"
                         alt="filter"
@@ -131,10 +131,10 @@ export default function RepairItem({
                                         <h2 className='mb-[-8px] text-[#FFFFFF] text-[22px] line-clamp-1'>
                                             {questionnaire.brand_name || questionnaire.full_name || 'Название организации'}
                                         </h2>
-                                        <p className='text-[#FFFFFF] text-sm max-md:text-xs line-clamp-1 mb-2'>
+                                        <p className='text-[#FFFFFF] text-sm max-md:text-xs line-clamp-1 mb-2 grow'>
                                             {questionnaire?.about_company[2]?.value.join(', ') || ""}
                                         </p>
-                                        <p className='text-[#FFFFFF] text-sm max-md:text-xs mt-1 line-clamp-2'>
+                                        <p className='text-[#FFFFFF] text-sm max-md:text-xs mt-1 line-clamp-2 leading-[100%]'>
                                             {questionnaire?.about_company[0]?.value || ""}
                                         </p>
                                     </div>
@@ -143,7 +143,7 @@ export default function RepairItem({
                         </>
                     )}
 
-                    <div className="flex justify-between">
+                    <div className="flex justify-between mt-8">
                         <button
                             onClick={onResetFilter}
                             className={`
