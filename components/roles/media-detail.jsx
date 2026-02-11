@@ -332,7 +332,7 @@ export default function MediaDetail({ questionnaire, onBack }) {
                         </div>
 
 
-                        <h2 className='mt-4  text-[19px] uppercase text-[#FFFFFF] max-md:text-base max-md:mb-2 max-md:mt-3'>Социальные сети</h2>
+                        <h2 className='mt-4  text-[19px] uppercase text-[#FFFFFF] max-md:text-base max-md:mb-2 max-md:mt-3 px-2'>Социальные сети:</h2>
                         <div className='space-y-4 max-md:space-y-2'>
                             {questionnaire.other_contacts && questionnaire.other_contacts.length > 0 ? (
                                 <div className='text-[#FFFFFF] px-2 py-2 space-y-2 border-b border-[#FFFFFF91] max-md:text-sm max-md:px-1 max-md:space-y-1'>
@@ -390,7 +390,7 @@ export default function MediaDetail({ questionnaire, onBack }) {
 
                         {questionnaire.additional_info && (
                             <>
-                                <h2 className='mt-4 text-[19px] uppercase text-[#FFFFFF] max-md:text-base max-md:mb-2 max-md:mt-3'>Дополнительная информация</h2>
+                                <h2 className='mt-4 text-[19px] uppercase text-[#FFFFFF] max-md:text-base max-md:mb-2 max-md:mt-3 px-2'>Дополнительная информация:</h2>
                                 <div className='text-[#FFFFFF] px-2 py-2 border-b border-[#FFFFFF91] max-md:text-sm max-md:px-1'>
                                     {renderExpandableContent(questionnaire.additional_info, 'additional_info')}
                                 </div>
@@ -403,13 +403,13 @@ export default function MediaDetail({ questionnaire, onBack }) {
                                 className="flex gap-x-4 cursor-pointer hover:opacity-80"
                                 onClick={() => setShowReviewForm(!showReviewForm)}
                             >
-                                <h3 className='text-[19px] uppercase max-md:text-base'>ОТЗЫВЫ:</h3>
+                                <h3 className='text-[19px] font-normal uppercase max-md:text-base'>ОТЗЫВЫ:</h3>
                                 <div className='flex items-center gap-x-5 max-md:gap-x-3'>
-                                    <p className='max-md:text-sm'>
-                                        <span className='text-yellow-400'>★</span> Положительных: {questionnaire.rating_count?.positive || 0}
+                                    <p className='max-md:text-sm lowercase'>
+                                        <span className='text-yellow-400 '>★</span> Положительных: {questionnaire.rating_count?.positive || 0}
                                     </p>
-                                    <p className='max-md:text-sm'>
-                                        <span className='text-gray-400'>☆</span> Конструктивных: {questionnaire.rating_count?.constructive || 0}
+                                    <p className='max-md:text-sm lowercase'>
+                                        <span className='text-gray-400 '>☆</span> Конструктивных: {questionnaire.rating_count?.constructive || 0}
                                     </p>
                                 </div>
                             </div>

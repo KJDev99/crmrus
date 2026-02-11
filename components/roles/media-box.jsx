@@ -117,7 +117,7 @@ export default function MediaBox() {
     };
 
     return (
-        <div className='max-md:px-4 '>
+        <div className='max-md:px-4  '>
             {step === 'list' && (
                 <MediaItem
                     questionnaires={questionnaires}

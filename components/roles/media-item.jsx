@@ -73,7 +73,7 @@ export default function MediaItem({
         }
     };
     return (
-        <div className='max-md:px-4 max-w-7xl mx-auto'>
+        <div className='max-md:px-4 max-w-7xl mx-auto min-h-screen relative'>
             <div className="text-white flex justify-between items-center mt-[0px] max-md:px-0">
                 <Link href={'/role'} className="cursor-pointer max-md:w-8 max-md:h-8 md:w-30">
                     <IoIosArrowBack size={40} className='max-md:w-6 max-md:h-6' />
@@ -82,6 +82,9 @@ export default function MediaItem({
                 <div className='md:w-30'></div>
             </div>
             <div className='mt-[0] max-md:mt-2'>
+                <p className="font-normal text-white uppercase text-[24px] leading-[100%] tracking-[0%] text-center hover:cursor-pointer border-b border-[#FFFFFF91] w-max mx-auto pb-1 mb-15">
+                    Медиапространство
+                </p>
                 <div className="max-w-xl mx-auto space-y-4 max-md:space-y-3">
                     {questionnaires.length === 0 && !loading ? (
                         <div className="text-center text-white py-10">
@@ -116,7 +119,7 @@ export default function MediaItem({
                                         <h2 className='mb-[-8px] text-[#FFFFFF] text-[22px] line-clamp-1'>
                                             {questionnaire.brand_name || questionnaire.full_name || 'Медиа пространство'}
                                         </h2>
-                                        <p className='text-[#FFFFFF] text-sm max-md:text-xs line-clamp-1 mb-2'>
+                                        <p className='text-[#FFFFFF] text-sm max-md:text-xs line-clamp-2 mb-2 grow'>
                                             {getRepresentativeCities(questionnaire.representative_cities) || 'Город не указан'}
                                         </p>
 
