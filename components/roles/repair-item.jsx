@@ -109,7 +109,7 @@ export default function RepairItem({
                             {questionnaires.map((questionnaire) => (
                                 <div
                                     key={questionnaire.id}
-                                    className="flex mb-4 max-md:mb-3 cursor-pointer hover:opacity-80 transition-opacity max-md:flex-col"
+                                    className="flex mb-2 max-md:mb-2 cursor-pointer hover:opacity-80 transition-opacity max-md:flex-col"
                                     onClick={() => onSelectQuestionnaire(questionnaire.id)}
                                 >
                                     <div className='w-[120px] h-[100px] card_img flex-shrink-0 overflow-hidden max-md:w-full max-md:h-20'>
@@ -128,10 +128,10 @@ export default function RepairItem({
                                         )}
                                     </div>
                                     <div className="flex flex-col border-b border-b-[#FFFFFF91]  pl-12 ml-[-16px] flex-grow max-md:pl-3 max-md:ml-0 max-md:border-b-0 max-md:border-t max-md:pt-3 max-md:mt-2">
-                                        <h2 className='mb-0.5 text-[#FFFFFF] text-[22px] max-md:text-base line-clamp-1'>
+                                        <h2 className='mb-[-8px] text-[#FFFFFF] text-[22px] line-clamp-1'>
                                             {questionnaire.brand_name || questionnaire.full_name || 'Название организации'}
                                         </h2>
-                                        <p className='text-[#FFFFFF] text-sm max-md:text-xs line-clamp-1'>
+                                        <p className='text-[#FFFFFF] text-sm max-md:text-xs line-clamp-1 mb-2'>
                                             {questionnaire?.about_company[2]?.value.join(', ') || ""}
                                         </p>
                                         <p className='text-[#FFFFFF] text-sm max-md:text-xs mt-1 line-clamp-2'>

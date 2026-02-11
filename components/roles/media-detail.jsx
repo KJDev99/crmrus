@@ -243,7 +243,7 @@ export default function MediaDetail({ questionnaire, onBack }) {
             </div>
             <div className="max-w-xl mx-auto space-y-4 max-md:space-y-3 max-md:mt-2">
                 <div className="">
-                    <div className="flex mb-6 max-md:mb-3 max-md:flex-col">
+                    <div className="flex mb-0 max-md:mb-0 max-md:flex-col">
                         <div className='w-[120px] h-[100px] card_img flex-shrink-0 overflow-hidden max-md:w-full max-md:h-20'>
                             <div className="w-full h-full rounded-lg flex items-center justify-center">
                                 {questionnaire.company_logo ? (
@@ -262,7 +262,7 @@ export default function MediaDetail({ questionnaire, onBack }) {
                             </div>
                         </div>
                         <div className="flex flex-col border-b border-b-[#FFFFFF91]  pl-12 ml-[-16px] flex-grow max-md:pl-3 max-md:ml-0 max-md:border-b-0 max-md:border-t max-md:pt-3 max-md:mt-2 relative">
-                            <h2 className='mb-0.5 text-[#FFFFFF] text-[22px] max-md:text-base'>
+                            <h2 className='mb-0.5 text-[#FFFFFF] text-[25px] max-md:text-base'>
                                 {questionnaire.brand_name || questionnaire.full_name || 'Медиа пространство'}
                             </h2>
                             <div className='w-[calc(100% + 32px)] h-0.25 bg-[#FFFFFF4F]  ml-[-32px]'></div>
@@ -286,229 +286,246 @@ export default function MediaDetail({ questionnaire, onBack }) {
                         <p className='max-md:text-sm'><strong>НДС:</strong> {questionnaire.vat_payment_display || 'Не указано'}</p>
                     </div> */}
 
-                    <h2 className='mt-4 mb-4 text-center text-lg text-[#FFFFFF] max-md:text-base max-md:mb-2 max-md:mt-3'>О медиа пространстве</h2>
-                    <div className='space-y-4 max-md:space-y-2'>
-                        {questionnaire.activity_description && (
-                            <div className='text-[#FFFFFF] px-2 py-2 border-b border-[#FFFFFF91] max-md:px-1 max-md:text-sm'>
-                                <strong>Деятельность:</strong><br />
-                                {renderExpandableContent(questionnaire.activity_description, 'activity_description')}
-                            </div>
-                        )}
+                    <div className='mt-0'>
 
-                        {questionnaire.welcome_message && (
-                            <div className='text-[#FFFFFF] px-2 py-2 border-b border-[#FFFFFF91] max-md:px-1 max-md:text-sm'>
-                                <strong>Приветственное сообщение:</strong><br />
-                                {renderExpandableContent(questionnaire.welcome_message, 'welcome_message')}
-                            </div>
-                        )}
 
-                        {questionnaire.cooperation_terms && (
-                            <div className='text-[#FFFFFF] px-2 py-2 border-b border-[#FFFFFF91] max-md:px-1 max-md:text-sm'>
-                                <strong>Условия сотрудничества:</strong><br />
-                                {renderExpandableContent(questionnaire.cooperation_terms, 'cooperation_terms')}
-                            </div>
-                        )}
+                        <div className='flex border-b border-[#FFFFFF91]'>
+                            <button
 
-                        <div className='text-[#FFFFFF] px-2 py-2 border-b border-[#FFFFFF91] max-md:px-1 max-md:text-sm'>
-                            <strong>Сегменты для публикации:</strong><br />
-                            {getSegmentDisplay(questionnaire.segments)}
+                                className={`px-4 py-2 text-center text-[19px] text-[#FFFFFF] transition-all border-r `}
+                            >
+                                О компании
+                            </button>
+                            <button
+
+                                className={`flex-1 py-2 text-center text-[19px] text-[#FFFFFF] transition-all  `}
+                            >
+
+                            </button>
                         </div>
-                    </div>
+                        <div className='space-y-4 max-md:space-y-2'>
+                            {questionnaire.activity_description && (
+                                <div className='text-[#FFFFFF] px-2 py-2 border-b border-[#FFFFFF91] max-md:px-1 max-md:text-sm'>
+                                    <p className='text-[19px] uppercase'>Деятельность:</p>
+                                    {renderExpandableContent(questionnaire.activity_description, 'activity_description')}
+                                </div>
+                            )}
+
+                            {questionnaire.welcome_message && (
+                                <div className='text-[#FFFFFF] px-2 py-2 border-b border-[#FFFFFF91] max-md:px-1 max-md:text-sm'>
+                                    <p className='text-[19px] uppercase'>Приветственное сообщение:</p>
+                                    {renderExpandableContent(questionnaire.welcome_message, 'welcome_message')}
+                                </div>
+                            )}
+
+                            {questionnaire.cooperation_terms && (
+                                <div className='text-[#FFFFFF] px-2 py-2 border-b border-[#FFFFFF91] max-md:px-1 max-md:text-sm'>
+                                    <p className='text-[19px] uppercase'>Условия сотрудничества:</p>
+                                    {renderExpandableContent(questionnaire.cooperation_terms, 'cooperation_terms')}
+                                </div>
+                            )}
+
+                            <div className='text-[#FFFFFF] px-2 py-2 border-b border-[#FFFFFF91] max-md:px-1 max-md:text-sm'>
+                                <p className='text-[19px] uppercase'>Сегменты для публикации:</p>
+                                {getSegmentDisplay(questionnaire.segments)}
+                            </div>
+                        </div>
 
 
-                    <h2 className='mt-4 mb-4 text-center text-lg text-[#FFFFFF] max-md:text-base max-md:mb-2 max-md:mt-3'>Социальные сети</h2>
-                    <div className='space-y-4 max-md:space-y-2'>
-                        {questionnaire.other_contacts && questionnaire.other_contacts.length > 0 ? (
-                            <div className='text-[#FFFFFF] px-2 py-2 space-y-2 border-b border-[#FFFFFF91] max-md:text-sm max-md:px-1 max-md:space-y-1'>
-                                {questionnaire.other_contacts.map((contact, index) => {
-                                    try {
-                                        // JSON stringini parse qilish
-                                        let contactObj;
-                                        if (typeof contact === 'string') {
-                                            // String ichidagi qo'shtirnoqlarni to'g'rilash
-                                            const fixedString = contact.replace(/'/g, '"');
-                                            contactObj = JSON.parse(fixedString);
-                                        } else {
-                                            contactObj = contact;
-                                        }
+                        <h2 className='mt-4  text-[19px] uppercase text-[#FFFFFF] max-md:text-base max-md:mb-2 max-md:mt-3'>Социальные сети</h2>
+                        <div className='space-y-4 max-md:space-y-2'>
+                            {questionnaire.other_contacts && questionnaire.other_contacts.length > 0 ? (
+                                <div className='text-[#FFFFFF] px-2 py-2 space-y-2 border-b border-[#FFFFFF91] max-md:text-sm max-md:px-1 max-md:space-y-1'>
+                                    {questionnaire.other_contacts.map((contact, index) => {
+                                        try {
+                                            // JSON stringini parse qilish
+                                            let contactObj;
+                                            if (typeof contact === 'string') {
+                                                // String ichidagi qo'shtirnoqlarni to'g'rilash
+                                                const fixedString = contact.replace(/'/g, '"');
+                                                contactObj = JSON.parse(fixedString);
+                                            } else {
+                                                contactObj = contact;
+                                            }
 
-                                        const { type, value } = contactObj;
+                                            const { type, value } = contactObj;
 
-                                        // Type bo'yicha label aniqlash
-                                        const getLabel = (type) => {
-                                            const labels = {
-                                                vk: 'VK',
-                                                instagram: 'Instagram',
-                                                telegram: 'Telegram',
-                                                telegram_channel: 'Telegram канал',
-                                                pinterest: 'Pinterest',
-                                                website: 'Website',
-                                                facebook: 'Facebook',
-                                                youtube: 'YouTube',
-                                                tiktok: 'TikTok'
+                                            // Type bo'yicha label aniqlash
+                                            const getLabel = (type) => {
+                                                const labels = {
+                                                    vk: 'VK',
+                                                    instagram: 'Instagram',
+                                                    telegram: 'Telegram',
+                                                    telegram_channel: 'Telegram канал',
+                                                    pinterest: 'Pinterest',
+                                                    website: 'Website',
+                                                    facebook: 'Facebook',
+                                                    youtube: 'YouTube',
+                                                    tiktok: 'TikTok'
+                                                };
+                                                return labels[type] || type;
                                             };
-                                            return labels[type] || type;
-                                        };
 
-                                        return (
-                                            <p key={index} className='max-md:text-sm'>
-                                                <strong>{getLabel(type)}:</strong> {value}
-                                            </p>
-                                        );
-                                    } catch (error) {
-                                        // Agar parse qilishda xatolik bo'lsa, oddiy ko'rsatish
-                                        return (
-                                            <p key={index} className='max-md:text-sm'>
-                                                <strong>Контакт:</strong> {typeof contact === 'string' ? contact : JSON.stringify(contact)}
-                                            </p>
-                                        );
-                                    }
-                                })}
-                            </div>
-                        ) : (
-                            <div className='text-[#FFFFFF] px-2 py-2 space-y-2 border-b border-[#FFFFFF91] max-md:text-sm max-md:px-1 max-md:space-y-1'>
-                                <p className='max-md:text-sm'>Контакты не указаны</p>
-                            </div>
-                        )}
-                    </div>
-
-                    {questionnaire.additional_info && (
-                        <>
-                            <h2 className='mt-4 mb-4 text-center text-lg text-[#FFFFFF] max-md:text-base max-md:mb-2 max-md:mt-3'>Дополнительная информация</h2>
-                            <div className='text-[#FFFFFF] px-2 py-2 border-b border-[#FFFFFF91] max-md:text-sm max-md:px-1'>
-                                {renderExpandableContent(questionnaire.additional_info, 'additional_info')}
-                            </div>
-                        </>
-                    )}
-
-                    {/* Reviews Section */}
-                    <div className='mt-8 text-[#FFFFFF] px-2 py-4 border-b border-[#FFFFFF91] max-md:mt-4'>
-                        <div
-                            className="flex gap-x-4 cursor-pointer hover:opacity-80"
-                            onClick={() => setShowReviewForm(!showReviewForm)}
-                        >
-                            <h3 className='text-lg font-semibold max-md:text-base'>ОТЗЫВЫ:</h3>
-                            <div className='flex items-center gap-x-5 max-md:gap-x-3'>
-                                <p className='max-md:text-sm'>
-                                    <span className='text-yellow-400'>★</span> Положительных: {questionnaire.rating_count?.positive || 0}
-                                </p>
-                                <p className='max-md:text-sm'>
-                                    <span className='text-gray-400'>☆</span> Конструктивных: {questionnaire.rating_count?.constructive || 0}
-                                </p>
-                            </div>
+                                            return (
+                                                <p key={index} className='max-md:text-sm'>
+                                                    <span>{getLabel(type)}:</span> {value}
+                                                </p>
+                                            );
+                                        } catch (error) {
+                                            // Agar parse qilishda xatolik bo'lsa, oddiy ko'rsatish
+                                            return (
+                                                <p key={index} className='max-md:text-sm'>
+                                                    <span>Контакт:</span> {typeof contact === 'string' ? contact : JSON.stringify(contact)}
+                                                </p>
+                                            );
+                                        }
+                                    })}
+                                </div>
+                            ) : (
+                                <div className='text-[#FFFFFF] px-2 py-2 space-y-2 border-b border-[#FFFFFF91] max-md:text-sm max-md:px-1 max-md:space-y-1'>
+                                    <p className='max-md:text-sm'>Контакты не указаны</p>
+                                </div>
+                            )}
                         </div>
 
-                        {!showReviewForm && displayedReviews.length > 0 && (
+                        {questionnaire.additional_info && (
                             <>
-                                {displayedReviews.map((review, index) => (
-                                    <div key={index} className='mt-4 border-b border-[#FFFFFF40] pb-3'>
-                                        <div className='flex items-center mb-2'>
-                                            <span className='text-yellow-400 mr-2'>
-                                                {review.is_positive ? '★' : '☆'}
-                                            </span>
-                                            <span className='text-sm text-[#FFFFFFCC] max-md:text-xs'>
-                                                {review.reviewer_phone || 'Аноним'}
-                                            </span>
-                                            <span className='text-xs text-[#FFFFFF80] ml-2'>
-                                                ({review.status_display})
-                                            </span>
-                                        </div>
-                                        <p className='text-[#FFFFFFCC] text-sm pl-6 max-md:text-xs max-md:pl-4'>
-                                            {review.text}
-                                        </p>
-                                    </div>
-                                ))}
-
-                                {questionnaire.reviews_list && questionnaire.reviews_list.length > 3 && (
-                                    <button
-                                        onClick={() => setShowAllReviews(!showAllReviews)}
-                                        className="mt-4 text-blue-400 hover:text-blue-300 underline max-md:text-sm"
-                                    >
-                                        {showAllReviews ? 'Скрыть' : `Показать все отзывы (${questionnaire.reviews_list.length})`}
-                                    </button>
-                                )}
+                                <h2 className='mt-4 text-[19px] uppercase text-[#FFFFFF] max-md:text-base max-md:mb-2 max-md:mt-3'>Дополнительная информация</h2>
+                                <div className='text-[#FFFFFF] px-2 py-2 border-b border-[#FFFFFF91] max-md:text-sm max-md:px-1'>
+                                    {renderExpandableContent(questionnaire.additional_info, 'additional_info')}
+                                </div>
                             </>
                         )}
 
-                        {/* Review Form */}
-                        {showReviewForm && (
-                            <div className='mt-6 space-y-4 border-t border-[#FFFFFF40] pt-4 max-md:mt-4 max-md:space-y-3'>
-                                <h4 className='text-md font-semibold max-md:text-sm'>Оставить отзыв:</h4>
-
-                                {/* Review Type Selection */}
-                                <div className='flex gap-x-6 max-md:gap-x-4'>
-                                    <label className='flex items-center gap-x-2 cursor-pointer max-md:text-sm'>
-                                        <input
-                                            type='radio'
-                                            name='reviewType'
-                                            value='positive'
-                                            checked={reviewType === 'positive'}
-                                            onChange={(e) => setReviewType(e.target.value)}
-                                            className='w-4 h-4'
-                                        />
-                                        <span className='text-yellow-400'>★</span>
-                                        <span>Положительный</span>
-                                    </label>
-                                    <label className='flex items-center gap-x-2 cursor-pointer max-md:text-sm'>
-                                        <input
-                                            type='radio'
-                                            name='reviewType'
-                                            value='constructive'
-                                            checked={reviewType === 'constructive'}
-                                            onChange={(e) => setReviewType(e.target.value)}
-                                            className='w-4 h-4'
-                                        />
-                                        <span className='text-gray-400'>☆</span>
-                                        <span>Конструктивный</span>
-                                    </label>
+                        {/* Reviews Section */}
+                        <div className='mt-0 text-[#FFFFFF] px-2 py-4 border-b border-[#FFFFFF91] max-md:mt-4'>
+                            <div
+                                className="flex gap-x-4 cursor-pointer hover:opacity-80"
+                                onClick={() => setShowReviewForm(!showReviewForm)}
+                            >
+                                <h3 className='text-[19px] uppercase max-md:text-base'>ОТЗЫВЫ:</h3>
+                                <div className='flex items-center gap-x-5 max-md:gap-x-3'>
+                                    <p className='max-md:text-sm'>
+                                        <span className='text-yellow-400'>★</span> Положительных: {questionnaire.rating_count?.positive || 0}
+                                    </p>
+                                    <p className='max-md:text-sm'>
+                                        <span className='text-gray-400'>☆</span> Конструктивных: {questionnaire.rating_count?.constructive || 0}
+                                    </p>
                                 </div>
-
-                                {/* Text Area */}
-                                <textarea
-                                    value={reviewText}
-                                    onChange={(e) => setReviewText(e.target.value)}
-                                    placeholder='Напишите ваш отзыв...'
-                                    className='w-full h-32 px-4 py-2 bg-[#FFFFFF20] text-white rounded-lg border border-[#FFFFFF40] focus:outline-none focus:border-[#FFFFFF80] resize-none max-md:text-sm max-md:h-24'
-                                />
-
-                                {/* Submit Button */}
-                                <div className='flex gap-x-4'>
-                                    <button
-                                        onClick={handleSubmitReview}
-                                        disabled={!reviewText.trim()}
-                                        className='px-6 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-600 disabled:cursor-not-allowed text-white rounded-lg transition-colors max-md:px-4 max-md:py-1.5 max-md:text-sm'
-                                    >
-                                        Отправить
-                                    </button>
-                                    <button
-                                        onClick={() => {
-                                            setShowReviewForm(false);
-                                            setReviewText('');
-                                            setRating(5);
-                                        }}
-                                        className='px-6 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-lg transition-colors max-md:px-4 max-md:py-1.5 max-md:text-sm'
-                                    >
-                                        Отмена
-                                    </button>
-                                </div>
-
-                                {/* Info Text */}
-                                <p className='text-xs text-[#FFFFFF80] mt-4'>
-                                    Кто оставил: 1 пользователь может оставить только 1 комментарий, при необходимости он может его удалить и оставить новый. Отзывы могут оставлять все рубрики.
-                                </p>
                             </div>
-                        )}
+
+                            {!showReviewForm && displayedReviews.length > 0 && (
+                                <>
+                                    {displayedReviews.map((review, index) => (
+                                        <div key={index} className='mt-4 border-b border-[#FFFFFF40] pb-3'>
+                                            <div className='flex items-center mb-2'>
+                                                <span className='text-yellow-400 mr-2'>
+                                                    {review.is_positive ? '★' : '☆'}
+                                                </span>
+                                                <span className='text-sm text-[#FFFFFFCC] max-md:text-xs'>
+                                                    {review.reviewer_phone || 'Аноним'}
+                                                </span>
+                                                <span className='text-xs text-[#FFFFFF80] ml-2'>
+                                                    ({review.status_display})
+                                                </span>
+                                            </div>
+                                            <p className='text-[#FFFFFFCC] text-sm pl-6 max-md:text-xs max-md:pl-4'>
+                                                {review.text}
+                                            </p>
+                                        </div>
+                                    ))}
+
+                                    {questionnaire.reviews_list && questionnaire.reviews_list.length > 3 && (
+                                        <button
+                                            onClick={() => setShowAllReviews(!showAllReviews)}
+                                            className="mt-4 text-blue-400 hover:text-blue-300 underline max-md:text-sm"
+                                        >
+                                            {showAllReviews ? 'Скрыть' : `Показать все отзывы (${questionnaire.reviews_list.length})`}
+                                        </button>
+                                    )}
+                                </>
+                            )}
+
+                            {/* Review Form */}
+                            {showReviewForm && (
+                                <div className='mt-6 space-y-4 border-t border-[#FFFFFF40] pt-4 max-md:mt-4 max-md:space-y-3'>
+                                    <h4 className='text-[19px] uppercase max-md:text-sm'>Оставить отзыв:</h4>
+
+                                    {/* Review Type Selection */}
+                                    <div className='flex gap-x-6 max-md:gap-x-4'>
+                                        <label className='flex items-center gap-x-2 cursor-pointer max-md:text-sm'>
+                                            <input
+                                                type='radio'
+                                                name='reviewType'
+                                                value='positive'
+                                                checked={reviewType === 'positive'}
+                                                onChange={(e) => setReviewType(e.target.value)}
+                                                className='w-4 h-4'
+                                            />
+                                            <span className='text-yellow-400'>★</span>
+                                            <span>Положительный</span>
+                                        </label>
+                                        <label className='flex items-center gap-x-2 cursor-pointer max-md:text-sm'>
+                                            <input
+                                                type='radio'
+                                                name='reviewType'
+                                                value='constructive'
+                                                checked={reviewType === 'constructive'}
+                                                onChange={(e) => setReviewType(e.target.value)}
+                                                className='w-4 h-4'
+                                            />
+                                            <span className='text-gray-400'>☆</span>
+                                            <span>Конструктивный</span>
+                                        </label>
+                                    </div>
+
+                                    {/* Text Area */}
+                                    <textarea
+                                        value={reviewText}
+                                        onChange={(e) => setReviewText(e.target.value)}
+                                        placeholder='Напишите ваш отзыв...'
+                                        className='w-full h-32 px-4 py-2 bg-[#FFFFFF20] text-white rounded-lg border border-[#FFFFFF40] focus:outline-none focus:border-[#FFFFFF80] resize-none max-md:text-sm max-md:h-24'
+                                    />
+
+                                    {/* Submit Button */}
+                                    <div className='flex gap-x-4'>
+                                        <button
+                                            onClick={handleSubmitReview}
+                                            disabled={!reviewText.trim()}
+                                            className='px-6 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-600 disabled:cursor-not-allowed text-white rounded-lg transition-colors max-md:px-4 max-md:py-1.5 max-md:text-sm'
+                                        >
+                                            Отправить
+                                        </button>
+                                        <button
+                                            onClick={() => {
+                                                setShowReviewForm(false);
+                                                setReviewText('');
+                                                setRating(5);
+                                            }}
+                                            className='px-6 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-lg transition-colors max-md:px-4 max-md:py-1.5 max-md:text-sm'
+                                        >
+                                            Отмена
+                                        </button>
+                                    </div>
+
+                                    {/* Info Text */}
+                                    <p className='text-xs text-[#FFFFFF80] mt-4'>
+                                        Кто оставил: 1 пользователь может оставить только 1 комментарий, при необходимости он может его удалить и оставить новый. Отзывы могут оставлять все рубрики.
+                                    </p>
+                                </div>
+                            )}
+                        </div>
+
+
                     </div>
-
-
                 </div>
-            </div>
-            <div className="relative w-full max-w-[1200px] mx-auto mt-[79px] max-md:mt-8 mb-[64px] max-md:mb-8 flex justify-center max-md:px-4">
-                <Link href={'/userinfo'}>
-                    <div className="absolute right-2 sm:right-0 top-1/2 -translate-y-1/2 text-white text-3xl sm:text-[50px] hidden sm:block">
-                        ★
-                    </div>
-                </Link>
+                <div className="fixed bottom-20 right-30 max-md:mb-8 flex justify-center max-md:px-4">
+                    <Link href={'/userinfo'}>
+                        <div className="absolute right-2 sm:right-0 top-1/2 -translate-y-1/2 text-white text-3xl sm:text-[50px] hidden sm:block">
+                            ★
+                        </div>
+                    </Link>
+                </div>
             </div>
         </div>
     )

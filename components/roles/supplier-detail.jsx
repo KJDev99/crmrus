@@ -240,7 +240,7 @@ export default function SupplierDetail({ questionnaire, onBack }) {
             </div>
             <div className="max-w-xl mx-auto space-y-6">
                 <div className="">
-                    <div className="flex mb-6">
+                    <div className="flex mb-0">
                         <div className='w-[125px] h-[100px] card_img flex-shrink-0 overflow-hidden'>
                             {questionnaire.company_logo ? (
                                 <img
@@ -257,7 +257,7 @@ export default function SupplierDetail({ questionnaire, onBack }) {
                             )}
                         </div>
                         <div className="flex flex-col border-b border-b-[#FFFFFF91]  pl-12 ml-[-16px] flex-grow relative">
-                            <h2 className='mb-0.5 text-[#FFFFFF] text-[22px]'>
+                            <h2 className='mb-0.5 text-[#FFFFFF] text-[25px]'>
                                 {questionnaire.brand_name || questionnaire.full_name || 'Название организации'}
                             </h2>
                             <div className='w-[calc(100% + 32px)] h-0.25 bg-[#FFFFFF4F]  ml-[-32px]'></div>
@@ -274,7 +274,7 @@ export default function SupplierDetail({ questionnaire, onBack }) {
 
                     {/* <h2 className='mt-4 mb-4 text-center text-lg text-[#FFFFFF]'>Контактная информация</h2>
                     <div className='text-lg border-y border-[#FFFFFF91] px-2 py-4 text-[#FFFFFF] space-y-2'>
-                        <p><strong>Бренд:</strong> {questionnaire.brand_name || 'Не указан'}</p>
+                        <p><p>Бренд:</p> {questionnaire.brand_name || 'Не указан'}</p>
                         <p><strong>Ответственное лицо:</strong> {questionnaire.responsible_person || 'Не указано'}</p>
                         <p><strong>Телефон:</strong> {questionnaire.phone || 'Не указан'}</p>
                         <p><strong>Email:</strong> {questionnaire.email || 'Не указан'}</p>
@@ -284,12 +284,12 @@ export default function SupplierDetail({ questionnaire, onBack }) {
                     </div> */}
 
                     {/* Tabs */}
-                    <div className='mt-6'>
+                    <div className='mt-0'>
                         <div className='flex border-b border-[#FFFFFF91]'>
                             <button
                                 onClick={() => setActiveTab('company')}
-                                className={`flex-1 py-3 text-center text-[#FFFFFF] transition-all ${activeTab === 'company'
-                                    ? 'border-b-2 border-[#FFFFFF] font-semibold'
+                                className={`px-4 py-2 text-center text-[19px] text-[#FFFFFF] transition-all border-r ${activeTab === 'company'
+                                    ? ''
                                     : 'opacity-60'
                                     }`}
                             >
@@ -297,8 +297,8 @@ export default function SupplierDetail({ questionnaire, onBack }) {
                             </button>
                             <button
                                 onClick={() => setActiveTab('cooperation')}
-                                className={`flex-1 py-3 text-center text-[#FFFFFF] transition-all ${activeTab === 'cooperation'
-                                    ? 'border-b-2 border-[#FFFFFF] font-semibold'
+                                className={`flex-1 py-2 text-center text-[19px] text-[#FFFFFF] transition-all  ${activeTab === 'cooperation'
+                                    ? ''
                                     : 'opacity-60'
                                     }`}
                             >
@@ -307,33 +307,33 @@ export default function SupplierDetail({ questionnaire, onBack }) {
                         </div>
 
                         {/* Tab Content */}
-                        <div className='mt-6'>
+                        <div className='mt-2'>
                             {activeTab === 'company' && (
-                                <div className='space-y-4'>
+                                <div className='space-y-2'>
                                     {getAboutValue('company_description') && (
                                         <div className='text-[#FFFFFF] px-2 py-2 border-b border-[#FFFFFF91]'>
-                                            <strong>Описание компании:</strong><br />
+                                            <p className='text-[19px] uppercase'>Описание компании</p>
                                             {renderExpandableContent(getAboutValue('company_description'), 'company_description')}
                                         </div>
                                     )}
 
                                     {getAboutValue('product_assortment') && (
                                         <div className='text-[#FFFFFF] px-2 py-2 border-b border-[#FFFFFF91]'>
-                                            <strong>Ассортимент продукции:</strong><br />
+                                            <p className='text-[19px] uppercase'>Ассортимент продукции</p>
                                             {renderExpandableContent(getAboutValue('product_assortment'), 'product_assortment')}
                                         </div>
                                     )}
 
                                     {getAboutValue('office_addresses') && (
                                         <div className='text-[#FFFFFF] px-2 py-2 border-b border-[#FFFFFF91]'>
-                                            <strong>Адреса офисов:</strong><br />
+                                            <p className='text-[19px] uppercase'>Адреса офисов:</p>
                                             {renderExpandableContent(getAboutValue('office_addresses'), 'office_addresses')}
                                         </div>
                                     )}
 
                                     {getAboutValue('social_networks') && (
                                         <div className='text-[#FFFFFF] px-2 py-2 border-b border-[#FFFFFF91]'>
-                                            <strong>Социальные сети:</strong><br />
+                                            <p className='text-[19px] uppercase'>Социальные сети:</p>
                                             {getAboutValue('social_networks')}
                                         </div>
                                     )}
@@ -341,47 +341,47 @@ export default function SupplierDetail({ questionnaire, onBack }) {
                             )}
 
                             {activeTab === 'cooperation' && (
-                                <div className='space-y-4'>
+                                <div className='space-y-2'>
                                     {getTermValue('delivery_periods') && (
                                         <div className='text-[#FFFFFF] px-2 py-2 border-b border-[#FFFFFF91]'>
-                                            <strong>Сроки поставки:</strong><br />
+                                            <p className='text-[19px] uppercase'>Сроки поставки:</p>
                                             {renderExpandableContent(getTermValue('delivery_periods'), 'delivery_periods')}
                                         </div>
                                     )}
 
                                     {getTermValue('vat_payment') && (
                                         <div className='text-[#FFFFFF] px-2 py-2 border-b border-[#FFFFFF91]'>
-                                            <strong>НДС:</strong> {getTermValue('vat_payment')}
+                                            <p className='text-[19px] uppercase'>НДС:</p> {getTermValue('vat_payment')}
                                         </div>
                                     )}
 
                                     {getTermValue('guarantees') && (
                                         <div className='text-[#FFFFFF] px-2 py-2 border-b border-[#FFFFFF91]'>
-                                            <strong>Гарантии:</strong><br />
+                                            <p className='text-[19px] uppercase'>Гарантии:</p>
                                             {renderExpandableContent(getTermValue('guarantees'), 'guarantees')}
                                         </div>
                                     )}
 
                                     {getTermValue('magazine_cards') && (
                                         <div className='text-[#FFFFFF] px-2 py-2 border-b border-[#FFFFFF91]'>
-                                            <strong>Карточки журнала:</strong> {getTermValue('magazine_cards')}
+                                            <p className='text-[19px] uppercase'>Карточки журнала:</p> {getTermValue('magazine_cards')}
                                         </div>
                                     )}
 
                                     {getTermValue('designer_contractor_terms') && (
                                         <div className='text-[#FFFFFF] px-2 py-2 border-b border-[#FFFFFF91]'>
-                                            <strong>Условия для дизайнеров и прорабов:</strong><br />
+                                            <p className='text-[19px] uppercase'>Условия для дизайнеров и прорабов:</p>
                                             {renderExpandableContent(getTermValue('designer_contractor_terms'), 'designer_contractor_terms')}
                                         </div>
                                     )}
 
                                     {/* Reviews Section */}
-                                    <div className='mt-8 text-[#FFFFFF] px-2 py-4 border-b border-[#FFFFFF91]'>
+                                    <div className='mt-0 text-[#FFFFFF] px-2 py-4 border-b border-[#FFFFFF91]'>
                                         <div
                                             className="flex gap-x-4 cursor-pointer hover:opacity-80"
                                             onClick={() => setShowReviewForm(!showReviewForm)}
                                         >
-                                            <h3 className='text-lg font-semibold'>ОТЗЫВЫ:</h3>
+                                            <h3 className='text-[19px] uppercase'>ОТЗЫВЫ:</h3>
                                             <div className='flex items-center gap-x-5'>
                                                 <p>
                                                     <span className='text-yellow-400'>★</span> Положительных: {questionnaire.rating_count?.positive || 0}
@@ -426,8 +426,8 @@ export default function SupplierDetail({ questionnaire, onBack }) {
 
                                         {/* Review Form */}
                                         {showReviewForm && (
-                                            <div className='mt-6 space-y-4 border-t border-[#FFFFFF40] pt-4'>
-                                                <h4 className='text-md font-semibold'>Оставить отзыв:</h4>
+                                            <div className='mt-6 space-y-2 border-t border-[#FFFFFF40] pt-4'>
+                                                <h4 className='text-md'>Оставить отзыв:</h4>
 
                                                 {/* Review Type Selection */}
                                                 <div className='flex gap-x-6'>

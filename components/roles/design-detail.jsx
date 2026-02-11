@@ -263,7 +263,7 @@ export default function DesignDetail({ questionnaire, onBack }) {
             </div>
             <div className="max-w-xl mx-auto space-y-6">
                 <div className="">
-                    <div className="flex mb-6">
+                    <div className="flex mb-0">
                         <div className='w-[125px] h-[100px] card_img flex-shrink-0 overflow-hidden'>
                             {questionnaire.photo ? (
                                 <img
@@ -280,7 +280,7 @@ export default function DesignDetail({ questionnaire, onBack }) {
                             )}
                         </div>
                         <div className="flex flex-col border-b border-b-[#FFFFFF91]  pl-12 ml-[-16px] flex-grow relative">
-                            <h2 className='mb-px text-[#FFFFFF] text-[22px]'>
+                            <h2 className='mb-px text-[#FFFFFF] text-[25px]'>
                                 {questionnaire.full_name || 'Имя не указано'}
                             </h2>
                             <div className='w-[calc(100% + 32px)] h-0.25 bg-[#FFFFFF4F]  ml-[-32px]'></div>
@@ -309,12 +309,12 @@ export default function DesignDetail({ questionnaire, onBack }) {
                     </div> */}
 
                     {/* Tabs */}
-                    <div className='mt-6'>
+                    <div className='mt-0'>
                         <div className='flex border-b border-[#FFFFFF91]'>
                             <button
                                 onClick={() => setActiveTab('company')}
-                                className={`flex-1 py-3 text-center text-[#FFFFFF] transition-all ${activeTab === 'company'
-                                    ? 'border-b-2 border-[#FFFFFF] font-semibold'
+                                className={`px-4 py-2 text-center text-[19px] text-[#FFFFFF] transition-all border-r ${activeTab === 'company'
+                                    ? ''
                                     : 'opacity-60'
                                     }`}
                             >
@@ -322,8 +322,8 @@ export default function DesignDetail({ questionnaire, onBack }) {
                             </button>
                             <button
                                 onClick={() => setActiveTab('cooperation')}
-                                className={`flex-1 py-3 text-center text-[#FFFFFF] transition-all ${activeTab === 'cooperation'
-                                    ? 'border-b-2 border-[#FFFFFF] font-semibold'
+                                className={`flex-1 py-2 text-center text-[19px] text-[#FFFFFF] transition-all  ${activeTab === 'cooperation'
+                                    ? ''
                                     : 'opacity-60'
                                     }`}
                             >
@@ -332,13 +332,13 @@ export default function DesignDetail({ questionnaire, onBack }) {
                         </div>
 
                         {/* Tab Content */}
-                        <div className='mt-6'>
+                        <div className='mt-2'>
                             {activeTab === 'company' && (
-                                <div className='space-y-4'>
+                                <div className='space-y-2'>
                                     {/* Приветственное сообщение */}
                                     {getAboutValue('welcome_message') && (
                                         <div className='text-[#FFFFFF] px-2 py-2 border-b border-[#FFFFFF91]'>
-                                            <strong>Приветственное сообщение:</strong><br />
+                                            <p className='text-[19px] uppercase'>Приветственное сообщение:</p>
                                             {renderExpandableContent(getAboutValue('welcome_message'), 'welcome_message')}
                                         </div>
                                     )}
@@ -346,7 +346,7 @@ export default function DesignDetail({ questionnaire, onBack }) {
                                     {/* Опыт и география */}
                                     {getAboutValue('experience_geography') && (
                                         <div className='text-[#FFFFFF] px-2 py-2 border-b border-[#FFFFFF91]'>
-                                            <strong>Опыт и география работы:</strong><br />
+                                            <p className='text-[19px] uppercase'>Опыт и география работы:</p>
                                             {getAboutValue('experience_geography')}
                                         </div>
                                     )}
@@ -354,7 +354,7 @@ export default function DesignDetail({ questionnaire, onBack }) {
                                     {/* Пакеты услуг и стоимость */}
                                     {getAboutValue('service_packages') && (
                                         <div className='text-[#FFFFFF] px-2 py-2 border-b border-[#FFFFFF91]'>
-                                            <strong>Пакеты услуг и их стоимость:</strong><br />
+                                            <p className='text-[19px] uppercase'>Пакеты услуг и их стоимость:</p>
                                             {renderExpandableContent(getAboutValue('service_packages'), 'service_packages')}
                                         </div>
                                     )}
@@ -362,7 +362,7 @@ export default function DesignDetail({ questionnaire, onBack }) {
                                     {/* Акции и УТП */}
                                     {getAboutValue('promotions_utp') && (
                                         <div className='text-[#FFFFFF] px-2 py-2 border-b border-[#FFFFFF91]'>
-                                            <strong>Акции и УТП:</strong><br />
+                                            <p className='text-[19px] uppercase'>Акции и УТП:</p>
                                             {renderExpandableContent(getAboutValue('promotions_utp'), 'promotions_utp')}
                                         </div>
                                     )}
@@ -370,7 +370,7 @@ export default function DesignDetail({ questionnaire, onBack }) {
                                     {/* Социальные сети */}
                                     {getAboutValue('social_networks') && (
                                         <div className='text-[#FFFFFF] px-2 py-2 border-b border-[#FFFFFF91]'>
-                                            <strong>Социальные сети:</strong><br />
+                                            <p className='text-[19px] uppercase'>Социальные сети:</p>
                                             {getAboutValue('social_networks')}
                                         </div>
                                     )}
@@ -382,7 +382,7 @@ export default function DesignDetail({ questionnaire, onBack }) {
                                     {/* Периоды выполнения проекта */}
                                     {getTermValue('project_periods') && (
                                         <div className='text-[#FFFFFF] px-2 py-2 border-b border-[#FFFFFF91]'>
-                                            <strong>Периоды выполнения проекта:</strong><br />
+                                            <p className='text-[19px] uppercase'>Периоды выполнения проекта:</p>
                                             {renderExpandableContent(getTermValue('project_periods'), 'project_periods')}
                                         </div>
                                     )}
@@ -390,14 +390,14 @@ export default function DesignDetail({ questionnaire, onBack }) {
                                     {/* НДС */}
                                     {getTermValue('vat_payment') && (
                                         <div className='text-[#FFFFFF] px-2 py-2 border-b border-[#FFFFFF91]'>
-                                            <strong>НДС:</strong> {getTermValue('vat_payment')}
+                                            <p className='text-[19px] uppercase'>НДС:</p> {getTermValue('vat_payment')}
                                         </div>
                                     )}
 
                                     {/* Гарантии */}
                                     {getTermValue('guarantees') && (
                                         <div className='text-[#FFFFFF] px-2 py-2 border-b border-[#FFFFFF91]'>
-                                            <strong>Гарантии:</strong><br />
+                                            <p className='text-[19px] uppercase'>Гарантии:</p>
                                             {renderExpandableContent(getTermValue('guarantees'), 'guarantees')}
                                         </div>
                                     )}
@@ -405,18 +405,18 @@ export default function DesignDetail({ questionnaire, onBack }) {
                                     {/* Условия работы с другими городами */}
                                     {getTermValue('other_cities_terms') && (
                                         <div className='text-[#FFFFFF] px-2 py-2 border-b border-[#FFFFFF91]'>
-                                            <strong>Условия работы с другими городами:</strong><br />
+                                            <p className='text-[19px] uppercase'>Условия работы с другими городами:</p>
                                             {renderExpandableContent(getTermValue('other_cities_terms'), 'other_cities_terms')}
                                         </div>
                                     )}
 
                                     {/* Reviews Section */}
-                                    <div className='mt-8 text-[#FFFFFF] px-2 py-4 border-b border-[#FFFFFF91]'>
+                                    <div className='mt-0 text-[#FFFFFF] px-2 py-4 border-b border-[#FFFFFF91]'>
                                         <div
                                             className="flex gap-x-4 cursor-pointer hover:opacity-80"
                                             onClick={() => setShowReviewForm(!showReviewForm)}
                                         >
-                                            <h3 className='text-lg font-semibold'>ОТЗЫВЫ:</h3>
+                                            <h3 className='text-[19px] uppercase'>ОТЗЫВЫ:</h3>
                                             <div className='flex items-center gap-x-5'>
                                                 <p>
                                                     <span className='text-yellow-400'>★</span> Положительных: {questionnaire.rating_count?.positive || 0}

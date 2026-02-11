@@ -108,7 +108,7 @@ export default function SupplierItem({
                             {questionnaires.map((questionnaire) => (
                                 <div
                                     key={questionnaire.id}
-                                    className="flex mb-6 cursor-pointer hover:opacity-80 transition-opacity"
+                                    className="flex mb-2 cursor-pointer hover:opacity-80 transition-opacity"
                                     onClick={() => onSelectQuestionnaire(questionnaire.id)}
                                 >
                                     <div className='w-[120px] h-[100px] card_img flex-shrink-0 overflow-hidden'>
@@ -127,11 +127,11 @@ export default function SupplierItem({
                                         )}
                                     </div>
                                     <div className="flex flex-col border-b border-b-[#FFFFFF91]  pl-12 ml-[-16px]  flex-grow">
-                                        <h2 className='mb-0.5 text-[#FFFFFF] text-[22px] line-clamp-1'>
+                                        <h2 className='mb-[-8px] text-[#FFFFFF] text-[22px] line-clamp-1'>
                                             {questionnaire.brand_name || questionnaire.full_name || 'Название организации'}
                                         </h2>
 
-                                        <p className='text-[#FFFFFF] text-sm max-md:text-xs line-clamp-1'>
+                                        <p className='text-[#FFFFFF] text-sm max-md:text-xs line-clamp-1 mb-2'>
                                             {questionnaire?.about_company[2]?.value.join(', ') || ""}
                                         </p>
                                         <p className='text-[#FFFFFF] text-sm max-md:text-xs mt-1 line-clamp-2'>

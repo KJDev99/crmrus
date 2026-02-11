@@ -122,7 +122,7 @@ export default function EventDetail({ setStep, selectedEvent }) {
 
             <div className="max-w-xl mx-auto space-y-6">
                 <div className="">
-                    <div className="flex mb-6">
+                    <div className="flex mb-0">
                         <div className='w-[125px] h-[100px] card_img flex-shrink-0 overflow-hidden'>
                             {eventDetail.poster ? (
                                 <img
@@ -139,7 +139,7 @@ export default function EventDetail({ setStep, selectedEvent }) {
                             )}
                         </div>
                         <div className="flex flex-col border-b border-b-[#FFFFFF91]  pl-12 ml-[-16px] flex-grow">
-                            <h2 className='mb-0.5 text-[#FFFFFF] text-[22px]'>
+                            <h2 className='mb-0.5 text-[#FFFFFF] text-[25px]'>
                                 {eventDetail.organization_name || 'Название организации'}
                             </h2>
                             <div className='w-[calc(100% + 32px)] h-0.25 bg-[#FFFFFF4F]  ml-[-32px]'></div>
@@ -150,18 +150,18 @@ export default function EventDetail({ setStep, selectedEvent }) {
                     </div>
 
                     <h2 className='mt-4 mb-4 text-center text-lg text-[#FFFFFF]'>Анонс мероприятия</h2>
-                    <div className='text-lg border-y border-[#FFFFFF91] px-2 py-4 text-[#FFFFFF] space-y-3'>
-                        <p><strong>Дата и время:</strong> {formatDate(eventDetail.event_date)}</p>
-                        <p><strong>Место проведения:</strong> {eventDetail.event_location || 'Не указано'}</p>
-                        <p><strong>Город:</strong> {eventDetail.city || 'Не указан'}</p>
+                    <div className='text-lg border-y border-[#FFFFFF91] px-2 py-4 text-[#FFFFFF] space-y-1'>
+                        <p><span>Дата и время:</span> {formatDate(eventDetail.event_date)}</p>
+                        <p><span>Место проведения:</span> {eventDetail.event_location || 'Не указано'}</p>
+                        <p><span>Город:</span> {eventDetail.city || 'Не указан'}</p>
                         {eventDetail.registration_phone && (
-                            <p><strong>Телефон для записи:</strong> {eventDetail.registration_phone}</p>
+                            <p><span>Телефон для записи:</span> {eventDetail.registration_phone}</p>
                         )}
                     </div>
 
                     {eventDetail.announcement && (
                         <>
-                            <h2 className='mt-4 mb-4 text-center text-lg text-[#FFFFFF] '>Описание мероприятия</h2>
+                            <h2 className='mt-4 mb-1 text-center text-lg text-[#FFFFFF] '>Описание мероприятия</h2>
                             <div className='text-lg text-[#FFFFFF] border-b'>
                                 {eventDetail.announcement}
                             </div>
@@ -170,7 +170,7 @@ export default function EventDetail({ setStep, selectedEvent }) {
 
                     {eventDetail.about_event && (
                         <>
-                            <h2 className='mt-4 mb-4 text-center text-lg text-[#FFFFFF]'>О мероприятии</h2>
+                            <h2 className='mt-4 mb-1 text-center text-lg text-[#FFFFFF]'>О мероприятии</h2>
                             <div className='text-lg text-[#FFFFFF] border-b'>
                                 {eventDetail.about_event}
                             </div>

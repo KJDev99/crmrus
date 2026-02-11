@@ -137,7 +137,7 @@ export default function SupplierSelect({ filterChoices, selectedFilters, onFilte
                 <div className='md:w-30'></div>
             </div>
             <div className='text-center mt-[13px] flex flex-col items-center'>
-                <h2 className='text-xl text-white mb-4'>ПОСТАВЩИКИ</h2>
+                <h2 className='text-[24px] text-white mb-4'>ПОСТАВЩИКИ</h2>
 
                 {filterConfigs.map((item) => (
                     <div key={item.key} className='mt-3 relative w-120'>
@@ -152,7 +152,7 @@ export default function SupplierSelect({ filterChoices, selectedFilters, onFilte
                             `}
                         >
                             <span className='truncate'>{getSelectedLabel(item.key)}</span>
-                            <IoIosArrowDown className={selectedFilters[item.key] && (Array.isArray(selectedFilters[item.key]) ? selectedFilters[item.key].length > 0 : true) ? 'text-yellow-400' : ''} />
+                            {/* <IoIosArrowDown className={selectedFilters[item.key] && (Array.isArray(selectedFilters[item.key]) ? selectedFilters[item.key].length > 0 : true) ? 'text-yellow-400' : ''} /> */}
                         </button>
 
                         {dropdowns[item.key] && (

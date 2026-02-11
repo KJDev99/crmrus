@@ -89,12 +89,12 @@ export default function AllEvents({ setStep, selectedCity, selectedDate, onEvent
                         <p>мероприятий нет</p>
                     </div>
                 ) : (
-                    <div className="max-w-xl mx-auto space-y-6">
+                    <div className="max-w-xl mx-auto space-y-2">
                         {events.map((event) => (
                             <div
                                 key={event.id}
                                 onClick={() => onEventSelect(event)}
-                                className="flex mb-6 cursor-pointer hover:opacity-80 transition-opacity"
+                                className="flex mb-0 cursor-pointer hover:opacity-80 transition-opacity"
                             >
                                 <div className='w-[120px] h-[100px] card_img flex-shrink-0 overflow-hidden'>
                                     {event.poster ? (
@@ -112,16 +112,16 @@ export default function AllEvents({ setStep, selectedCity, selectedDate, onEvent
                                     )}
                                 </div>
                                 <div className="flex flex-col border-b border-b-[#FFFFFF91]  pl-12 ml-[-16px]  flex-grow">
-                                    <h2 className='mb-0.5 text-[#FFFFFF] text-[22px]'>
+                                    <h2 className='mb-[-8px] text-[#FFFFFF] text-[22px] line-clamp-1'>
                                         {event.organization_name || 'Название организации'}
                                     </h2>
-                                    <p className='text-sm text-[#FFFFFF] mt-1'>
+                                    <p className='text-[#FFFFFF] text-sm max-md:text-xs line-clamp-1 mb-2'>
                                         {event.city || ''} {event.event_location ? `, ${event.event_location}` : ''}
                                     </p>
 
 
                                     {event.announcement && (
-                                        <p className='text-[#B79F15] text-sm mt-2 line-clamp-1'>
+                                        <p className='text-[#B79F15] text-sm leading-[100%]  mt-2 uppercase line-clamp-2'>
                                             {event.announcement}
                                         </p>
                                     )}
