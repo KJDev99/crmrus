@@ -6,7 +6,7 @@ import SupplierDetail from './supplier-detail';
 import axios from 'axios';
 
 export default function SupplierBox() {
-    const [step, setStep] = useState('select'); // select, list, detail
+    const [step, setStep] = useState('select');
     const [filterChoices, setFilterChoices] = useState(null);
     const [selectedFilters, setSelectedFilters] = useState({
         group: '',
@@ -17,7 +17,19 @@ export default function SupplierBox() {
         execution_speed: '',
         cooperation_terms: '',
         business_form: '',
+        category: [], // YANGI - array formatda
     });
+
+    // YANGI - Sub-category filter uchun
+    const [subCategoryFilters, setSubCategoryFilters] = useState({
+        rough_materials: [],
+        finishing_materials: [],
+        upholstered_furniture: [],
+        cabinet_furniture: [],
+        technique: [],
+        decor: [],
+    });
+
     const [questionnaires, setQuestionnaires] = useState([]);
     const [loading, setLoading] = useState(false);
     const [selectedQuestionnaire, setSelectedQuestionnaire] = useState(null);
@@ -58,7 +70,15 @@ export default function SupplierBox() {
         }));
     };
 
-    const handleSearch = async () => {
+    // YANGI - Sub-category filter change handler
+    const handleSubCategoryFilterChange = (categoryKey, values) => {
+        setSubCategoryFilters(prev => ({
+            ...prev,
+            [categoryKey]: values
+        }));
+    };
+
+    const handleSearch = async (optionalSubFilters = null) => {
         try {
             setLoading(true);
             const token = localStorage.getItem('access_token');
@@ -67,15 +87,19 @@ export default function SupplierBox() {
                 return;
             }
 
+            // Agar optionalSubFilters berilgan bo'lsa, ularni ishlatish
+            const activeSubFilters = optionalSubFilters || subCategoryFilters;
+
             const params = {
                 ...selectedFilters,
+                ...activeSubFilters, // yangilangan filterlar
                 limit: limit,
                 offset: (currentPage - 1) * limit
             };
 
-            // Bo'sh filterlarni olib tashlash va comma bilan ajratilgan qiymatlarni qayta ishlash
+            // Bo'sh filterlarni olib tashlash
             Object.keys(params).forEach(key => {
-                if (!params[key]) {
+                if (!params[key] || (Array.isArray(params[key]) && params[key].length === 0)) {
                     delete params[key];
                 } else if (Array.isArray(params[key])) {
                     params[key] = params[key].join(',');
@@ -114,12 +138,13 @@ export default function SupplierBox() {
             const nextPage = currentPage + 1;
             const params = {
                 ...selectedFilters,
+                ...subCategoryFilters, // YANGI
                 limit: limit,
                 offset: nextPage * limit
             };
 
             Object.keys(params).forEach(key => {
-                if (!params[key]) {
+                if (!params[key] || (Array.isArray(params[key]) && params[key].length === 0)) {
                     delete params[key];
                 } else if (Array.isArray(params[key])) {
                     params[key] = params[key].join(',');
@@ -155,6 +180,16 @@ export default function SupplierBox() {
             execution_speed: '',
             cooperation_terms: '',
             business_form: '',
+            category: [], // YANGI
+        });
+        // YANGI - Sub-category filterlarni ham reset qilish
+        setSubCategoryFilters({
+            rough_materials: [],
+            finishing_materials: [],
+            upholstered_furniture: [],
+            cabinet_furniture: [],
+            technique: [],
+            decor: [],
         });
         setQuestionnaires([]);
         setCurrentPage(1);
@@ -216,6 +251,10 @@ export default function SupplierBox() {
                     onResetFilter={handleResetFilter}
                     loading={loading}
                     hasMore={questionnaires.length < totalCount}
+                    selectedCategories={selectedFilters.category} // YANGI
+                    subCategoryFilters={subCategoryFilters} // YANGI
+                    onSubCategoryFilterChange={handleSubCategoryFilterChange} // YANGI
+                    onApplySubFilters={handleSearch} // YANGI
                 />
             )}
             {step === 'detail' && (

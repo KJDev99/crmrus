@@ -1,5 +1,5 @@
 'use client'
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { toast } from 'react-hot-toast';
 import { RiDeleteBin6Line } from 'react-icons/ri';
@@ -34,6 +34,12 @@ export default function SupplierBox() {
         company_logo: null,
         legal_entity_card: null,
         categories: [],
+        rough_materials: [],      // YANGI
+        finishing_materials: [],  // YANGI
+        upholstered_furniture: [], // YANGI
+        cabinet_furniture: [],    // YANGI
+        technique: [],            // YANGI
+        decor: [],                // YANGI
         speed_of_execution: ''
     });
 
@@ -41,6 +47,8 @@ export default function SupplierBox() {
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [logoPreview, setLogoPreview] = useState(null);
     const [cardFileName, setCardFileName] = useState('');
+    const [subCategoryData, setSubCategoryData] = useState(null); // YANGI - API dan kelgan data
+    const [loading, setLoading] = useState(false); // YANGI - loading holati
 
     const groupOptions = [
         { value: 'designer', label: 'Дизайнер' },
@@ -94,14 +102,53 @@ export default function SupplierBox() {
     ]
     const categoryOptions = [
         {
-            value: 'Черновые материалы', label: 'Черновые материалы'
+            value: 'Черновые материалы',
+            label: 'Черновые материалы',
+            key: 'rough_materials' // YANGI
         },
-        { value: 'Чистовые материалы', label: 'Чистовые материалы' },
-        { value: 'Мягкая мебель', label: 'Мягкая мебель' },
-        { value: 'Корпусная мебель', label: 'Корпусная мебель' },
-        { value: 'Техника', label: 'Техника' },
-        { value: 'Декор', label: 'Декор' },
+        {
+            value: 'Чистовые материалы',
+            label: 'Чистовые материалы',
+            key: 'finishing_materials' // YANGI
+        },
+        {
+            value: 'Мягкая мебель',
+            label: 'Мягкая мебель',
+            key: 'upholstered_furniture' // YANGI
+        },
+        {
+            value: 'Корпусная мебель',
+            label: 'Корпусная мебель',
+            key: 'cabinet_furniture' // YANGI
+        },
+        {
+            value: 'Техника',
+            label: 'Техника',
+            key: 'technique' // YANGI
+        },
+        {
+            value: 'Декор',
+            label: 'Декор',
+            key: 'decor' // YANGI
+        },
     ]
+
+    useEffect(() => {
+        const fetchSubCategories = async () => {
+            setLoading(true);
+            try {
+                const response = await axios.get('https://api.reiting-profi.ru/api/v1/accounts/supplier-questionnaires/secondory-filter-data/');
+                setSubCategoryData(response.data);
+            } catch (error) {
+                console.error('Error fetching subcategories:', error);
+                toast.error('Ошибка при загрузке подкатегорий');
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchSubCategories();
+    }, []);
 
     const handleInputChange = (e) => {
         const { name, value, type, checked } = e.target;
@@ -134,6 +181,15 @@ export default function SupplierBox() {
             categories: prev.categories.includes(categoryValue)
                 ? prev.categories.filter(c => c !== categoryValue)
                 : [...prev.categories, categoryValue]
+        }));
+    };
+
+    const handleSubCategoryToggle = (categoryKey, subCategoryValue) => {
+        setFormData(prev => ({
+            ...prev,
+            [categoryKey]: prev[categoryKey].includes(subCategoryValue)
+                ? prev[categoryKey].filter(s => s !== subCategoryValue)
+                : [...prev[categoryKey], subCategoryValue]
         }));
     };
 
@@ -354,6 +410,22 @@ export default function SupplierBox() {
                         });
                     }
                 }
+                // else if (['rough_materials', 'finishing_materials', 'upholstered_furniture',
+                //     'cabinet_furniture', 'technique', 'decor'].includes(key)) {
+                //     if (Array.isArray(value) && value.length > 0) {
+                //         console.log(`${key}:`, value);
+                //         submitFormData.append(key, JSON.stringify(value));
+                //     }
+                // }
+                else if (['rough_materials', 'finishing_materials', 'upholstered_furniture',
+                    'cabinet_furniture', 'technique', 'decor'].includes(key)) {
+                    if (Array.isArray(value) && value.length > 0) {
+                        console.log(`Sending ${key}:`, value);
+                        value.forEach(item => {
+                            submitFormData.append(key, item);
+                        });
+                    }
+                }
                 else if (key === 'data_processing_consent') {
                     submitFormData.append(key, value.toString());
                 } else if (value !== '' && value !== null) {
@@ -367,41 +439,47 @@ export default function SupplierBox() {
                 }
             });
 
-            setShowModal(true);
+            // setShowModal(true);
             toast.success('Анкета успешно отправлена!');
 
             // Reset form
-            setFormData({
-                group: 'supplier',
-                brand_name: '',
-                email: '',
-                phone: '',
-                responsible_person: '',
-                representative_cities: [''],
-                business_form: '',
-                product_assortment: '',
-                welcome_message: '',
-                cooperation_terms: '',
-                segments: [],
-                vk: '',
-                telegram_channel: '',
-                pinterest: '',
-                instagram: '',
-                website: '',
-                other_contacts: [{ type: '', value: '' }],
-                delivery_terms: '',
-                vat_payment: '',
-                guarantees: '',
-                designer_contractor_terms: '',
-                magazine_cards: [],
-                data_processing_consent: false,
-                company_logo: null,
-                legal_entity_card: null,
-                categories: [],
-                speed_of_execution: ''
-            });
-            setLogoPreview(null);
-            setCardFileName('');
+            // setFormData({
+            //     group: 'supplier',
+            //     brand_name: '',
+            //     email: '',
+            //     phone: '',
+            //     responsible_person: '',
+            //     representative_cities: [''],
+            //     business_form: '',
+            //     product_assortment: '',
+            //     welcome_message: '',
+            //     cooperation_terms: '',
+            //     segments: [],
+            //     vk: '',
+            //     telegram_channel: '',
+            //     pinterest: '',
+            //     instagram: '',
+            //     website: '',
+            //     other_contacts: [{ type: '', value: '' }],
+            //     delivery_terms: '',
+            //     vat_payment: '',
+            //     guarantees: '',
+            //     designer_contractor_terms: '',
+            //     magazine_cards: [],
+            //     data_processing_consent: false,
+            //     company_logo: null,
+            //     legal_entity_card: null,
+            //     categories: [],
+            //     rough_materials: [],      // YANGI
+            //     finishing_materials: [],  // YANGI
+            //     upholstered_furniture: [], // YANGI
+            //     cabinet_furniture: [],    // YANGI
+            //     technique: [],            // YANGI
+            //     decor: [], // YANGI
+            //     speed_of_execution: ''
+            // });
+            // setLogoPreview(null);
+            // setCardFileName('');
         } catch (error) {
             console.error('Error submitting form:', error);
             toast.error('Ошибка при отправке анкеты. Пожалуйста, попробуйте позже.');
@@ -851,6 +929,51 @@ export default function SupplierBox() {
                                     </label>
                                 ))}
                             </div>
+
+                            {/* YANGI QISM - Sub-categories */}
+                            {loading ? (
+                                <div className="mt-4 text-center text-white/70">
+                                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-white mx-auto mb-2"></div>
+                                    <p className="text-sm">Загрузка подкатегорий...</p>
+                                </div>
+                            ) : (
+                                <div className="mt-6 space-y-6">
+                                    {categoryOptions.map(category => {
+                                        // Agar category tanlanmagan bo'lsa, sub-category ko'rsatmaydi
+                                        if (!formData.categories.includes(category.value)) return null;
+
+                                        // API dan kerakli sub-category larni olish
+                                        const subCategories = subCategoryData?.[category.key] || [];
+
+                                        // Agar sub-category lar bo'lmasa, ko'rsatmaydi
+                                        if (subCategories.length === 0) return null;
+
+                                        return (
+                                            <div key={category.key} className="bg-glass2 p-4 rounded-lg animate-fade-in">
+                                                <h3 className="text-white font-semibold mb-3 text-sm sm:text-base">
+                                                    Подкатегории для "{category.label}"
+                                                </h3>
+                                                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
+                                                    {subCategories.map((subCat, index) => (
+                                                        <label
+                                                            key={index}
+                                                            className="bg-glass1 px-3 py-2 rounded-lg cursor-pointer hover:bg-opacity-80 transition-all flex items-center gap-2"
+                                                        >
+                                                            <input
+                                                                type="checkbox"
+                                                                checked={formData[category.key].includes(subCat.name)}
+                                                                onChange={() => handleSubCategoryToggle(category.key, subCat.name)}
+                                                                className="checkbox-glass"
+                                                            />
+                                                            <span className="text-xs sm:text-sm text-white">{subCat.name}</span>
+                                                        </label>
+                                                    ))}
+                                                </div>
+                                            </div>
+                                        );
+                                    })}
+                                </div>
+                            )}
                         </div>
                         <div>
                             <label className="block text-sm font-medium mb-3 text-white">
