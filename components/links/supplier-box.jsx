@@ -438,46 +438,46 @@ export default function SupplierBox() {
                 }
             });
 
-            // setShowModal(true);
-            // toast.success('Анкета успешно отправлена!');
+            setShowModal(true);
+            toast.success('Анкета успешно отправлена!');
 
-            // setFormData({
-            //     group: 'supplier',
-            //     brand_name: '',
-            //     email: '',
-            //     phone: '',
-            //     responsible_person: '',
-            //     representative_cities: [''],
-            //     business_form: '',
-            //     product_assortment: '',
-            //     welcome_message: '',
-            //     cooperation_terms: '',
-            //     segments: [],
-            //     vk: '',
-            //     telegram_channel: '',
-            //     pinterest: '',
-            //     instagram: '',
-            //     website: '',
-            //     other_contacts: [{ type: '', value: '' }],
-            //     delivery_terms: '',
-            //     vat_payment: '',
-            //     guarantees: '',
-            //     designer_contractor_terms: '',
-            //     magazine_cards: [],
-            //     data_processing_consent: false,
-            //     company_logo: null,
-            //     legal_entity_card: null,
-            //     categories: [],
-            //     rough_materials: [],      // YANGI
-            //     finishing_materials: [],  // YANGI
-            //     upholstered_furniture: [], // YANGI
-            //     cabinet_furniture: [],    // YANGI
-            //     technique: [],            // YANGI
-            //     decor: [], // YANGI
-            //     speed_of_execution: ''
-            // });
-            // setLogoPreview(null);
-            // setCardFileName('');
+            setFormData({
+                group: 'supplier',
+                brand_name: '',
+                email: '',
+                phone: '',
+                responsible_person: '',
+                representative_cities: [''],
+                business_form: '',
+                product_assortment: '',
+                welcome_message: '',
+                cooperation_terms: '',
+                segments: [],
+                vk: '',
+                telegram_channel: '',
+                pinterest: '',
+                instagram: '',
+                website: '',
+                other_contacts: [{ type: '', value: '' }],
+                delivery_terms: '',
+                vat_payment: '',
+                guarantees: '',
+                designer_contractor_terms: '',
+                magazine_cards: [],
+                data_processing_consent: false,
+                company_logo: null,
+                legal_entity_card: null,
+                categories: [],
+                rough_materials: [],      // YANGI
+                finishing_materials: [],  // YANGI
+                upholstered_furniture: [], // YANGI
+                cabinet_furniture: [],    // YANGI
+                technique: [],            // YANGI
+                decor: [], // YANGI
+                speed_of_execution: ''
+            });
+            setLogoPreview(null);
+            setCardFileName('');
         } catch (error) {
             console.error('Error submitting form:', error);
             toast.error('Ошибка при отправке анкеты. Пожалуйста, попробуйте позже.');
