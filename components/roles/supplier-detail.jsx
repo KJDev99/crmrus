@@ -152,7 +152,7 @@ export default function SupplierDetail({ questionnaire, onBack }) {
 
             if (socialData && Array.isArray(socialData.other_contacts)) {
                 return (
-                    <div className="space-y-2">
+                    <div className="space-y-0">
                         {socialData.other_contacts.map((contactStr, index) => {
                             try {
                                 // Backenddan ' (yagona tirnoq) bilan kelayotgani uchun uni " ga almashtiramiz
@@ -306,14 +306,15 @@ export default function SupplierDetail({ questionnaire, onBack }) {
                                 <div className='space-y-2'>
                                     {getAboutValue('company_description') && (
                                         <div className='text-[#FFFFFF] px-2 py-2 border-b border-[#FFFFFF91]'>
-                                            <p className='text-[19px] uppercase'>Описание компании</p>
+                                            <p className='text-[19px] uppercase'>Описание компании: </p>
                                             {renderExpandableContent(getAboutValue('company_description'), 'company_description')}
+
                                         </div>
                                     )}
 
                                     {getAboutValue('product_assortment') && (
                                         <div className='text-[#FFFFFF] px-2 py-2 border-b border-[#FFFFFF91]'>
-                                            <p className='text-[19px] uppercase'>Ассортимент продукции</p>
+                                            <p className='text-[19px] uppercase'>Ассортимент продукции:</p>
                                             {renderExpandableContent(getAboutValue('product_assortment'), 'product_assortment')}
                                         </div>
                                     )}
@@ -338,34 +339,35 @@ export default function SupplierDetail({ questionnaire, onBack }) {
                                 <div className='space-y-2'>
                                     {getTermValue('delivery_periods') && (
                                         <div className='text-[#FFFFFF] px-2 py-2 border-b border-[#FFFFFF91]'>
-                                            <p className='text-[19px] uppercase'>Сроки поставки:</p>
-                                            {renderExpandableContent(getTermValue('delivery_periods'), 'delivery_periods')}
+                                            <p className='text-[19px] uppercase'>Сроки поставки:  {renderExpandableContent(getTermValue('delivery_periods'), 'delivery_periods')}</p>
+
                                         </div>
                                     )}
 
                                     {getTermValue('vat_payment') && (
                                         <div className='text-[#FFFFFF] px-2 py-2 border-b border-[#FFFFFF91]'>
-                                            <p className='text-[19px] uppercase'>НДС:</p> {getTermValue('vat_payment')}
+                                            <p className='text-[19px] uppercase'>НДС:  {getTermValue('vat_payment')}</p>
                                         </div>
                                     )}
 
                                     {getTermValue('guarantees') && (
                                         <div className='text-[#FFFFFF] px-2 py-2 border-b border-[#FFFFFF91]'>
-                                            <p className='text-[19px] uppercase'>Гарантии:</p>
-                                            {renderExpandableContent(getTermValue('guarantees'), 'guarantees')}
+                                            <p className='text-[19px] uppercase'>Гарантии:  {renderExpandableContent(getTermValue('guarantees'), 'guarantees')}</p>
+
                                         </div>
                                     )}
 
                                     {getTermValue('magazine_cards') && (
                                         <div className='text-[#FFFFFF] px-2 py-2 border-b border-[#FFFFFF91]'>
-                                            <p className='text-[19px] uppercase'>Карточки журнала:</p> {getTermValue('magazine_cards')}
+                                            <p className='text-[19px] uppercase'>Карточки журнала: {getTermValue('magazine_cards')}</p>
                                         </div>
                                     )}
 
                                     {getTermValue('designer_contractor_terms') && (
                                         <div className='text-[#FFFFFF] px-2 py-2 border-b border-[#FFFFFF91]'>
-                                            <p className='text-[19px] uppercase'>Условия для дизайнеров и прорабов:</p>
+                                            <p className='text-[19px] uppercase'>Условия для дизайнеров и прорабов:  </p>
                                             {renderExpandableContent(getTermValue('designer_contractor_terms'), 'designer_contractor_terms')}
+
                                         </div>
                                     )}
 
@@ -376,7 +378,7 @@ export default function SupplierDetail({ questionnaire, onBack }) {
                                             onClick={() => setShowReviewForm(!showReviewForm)}
                                         >
                                             <h3 className='text-[19px] uppercase'>ОТЗЫВЫ:</h3>
-                                            <div className='flex items-center gap-x-5'>
+                                            <div className='flex items-center gap-x-5 lowercase'>
                                                 <p>
                                                     <span className='text-yellow-400'>★</span> Положительных: {questionnaire.rating_count?.positive || 0}
                                                 </p>
