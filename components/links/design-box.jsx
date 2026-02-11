@@ -1029,8 +1029,11 @@ export default function DesignBox() {
                         </div>
                         <div>
                             <label className="block text-sm font-medium mb-2 text-white">
-                                Выберите категорий <span className="text-red-400">*</span>
+                                Специализация <span className="text-red-400">*</span>
                             </label>
+                            <p className="text-white/50 text-xs mb-3 italic">
+                                Отметьте категории продукции, с которыми вы реально работаете. По этим параметрам дизайнеры смогут находить вас в поиске.
+                            </p>
                             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
                                 {categoryOptions.map(option => (
                                     <label

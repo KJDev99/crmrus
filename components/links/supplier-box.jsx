@@ -439,7 +439,7 @@ export default function SupplierBox() {
                 }
             });
 
-            // setShowModal(true);
+            setShowModal(true);
             toast.success('Анкета успешно отправлена!');
 
             // Reset form
@@ -911,8 +911,10 @@ export default function SupplierBox() {
                         </div>
                         <div>
                             <label className="block text-sm font-medium mb-2 text-white">
-                                Выберите категории <span className="text-red-400">*</span>
+                                Специализация <span className="text-red-400">*</span>
                             </label>
+                            <p className="text-white/60 text-sm mb-2">
+                                Отметьте категории продукции, с которыми вы реально работаете. По этим параметрам дизайнеры смогут находить вас в поиске.</p>
                             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
                                 {categoryOptions.map(option => (
                                     <label
