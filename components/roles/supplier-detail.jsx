@@ -164,13 +164,7 @@ export default function SupplierDetail({ questionnaire, onBack }) {
                                         <span className="font-bold uppercase text-xs  px-px rounded">
                                             {contact.type}:
                                         </span>
-                                        {contact.type === 'telegram' || contact.value.startsWith('http') ? (
-                                            <a href={contact.value} target="_blank" rel="noreferrer" className="underline hover:text-blue-300">
-                                                {contact.value}
-                                            </a>
-                                        ) : (
-                                            <span>{contact.value}</span>
-                                        )}
+                                        <span>{contact.value}</span>
                                     </div>
                                 );
                             } catch (e) {

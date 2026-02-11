@@ -110,7 +110,7 @@ export default function UserInfoBox() {
     if (loading) {
         return (
             <div className="min-h-screen flex items-center justify-center bg-[#122161]">
-                <BiLoaderAlt className="animate-spin text-[#D7B706]" size={64} />
+                <BiLoaderAlt className="animate-spin text-[#FFFFFF]" size={64} />
             </div>
         );
     }
@@ -134,24 +134,24 @@ export default function UserInfoBox() {
                 <div className="md:w-30"></div>
             </div>
 
-            <div className="max-w-xl mx-auto space-y-6">
+            <div className="max-w-xl mx-auto space-y-2">
                 {/* Top Info Section */}
-                <div className="flex mb-6">
+                <div className="flex mb-0">
                     <div className='w-[125px] h-[100px] flex-shrink-0 bg-white/10 rounded-lg overflow-hidden border border-white/20'>
                         {getAvatar() ? (
                             <img src={getAvatar()} alt="avatar" className="w-full h-full object-cover" />
                         ) : (
-                            <div className="w-full h-full flex items-center justify-center text-3xl font-bold bg-[#D7B706]/20">
+                            <div className="w-full h-full flex items-center justify-center text-3xl font-bold bg-[#FFFFFF]/20">
                                 {getName().charAt(0)}
                             </div>
                         )}
                     </div>
-                    <div className="flex flex-col border-b border-white/40 pl-6 ml-4 flex-grow relative pb-2">
-                        <h2 className='text-[22px] font-normal leading-tight'>
+                    <div className="flex flex-col border-b border-b-[#FFFFFF91] pl-12 ml-[-16px] flex-grow relative">
+                        <h2 className='mb-0.5 text-[#FFFFFF] text-[25px] line-clamp-1'>
                             {getName()}
                         </h2>
-                        <div className='w-full h-[1px] bg-white/30 my-1'></div>
-                        <p className='text-sm opacity-80'>
+                        <div className='w-[calc(100% + 32px)] h-0.25 bg-[#FFFFFF4F]  ml-[-32px]'></div>
+                        <p className='text-[#FFFFFF] text-sm mt-1'>
                             Сегменты: {questionnaire.segments?.join(', ') || 'Не указаны'}
                         </p>
                         <div className="absolute bottom-1 right-1">
@@ -161,29 +161,35 @@ export default function UserInfoBox() {
                 </div>
 
                 {/* Tabs */}
-                <div>
-                    <div className='flex border-b border-white/40'>
+                <div >
+                    <div className='flex border-b border-[#FFFFFF91]'>
                         <button
                             onClick={() => setActiveTab('company')}
-                            className={`flex-1 py-3 text-center transition-all ${activeTab === 'company' ? 'border-b-2 border-white font-semibold' : 'opacity-60'}`}
+                            className={`px-4 py-2 text-center text-[19px] text-[#FFFFFF] transition-all border-r ${activeTab === 'company'
+                                ? ''
+                                : 'opacity-60'
+                                }`}
                         >
                             О компании
                         </button>
                         <button
                             onClick={() => setActiveTab('cooperation')}
-                            className={`flex-1 py-3 text-center transition-all ${activeTab === 'cooperation' ? 'border-b-2 border-white font-semibold' : 'opacity-60'}`}
+                            className={`flex-1 py-2 text-center text-[19px] text-[#FFFFFF] transition-all  ${activeTab === 'cooperation'
+                                ? ''
+                                : 'opacity-60'
+                                }`}
                         >
-                            Условия
+                            Условия сотрудничества
                         </button>
                     </div>
 
                     {/* Tab Content */}
-                    <div className='mt-6 space-y-4'>
+                    <div className='mt-4 space-y-2'>
                         {activeTab === 'company' ? (
                             <div className='space-y-4'>
                                 {getDescription() && (
                                     <div className='border-b border-white/20 pb-4'>
-                                        <strong className="block text-[#D7B706] mb-1">Описание / УТП:</strong>
+                                        <p className="text-[19px] uppercase">Описание / УТП:</p>
                                         <div className="text-sm leading-relaxed">
                                             {renderExpandableContent(getDescription(), 'desc')}
                                         </div>
@@ -192,10 +198,10 @@ export default function UserInfoBox() {
 
                                 {questionnaire.services && questionnaire.services.length > 0 && (
                                     <div className='border-b border-white/20 pb-4'>
-                                        <strong className="block text-[#D7B706] mb-1">Услуги:</strong>
+                                        <p className="text-[19px] uppercase">Услуги:</p>
                                         <div className="flex flex-wrap gap-2 mt-2">
                                             {questionnaire.services.map((s, i) => (
-                                                <span key={i} className="bg-white/10 px-3 py-1 rounded-full text-xs border border-white/20">{s}</span>
+                                                <span key={i} className=" text-sm ">{s},</span>
                                             ))}
                                         </div>
                                     </div>
@@ -203,7 +209,7 @@ export default function UserInfoBox() {
 
                                 {getServicePackages() && (
                                     <div className='border-b border-white/20 pb-4'>
-                                        <strong className="block text-[#D7B706] mb-1">Пакеты / Сроки / Ассортимент:</strong>
+                                        <p className="text-[19px] uppercase">Пакеты / Сроки / Ассортимент:</p>
                                         <div className="text-sm whitespace-pre-line">
                                             {renderExpandableContent(getServicePackages(), 'packages')}
                                         </div>
@@ -213,13 +219,13 @@ export default function UserInfoBox() {
                         ) : (
                             <div className='space-y-4'>
                                 <div className='border-b border-white/20 pb-4'>
-                                    <strong className="block text-[#D7B706] mb-1">НДС:</strong>
+                                    <p className="text-[19px] uppercase">НДС:</p>
                                     <p className="text-sm">{questionnaire.vat_payment_display || (questionnaire.vat_payment === 'yes' ? 'Да' : 'Нет')}</p>
                                 </div>
 
                                 {getCooperationTerms() && (
                                     <div className='border-b border-white/20 pb-4'>
-                                        <strong className="block text-[#D7B706] mb-1">Условия сотрудничества:</strong>
+                                        <p className="text-[19px] uppercase">Условия сотрудничества:</p>
                                         <div className="text-sm leading-relaxed">
                                             {renderExpandableContent(getCooperationTerms(), 'coop')}
                                         </div>
@@ -228,7 +234,7 @@ export default function UserInfoBox() {
 
                                 {questionnaire.guarantees && (
                                     <div className='border-b border-white/20 pb-4'>
-                                        <strong className="block text-[#D7B706] mb-1">Гарантии:</strong>
+                                        <p className="text-[19px] uppercase">Гарантии:</p>
                                         <p className="text-sm">{questionnaire.guarantees}</p>
                                     </div>
                                 )}
@@ -238,7 +244,7 @@ export default function UserInfoBox() {
                 </div>
 
                 {/* Rating Stats */}
-                <div className='mt-8 pt-6 border-t border-white/40'>
+                <div className=''>
                     <div className='flex items-center gap-x-4 mb-4'>
                         <h3 className='text-lg font-semibold'>РЕЙТИНГ:</h3>
                         <div className='flex gap-x-6'>

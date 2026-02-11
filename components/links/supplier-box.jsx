@@ -396,11 +396,10 @@ export default function SupplierBox() {
                     const filteredValues = value.filter(v => v.trim() !== '');
                     if (filteredValues.length > 0) submitFormData.append(key, JSON.stringify(filteredValues));
                 } else if (key === 'other_contacts') {
-                    // ✅ Yangi format: { type: 'vk', value: 'https://...' }
                     const filteredContacts = value.filter(c => c.type && c.value.trim() !== '');
-                    if (filteredContacts.length > 0) {
-                        submitFormData.append(key, JSON.stringify(filteredContacts));
-                    }
+                    filteredContacts.forEach(contact => {  // ✅ TO'G'RI
+                        submitFormData.append(key, JSON.stringify(contact));
+                    });
                 } else if (['segments', 'magazine_cards'].includes(key)) {
                     if (value.length > 0) submitFormData.append(key, JSON.stringify(value));
                 } else if (['categories'].includes(key)) {
@@ -439,47 +438,46 @@ export default function SupplierBox() {
                 }
             });
 
-            setShowModal(true);
-            toast.success('Анкета успешно отправлена!');
+            // setShowModal(true);
+            // toast.success('Анкета успешно отправлена!');
 
-            // Reset form
-            setFormData({
-                group: 'supplier',
-                brand_name: '',
-                email: '',
-                phone: '',
-                responsible_person: '',
-                representative_cities: [''],
-                business_form: '',
-                product_assortment: '',
-                welcome_message: '',
-                cooperation_terms: '',
-                segments: [],
-                vk: '',
-                telegram_channel: '',
-                pinterest: '',
-                instagram: '',
-                website: '',
-                other_contacts: [{ type: '', value: '' }],
-                delivery_terms: '',
-                vat_payment: '',
-                guarantees: '',
-                designer_contractor_terms: '',
-                magazine_cards: [],
-                data_processing_consent: false,
-                company_logo: null,
-                legal_entity_card: null,
-                categories: [],
-                rough_materials: [],      // YANGI
-                finishing_materials: [],  // YANGI
-                upholstered_furniture: [], // YANGI
-                cabinet_furniture: [],    // YANGI
-                technique: [],            // YANGI
-                decor: [], // YANGI
-                speed_of_execution: ''
-            });
-            setLogoPreview(null);
-            setCardFileName('');
+            // setFormData({
+            //     group: 'supplier',
+            //     brand_name: '',
+            //     email: '',
+            //     phone: '',
+            //     responsible_person: '',
+            //     representative_cities: [''],
+            //     business_form: '',
+            //     product_assortment: '',
+            //     welcome_message: '',
+            //     cooperation_terms: '',
+            //     segments: [],
+            //     vk: '',
+            //     telegram_channel: '',
+            //     pinterest: '',
+            //     instagram: '',
+            //     website: '',
+            //     other_contacts: [{ type: '', value: '' }],
+            //     delivery_terms: '',
+            //     vat_payment: '',
+            //     guarantees: '',
+            //     designer_contractor_terms: '',
+            //     magazine_cards: [],
+            //     data_processing_consent: false,
+            //     company_logo: null,
+            //     legal_entity_card: null,
+            //     categories: [],
+            //     rough_materials: [],      // YANGI
+            //     finishing_materials: [],  // YANGI
+            //     upholstered_furniture: [], // YANGI
+            //     cabinet_furniture: [],    // YANGI
+            //     technique: [],            // YANGI
+            //     decor: [], // YANGI
+            //     speed_of_execution: ''
+            // });
+            // setLogoPreview(null);
+            // setCardFileName('');
         } catch (error) {
             console.error('Error submitting form:', error);
             toast.error('Ошибка при отправке анкеты. Пожалуйста, попробуйте позже.');
