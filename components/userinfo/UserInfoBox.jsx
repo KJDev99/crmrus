@@ -189,53 +189,53 @@ export default function UserInfoBox() {
                             <div className='space-y-4'>
                                 {getDescription() && (
                                     <div className='border-b border-white/20 pb-4'>
-                                        <p className="text-[19px] uppercase">Описание / УТП:</p>
-                                        <div className="text-sm leading-relaxed">
+                                        <span className="text-[19px] uppercase">Описание / УТП: &nbsp;</span>
+                                        <span className="text-sm leading-[100%]">
                                             {renderExpandableContent(getDescription(), 'desc')}
-                                        </div>
+                                        </span>
                                     </div>
                                 )}
 
                                 {questionnaire.services && questionnaire.services.length > 0 && (
                                     <div className='border-b border-white/20 pb-4'>
-                                        <p className="text-[19px] uppercase">Услуги:</p>
-                                        <div className="flex flex-wrap gap-2 mt-2">
+                                        <span className="text-[19px] uppercase">Услуги: &nbsp;</span>
+                                        <span className="flex flex-wrap gap-2 mt-2 leading-[100%]">
                                             {questionnaire.services.map((s, i) => (
                                                 <span key={i} className=" text-sm ">{s},</span>
                                             ))}
-                                        </div>
+                                        </span>
                                     </div>
                                 )}
 
                                 {getServicePackages() && (
                                     <div className='border-b border-white/20 pb-4'>
-                                        <p className="text-[19px] uppercase">Пакеты / Сроки / Ассортимент:</p>
-                                        <div className="text-sm whitespace-pre-line">
+                                        <span className="text-[19px] uppercase">Пакеты / Сроки / Ассортимент: &nbsp;</span>
+                                        <span className="text-sm whitespace-pre-line leading-[100%]">
                                             {renderExpandableContent(getServicePackages(), 'packages')}
-                                        </div>
+                                        </span>
                                     </div>
                                 )}
                             </div>
                         ) : (
                             <div className='space-y-4'>
                                 <div className='border-b border-white/20 pb-4'>
-                                    <p className="text-[19px] uppercase">НДС:</p>
-                                    <p className="text-sm">{questionnaire.vat_payment_display || (questionnaire.vat_payment === 'yes' ? 'Да' : 'Нет')}</p>
+                                    <span className="text-[19px] uppercase">НДС: &nbsp;</span>
+                                    <span className="text-sm leading-[100%]">{questionnaire.vat_payment_display || (questionnaire.vat_payment === 'yes' ? 'Да' : 'Нет')}</span>
                                 </div>
 
                                 {getCooperationTerms() && (
                                     <div className='border-b border-white/20 pb-4'>
-                                        <p className="text-[19px] uppercase">Условия сотрудничества:</p>
-                                        <div className="text-sm leading-relaxed">
+                                        <span className="text-[19px] uppercase">Условия сотрудничества: &nbsp;</span>
+                                        <span className="text-sm leading-[100%]">
                                             {renderExpandableContent(getCooperationTerms(), 'coop')}
-                                        </div>
+                                        </span>
                                     </div>
                                 )}
 
                                 {questionnaire.guarantees && (
                                     <div className='border-b border-white/20 pb-4'>
-                                        <p className="text-[19px] uppercase">Гарантии:</p>
-                                        <p className="text-sm">{questionnaire.guarantees}</p>
+                                        <span className="text-[19px] uppercase">Гарантии:&nbsp;</span>
+                                        <span className="text-sm leading-[100%]">{questionnaire.guarantees}</span>
                                     </div>
                                 )}
                             </div>
