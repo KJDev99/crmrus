@@ -194,8 +194,8 @@ export default function HomeRestriction() {
       </div>
 
       <div className="relative w-full max-w-[1200px] mx-auto mt-10 sm:mt-[79px] mb-12 sm:mb-[64px] flex justify-center px-4 sm:px-0">
-        <div className="text-center text-white space-y-3 sm:space-y-4">
-          <Link href={'/events'} className="font-normal text-sm sm:text-[20px] leading-[100%] tracking-[0%] text-center uppercase hover:underline hover:cursor-pointer block underline">
+        <div className="text-center text-white ">
+          <Link href={'/events'} className="font-normal text-sm sm:text-[20px] leading-[100%] tracking-[0%] text-center uppercase hover:underline hover:cursor-pointer block underline mb-[30px]">
             Ближайшие мероприятия
           </Link>
 
@@ -211,11 +211,13 @@ export default function HomeRestriction() {
             <a target='_blank' className='underline pb-1' href='https://reiting-profi-info.taplink.ws/p/1078773/'>  ПОЛИТИКА КОНФИДЕНЦИАЛЬНОСТИ</a>
           </p>
         </div>
-        <Link href={'/userinfo'}>
-          <div className="absolute right-2 sm:right-0 top-1/2 -translate-y-1/2 text-white text-3xl sm:text-[50px] hidden sm:block">
-            ★
-          </div>
-        </Link>
+        <div className="absolute bottom-20 right-0">
+          <Link href={'/userinfo'}>
+            <div className="absolute right-2 sm:right-0 top-1/2 -translate-y-1/2 text-white text-3xl sm:text-[50px] hidden sm:block">
+              ★
+            </div>
+          </Link>
+        </div>
       </div>
     </div>
   )

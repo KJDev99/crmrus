@@ -171,7 +171,7 @@ export default function DesignItem({
                     </div>
                 </div>
             </div>
-            <div className="fixed bottom-20 right-20">
+            <div className="absolute bottom-20 right-0">
                 <Link href={'/userinfo'}>
                     <div className="absolute right-2 sm:right-0 top-1/2 -translate-y-1/2 text-white text-3xl sm:text-[50px] hidden sm:block">
                         ★

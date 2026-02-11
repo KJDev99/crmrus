@@ -76,7 +76,7 @@ export default function Calendar({ setStep, selectedCity, onDateSelect }) {
   const renderDays = () => {
     const days = ["ПН", "ВТ", "СР", "ЧТ", "ПТ", "СБ", "ВС"]
     return (
-      <div className="grid grid-cols-7 text-white/60 text-lg text-center mb-4 max-w-md mx-auto w-full">
+      <div className="grid grid-cols-7 text-white text-lg text-center mb-4 max-w-md mx-auto w-full">
         {days.map((day) => (
           <div key={day} className="py-1 flex justify-center items-center">
             {day}
@@ -122,16 +122,16 @@ export default function Calendar({ setStep, selectedCity, onDateSelect }) {
                 ${isCurrentMonth ? "opacity-100" : "opacity-0"}
                 transition-all duration-200
                 calc_style
-                ${hasEvent ? 'cursor-pointer hover:scale-105' : 'cursor-default'}
-                ${hasEvent ? 'bg-yellow-500/20' : ''}
+                ${hasEvent ? 'cursor-pointer' : 'cursor-default'}
+                ${hasEvent ? 'bg-[#D7B706]' : ''}
               `}
               disabled={!hasEvent || !isCurrentMonth}
             >
               {hasEvent && (
-                <div className="absolute inset-0 rounded-[18px] bg-yellow-400/80 shadow-[0_8px_25px_rgba(250,204,21,0.5)]" />
+                <div className="absolute inset-0 rounded-[18px] bg-[#D7B706] shadow-[0_8px_25px_rgba(250,204,21,0.5)]" />
               )}
               {isCurrentMonth && (
-                <span className={`relative z-10 text-xl font-medium ${hasEvent ? 'text-yellow-300' : 'text-white'
+                <span className={`relative z-10 text-xl font-medium ${hasEvent ? 'text-[white]' : 'text-white'
                   }`}>
                   {dayNumber}
                 </span>
@@ -167,8 +167,8 @@ export default function Calendar({ setStep, selectedCity, onDateSelect }) {
         >
           <IoIosArrowBack size={40} />
         </button>
-        <div className="flex items-center gap-2 text-white text-2xl font-medium uppercase tracking-wider min-w-[180px] text-center">
-          <MdCalendarToday size={24} />
+        <div className="flex items-center gap-2 text-white text-[24px] font-normal uppercase tracking-wider min-w-[180px] text-center">
+          {/* <MdCalendarToday size={24} /> */}
           {`${monthName.toUpperCase()} ${year}`}
         </div>
         <button
@@ -182,39 +182,42 @@ export default function Calendar({ setStep, selectedCity, onDateSelect }) {
   }
 
   return (
-    <div className="min-h-screen flex flex-col items-center">
-      <div className="text-white flex justify-between items-center mt-[0px] w-full">
-        <button onClick={() => setStep(0)} className="cursor-pointer">
-          <IoIosArrowBack size={40} />
-        </button>
-        <img src="/icons/logo.svg" alt="logo" className='max-md:w-20 w-50' />
-        <div className="text-white text-lg">{selectedCity}</div>
-      </div>
+    <div className="max-w-7xl mx-auto relative">
 
-      <div className="w-full max-w-md px-4">
-        <p className="font-normal text-white text-[20px] leading-[100%] tracking-[0%] text-center uppercase underline hover:cursor-pointer mb-4">
-          Ближайшие мероприятия
-        </p>
-        {loading ? (
-          <div className="text-center text-white py-10">
-            <p>Загрузка...</p>
-          </div>
-        ) : (
-          <>
-            {renderDays()}
-            {renderCells()}
-          </>
-        )}
-      </div>
+      <div className="min-h-screen  flex flex-col items-center">
+        <div className="text-white flex justify-between items-center mt-[0px] w-full">
+          <button onClick={() => setStep(0)} className="cursor-pointer">
+            <IoIosArrowBack size={40} />
+          </button>
+          <img src="/icons/logo.svg" alt="logo" className='max-md:w-20 w-50' />
+          <div className="text-white text-lg"></div>
+        </div>
 
-      {renderMonthNavigation()}
+        <div className="w-full max-w-md px-4">
+          <p className="font-normal text-white uppercase text-[24px] leading-[100%] tracking-[0%] text-center hover:cursor-pointer border-b border-[#FFFFFF91] w-max mx-auto pb-1 mb-8">
+            Ближайшие мероприятия
+          </p>
+          {loading ? (
+            <div className="text-center text-white py-10">
+              <p>Загрузка...</p>
+            </div>
+          ) : (
+            <>
+              {renderDays()}
+              {renderCells()}
+            </>
+          )}
+        </div>
 
-      <div className="relative w-full max-w-[1200px] mx-auto mb-[64px] flex justify-center">
-        <Link href={'/userinfo'}>
-          <div className="absolute right-2 sm:right-0 top-1/2 -translate-y-1/2 text-white text-3xl sm:text-[50px] hidden sm:block">
-            ★
-          </div>
-        </Link>
+        {renderMonthNavigation()}
+
+        <div className="absolute bottom-20 right-0">
+          <Link href={'/userinfo'}>
+            <div className="absolute right-2 sm:right-0 top-1/2 -translate-y-1/2 text-white text-3xl sm:text-[50px] hidden sm:block">
+              ★
+            </div>
+          </Link>
+        </div>
       </div>
     </div>
   )

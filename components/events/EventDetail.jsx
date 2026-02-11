@@ -109,7 +109,7 @@ export default function EventDetail({ setStep, selectedEvent }) {
     }
 
     return (
-        <div>
+        <div className='relative max-w-7xl mx-auto'>
             <div className="text-white flex justify-between items-center mt-[0px]">
                 <button onClick={() => setStep(2)} className="cursor-pointer md:w-30">
                     <IoIosArrowBack size={40} />
@@ -139,11 +139,11 @@ export default function EventDetail({ setStep, selectedEvent }) {
                             )}
                         </div>
                         <div className="flex flex-col border-b border-b-[#FFFFFF91]  pl-12 ml-[-16px] flex-grow">
-                            <h2 className='mb-0.5 text-[#FFFFFF] text-[25px]'>
+                            <h2 className='mb-0.5 text-[#FFFFFF] text-[25px] capitalize'>
                                 {eventDetail.organization_name || 'Название организации'}
                             </h2>
                             <div className='w-[calc(100% + 32px)] h-0.25 bg-[#FFFFFF4F]  ml-[-32px]'></div>
-                            <p className='text-[#B79F15] uppercase text-sm leading-[100%] mt-3 line-clamp-1'>
+                            <p className='text-[#B79F15] uppercase text-sm leading-[100%] mt-5 line-clamp-1 text-center'>
                                 {eventDetail.event_type_display || 'МЕРОПРИЯТИЕ'}
                             </p>
                         </div>
@@ -161,7 +161,7 @@ export default function EventDetail({ setStep, selectedEvent }) {
 
                     {eventDetail.announcement && (
                         <>
-                            <h2 className='mt-4 mb-1 text-center text-lg text-[#FFFFFF] '>Описание мероприятия</h2>
+                            <h2 className='mt-4 mb-1  text-lg text-[#FFFFFF] '>Описание мероприятия:</h2>
                             <div className='text-lg text-[#FFFFFF] border-b'>
                                 {eventDetail.announcement}
                             </div>
@@ -170,23 +170,23 @@ export default function EventDetail({ setStep, selectedEvent }) {
 
                     {eventDetail.about_event && (
                         <>
-                            <h2 className='mt-4 mb-1 text-center text-lg text-[#FFFFFF]'>О мероприятии</h2>
+                            <h2 className='mt-4 mb-1  text-lg text-[#FFFFFF]'>О мероприятии:</h2>
                             <div className='text-lg text-[#FFFFFF] border-b'>
                                 {eventDetail.about_event}
                             </div>
                         </>
                     )}
 
-                    <div className='mt-6 text-[#FFFFFF] px-2 py-2 text-sm opacity-80'>
+                    {/* <div className='mt-6 text-[#FFFFFF] px-2 py-2 text-sm opacity-80'>
                         <p>Статус: {eventDetail.status_display || 'Не указан'}</p>
                         {eventDetail.created_at && (
                             <p>Создано: {new Date(eventDetail.created_at).toLocaleDateString('ru-RU')}</p>
                         )}
-                    </div>
+                    </div> */}
                 </div>
             </div>
 
-            <div className="relative w-full max-w-[1200px] mx-auto mt-[79px] mb-[64px] flex justify-center">
+            <div className="absolute bottom-20 right-0">
                 <Link href={'/userinfo'}>
                     <div className="absolute right-2 sm:right-0 top-1/2 -translate-y-1/2 text-white text-3xl sm:text-[50px] hidden sm:block">
                         ★

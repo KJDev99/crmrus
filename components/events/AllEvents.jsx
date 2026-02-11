@@ -50,7 +50,7 @@ export default function AllEvents({ setStep, selectedCity, selectedDate, onEvent
     const formatDate = (dateString) => {
         try {
             const date = parseISO(dateString)
-            return format(date, 'dd MMMM yyyy', { locale: ru })
+            return format(date, 'dd MMMM', { locale: ru })
         } catch (error) {
             return dateString
         }
@@ -66,7 +66,7 @@ export default function AllEvents({ setStep, selectedCity, selectedDate, onEvent
     }
 
     return (
-        <div className='relative'>
+        <div className='relative min-h-screen'>
             <div className="text-white flex justify-between items-center mt-[0px]">
                 <button onClick={() => setStep(1)} className="cursor-pointer md:w-30">
                     <IoIosArrowBack size={40} />
@@ -76,7 +76,7 @@ export default function AllEvents({ setStep, selectedCity, selectedDate, onEvent
             </div>
 
             <div className='mt-[0]'>
-                <p className="font-normal text-[#B79F15] text-[24px] mb-14 leading-[100%] tracking-[0%] text-center uppercase underline hover:cursor-pointer">
+                <p className="font-normal text-[#B79F15] uppercase text-[24px] leading-[100%] tracking-[0%] text-center hover:cursor-pointer border-b  border-[#B79F15] w-max mx-auto pb-1 mb-8">
                     {formatDate(selectedDate)}
                 </p>
 
@@ -115,7 +115,7 @@ export default function AllEvents({ setStep, selectedCity, selectedDate, onEvent
                                     <h2 className='mb-[-8px] text-[#FFFFFF] text-[22px] line-clamp-1'>
                                         {event.organization_name || 'Название организации'}
                                     </h2>
-                                    <p className='text-[#FFFFFF] text-sm max-md:text-xs line-clamp-1 mb-2'>
+                                    <p className='text-[#FFFFFF] text-sm max-md:text-xs line-clamp-1 mb-2 grow'>
                                         {event.city || ''} {event.event_location ? `, ${event.event_location}` : ''}
                                     </p>
 
@@ -132,11 +132,13 @@ export default function AllEvents({ setStep, selectedCity, selectedDate, onEvent
                 )}
             </div>
 
-            <Link href={'/userinfo'}>
-                <div className="fixed right-20  bottom-20 text-white text-3xl sm:text-[50px] hidden sm:block">
-                    ★
-                </div>
-            </Link>
+            <div className="absolute bottom-20 right-0">
+                <Link href={'/userinfo'}>
+                    <div className="absolute right-2 sm:right-0 top-1/2 -translate-y-1/2 text-white text-3xl sm:text-[50px] hidden sm:block">
+                        ★
+                    </div>
+                </Link>
+            </div>
         </div>
     )
 }

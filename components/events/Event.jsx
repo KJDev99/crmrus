@@ -69,7 +69,7 @@ export default function Event({ setStep, eventsData, onCitySelect }) {
     }
 
     return (
-        <div className='relative'>
+        <div className='relative min-h-screen'>
             <div className="text-white flex justify-between items-center mt-[0px]">
                 <Link href={'/role'} className="cursor-pointer md:w-30">
                     <IoIosArrowBack size={40} />
@@ -79,7 +79,7 @@ export default function Event({ setStep, eventsData, onCitySelect }) {
             </div>
 
             <div className='text-center mt-[0]'>
-                <p className="font-normal text-white text-[20px] leading-[100%] tracking-[0%] text-center uppercase underline hover:cursor-pointer">
+                <p className="font-normal text-white uppercase text-[24px] leading-[100%] tracking-[0%] text-center hover:cursor-pointer border-b border-[#FFFFFF91] w-max mx-auto pb-1">
                     Ближайшие мероприятия
                 </p>
 
@@ -91,9 +91,9 @@ export default function Event({ setStep, eventsData, onCitySelect }) {
                             className={`
                 w-80 md:w-120 h-[60px] md:h-[80px]
                 rounded-2xl transition-all duration-200
-                bg-glass2 text-white hover:bg-white/40
-                text-[20px] md:text-[26px] font-medium
-                flex items-center justify-center 
+                bg-glass3 text-white 
+                text-[20px] md:text-[26px] font-normal
+                flex items-center justify-start px-7 
               `}
                         >
                             {loading ? 'Загрузка...' : 'Выберете город'}
@@ -105,7 +105,7 @@ export default function Event({ setStep, eventsData, onCitySelect }) {
                                     <button
                                         key={city}
                                         onClick={() => handleCitySelect(city)}
-                                        className="w-full text-left px-5 py-4 text-white hover:bg-white/20 transition-all text-lg"
+                                        className="w-full text-left px-5 py-4 text-white  transition-all text-lg capitalize"
                                     >
                                         {city}
                                     </button>
@@ -116,7 +116,7 @@ export default function Event({ setStep, eventsData, onCitySelect }) {
                 </div>
             </div>
 
-            <div className="relative w-full max-w-[1200px] mx-auto mt-[79px] mb-[64px] flex justify-center">
+            <div className="absolute bottom-20 right-0">
                 <Link href={'/userinfo'}>
                     <div className="absolute right-2 sm:right-0 top-1/2 -translate-y-1/2 text-white text-3xl sm:text-[50px] hidden sm:block">
                         ★

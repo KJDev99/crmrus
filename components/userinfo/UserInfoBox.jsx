@@ -137,7 +137,7 @@ export default function UserInfoBox() {
             <div className="max-w-xl mx-auto space-y-2">
                 {/* Top Info Section */}
                 <div className="flex mb-0">
-                    <div className='w-[125px] h-[100px] flex-shrink-0 bg-white/10 rounded-lg overflow-hidden border border-white/20'>
+                    <div className='w-[125px] h-[100px] flex-shrink-0 bg-white/10 rounded-[20px] overflow-hidden border border-white/20'>
                         {getAvatar() ? (
                             <img src={getAvatar()} alt="avatar" className="w-full h-full object-cover" />
                         ) : (
