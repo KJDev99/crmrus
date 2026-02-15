@@ -1,5 +1,5 @@
 // forms/SupplierEditForm.jsx
-import React, { useState, useRef } from 'react'
+import React, { useState, useRef, useEffect } from 'react'
 import { FiSave, FiX, FiUpload, FiPlus, FiTrash2 } from 'react-icons/fi'
 
 const businessFormOptions = [
@@ -31,6 +31,16 @@ const speedOptions = [
     { value: 'до 1 месяца', label: 'до 1 месяца' },
     { value: 'до 3x месяцев', label: 'до 3x месяцев' },
 ]
+
+// ✅ YANGI: Category mapping for subcategories
+const categoryMapping = {
+    'Черновые материалы': 'rough_materials',
+    'Чистовые материалы': 'finishing_materials',
+    'Мягкая мебель': 'upholstered_furniture',
+    'Корпусная мебель': 'cabinet_furniture',
+    'Техника': 'technique',
+    'Декор': 'decor'
+}
 const categoryOptions = [
     { value: 'Основные категории', label: 'Основные категории' },
     {
@@ -52,6 +62,7 @@ const contactTypeOptions = [
     { value: 'website', label: 'Website', placeholder: 'https://example.com' },
     { value: 'other', label: 'Другое', placeholder: 'Введите контакт' }
 ]
+
 
 export default function SupplierEditForm({ data, onChange, onSave, onCancel, saving }) {
     // ✅ YANGI: other_contacts ni to'g'ri parse qilish
@@ -99,10 +110,21 @@ export default function SupplierEditForm({ data, onChange, onSave, onCancel, sav
 
         return [{ type: '', value: '' }]
     }
+    const [subCategoryData, setSubCategoryData] = useState(null)
+    const [loadingSubCategories, setLoadingSubCategories] = useState(false)
 
     const [localData, setLocalData] = useState({
         ...data,
-        other_contacts: parseOtherContacts(data?.other_contacts)
+        other_contacts: parseOtherContacts(data?.other_contacts),
+        speed_of_execution: Array.isArray(data?.speed_of_execution)
+            ? data.speed_of_execution
+            : (data?.speed_of_execution ? [data.speed_of_execution] : []),
+        rough_materials: data?.rough_materials || [],
+        finishing_materials: data?.finishing_materials || [],
+        upholstered_furniture: data?.upholstered_furniture || [],
+        cabinet_furniture: data?.cabinet_furniture || [],
+        technique: data?.technique || [],
+        decor: data?.decor || []
     })
 
     const [imagePreview, setImagePreview] = useState(data?.company_logo || null)
@@ -115,6 +137,23 @@ export default function SupplierEditForm({ data, onChange, onSave, onCancel, sav
         onChange(newData)
     }
 
+    useEffect(() => {
+        const fetchSubCategories = async () => {
+            setLoadingSubCategories(true)
+            try {
+                const response = await fetch('https://api.reiting-profi.ru/api/v1/accounts/supplier-questionnaires/secondory-filter-data/')
+                const result = await response.json()
+                setSubCategoryData(result)
+            } catch (error) {
+                console.error('Error fetching subcategories:', error)
+            } finally {
+                setLoadingSubCategories(false)
+            }
+        }
+
+        fetchSubCategories()
+    }, [])
+
     const handleArrayChange = (field, value, checked) => {
         const currentArray = localData[field] || []
         let newArray
@@ -123,10 +162,22 @@ export default function SupplierEditForm({ data, onChange, onSave, onCancel, sav
         } else {
             newArray = currentArray.filter(item => item !== value)
         }
+
         handleChange(field, newArray)
     }
 
-    // ✅ YANGI: Contact management functions
+    // ✅ YANGI: Subcategory toggle
+    const handleSubCategoryToggle = (categoryKey, subCategoryValue) => {
+        const currentArray = localData[categoryKey] || []
+        let newArray
+        if (currentArray.includes(subCategoryValue)) {
+            newArray = currentArray.filter(item => item !== subCategoryValue)
+        } else {
+            newArray = [...currentArray, subCategoryValue]
+        }
+        handleChange(categoryKey, newArray)
+    }
+
     const addContact = () => {
         const newContacts = [...(localData.other_contacts || []), { type: '', value: '' }]
         handleChange('other_contacts', newContacts)
@@ -199,10 +250,17 @@ export default function SupplierEditForm({ data, onChange, onSave, onCancel, sav
                     formData.append(key, JSON.stringify(value))
                 }
             }
-            // ✅ YANGI: speed_of_execution oddiy string (select element)
+            // ✅ YANGI: speed_of_execution array sifatida
             else if (key === 'speed_of_execution') {
-                if (value && value.trim() !== '') {
-                    formData.append(key, value)
+                if (Array.isArray(value) && value.length > 0) {
+                    formData.append(key, JSON.stringify(value))
+                }
+            }
+            // ✅ YANGI: Subcategory fields
+            else if (['rough_materials', 'finishing_materials', 'upholstered_furniture',
+                'cabinet_furniture', 'technique', 'decor'].includes(key)) {
+                if (Array.isArray(value) && value.length > 0) {
+                    formData.append(key, JSON.stringify(value))
                 }
             }
             // Oddiy fieldlar
@@ -378,19 +436,20 @@ export default function SupplierEditForm({ data, onChange, onSave, onCancel, sav
                     </div>
 
                     <div>
-                        <label className="block text-sm text-white/80 mb-1">Скорость выполнения</label>
-                        <select
-                            value={localData.speed_of_execution || ''}
-                            onChange={(e) => handleChange('speed_of_execution', e.target.value)}
-                            className="w-full bg-white/10 border border-white/30 rounded px-3 py-2 text-white text-sm"
-                        >
-                            <option className='text-black' value="">Выберите вариант</option>
+                        <label className="block text-sm text-white/80 mb-2">Сроки поставки</label>
+                        <div className="grid grid-cols-2 gap-2 p-2 bg-white/5 rounded">
                             {speedOptions.map(option => (
-                                <option className='text-black' key={option.value} value={option.value}>
-                                    {option.label}
-                                </option>
+                                <label key={option.value} className="flex items-center space-x-2">
+                                    <input
+                                        type="checkbox"
+                                        checked={(localData.speed_of_execution || []).includes(option.value)}
+                                        onChange={(e) => handleArrayChange('speed_of_execution', option.value, e.target.checked)}
+                                        className="rounded border-white/30 bg-white/10"
+                                    />
+                                    <span className="text-sm text-white/90">{option.label}</span>
+                                </label>
                             ))}
-                        </select>
+                        </div>
                     </div>
 
                 </div>
@@ -494,6 +553,48 @@ export default function SupplierEditForm({ data, onChange, onSave, onCancel, sav
                     ))}
                 </div>
             </div>
+
+            {/* ✅ YANGI: Subcategories Section */}
+            {loadingSubCategories ? (
+                <div className="text-center text-white/70 py-4">
+                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-white mx-auto mb-2"></div>
+                    <p className="text-sm">Загрузка подкатегорий...</p>
+                </div>
+            ) : (
+                <div className="space-y-4">
+                    {Object.entries(categoryMapping).map(([categoryLabel, categoryKey]) => {
+                        // Agar category tanlanmagan bo'lsa, sub-category ko'rsatmaydi
+                        if (!(localData.categories || []).includes(categoryLabel)) return null
+
+                        // API dan kerakli sub-category larni olish
+                        const subCategories = subCategoryData?.[categoryKey] || []
+
+                        // Agar sub-category lar bo'lmasa, ko'rsatmaydi
+                        if (subCategories.length === 0) return null
+
+                        return (
+                            <div key={categoryKey} className="space-y-3">
+                                <h3 className="text-lg font-semibold text-white">
+                                    Подкатегории для "{categoryLabel}"
+                                </h3>
+                                <div className="grid grid-cols-2 md:grid-cols-3 gap-2 p-3 bg-white/5 rounded">
+                                    {subCategories.map((subCat, index) => (
+                                        <label key={index} className="flex items-center space-x-2">
+                                            <input
+                                                type="checkbox"
+                                                checked={(localData[categoryKey] || []).includes(subCat.name)}
+                                                onChange={() => handleSubCategoryToggle(categoryKey, subCat.name)}
+                                                className="rounded border-white/30 bg-white/10"
+                                            />
+                                            <span className="text-xs text-white/90">{subCat.name}</span>
+                                        </label>
+                                    ))}
+                                </div>
+                            </div>
+                        )
+                    })}
+                </div>
+            )}
 
             {/* ✅ YANGI: Dynamic Contact Management */}
             <div className="space-y-3">

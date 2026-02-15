@@ -149,7 +149,10 @@ export default function DesignerEditForm({ data, onChange, onSave, onCancel, sav
 
     const [localData, setLocalData] = useState({
         ...data,
-        other_contacts: parseOtherContacts(data?.other_contacts)
+        other_contacts: parseOtherContacts(data?.other_contacts),
+        area_of_object: Array.isArray(data?.area_of_object)
+            ? data.area_of_object
+            : (data?.area_of_object ? [data.area_of_object] : [])
     })
     const [imagePreview, setImagePreview] = useState(data?.photo || null)
     const [imageFile, setImageFile] = useState(null) // File ob'ektini alohida saqlash
@@ -442,7 +445,7 @@ export default function DesignerEditForm({ data, onChange, onSave, onCancel, sav
             <div className="space-y-3">
                 <h3 className="text-lg font-semibold text-white mb-2">Текстовая информация</h3>
 
-                <div>
+                {/* <div>
                     <label className="block text-sm text-white/80 mb-1">Приветственное сообщение</label>
                     <textarea
                         value={localData.welcome_message || ''}
@@ -450,7 +453,7 @@ export default function DesignerEditForm({ data, onChange, onSave, onCancel, sav
                         rows="3"
                         className="w-full bg-white/10 border border-white/30 rounded px-3 py-2 text-white text-sm"
                     />
-                </div>
+                </div> */}
 
                 <div>
                     <label className="block text-sm text-white/80 mb-1">Опыт работы</label>
@@ -469,18 +472,19 @@ export default function DesignerEditForm({ data, onChange, onSave, onCancel, sav
                 </div>
                 <div>
                     <label className="block text-sm text-white/80 mb-1">Область объекта</label>
-                    <select
-                        value={localData.area_of_object || ''}
-                        onChange={(e) => handleChange('area_of_object', e.target.value)}
-                        className="w-full bg-white/10 border border-white/30 rounded px-3 py-2 text-white text-sm"
-                    >
-                        <option className='text-black' value="">Выберите вариант</option>
+                    <div className="grid grid-cols-2 gap-2 p-2 bg-white/5 rounded">
                         {areaOptions.map(option => (
-                            <option className='text-black' key={option.value} value={option.value}>
-                                {option.label}
-                            </option>
+                            <label key={option.value} className="flex items-center space-x-2">
+                                <input
+                                    type="checkbox"
+                                    checked={(localData.area_of_object || []).includes(option.value)}
+                                    onChange={(e) => handleArrayChange('area_of_object', option.value, e.target.checked)}
+                                    className="rounded border-white/30 bg-white/10"
+                                />
+                                <span className="text-sm text-white/90">{option.label}</span>
+                            </label>
                         ))}
-                    </select>
+                    </div>
                 </div>
                 <div>
                     <label className="block text-sm text-white/80 mb-1">Стоимость за м2</label>
@@ -542,7 +546,7 @@ export default function DesignerEditForm({ data, onChange, onSave, onCancel, sav
                     />
                 </div>
 
-                <div>
+                {/* <div>
                     <label className="block text-sm text-white/80 mb-1">Условия сотрудничества</label>
                     <textarea
                         value={localData.cooperation_terms || ''}
@@ -550,7 +554,7 @@ export default function DesignerEditForm({ data, onChange, onSave, onCancel, sav
                         rows="3"
                         className="w-full bg-white/10 border border-white/30 rounded px-3 py-2 text-white text-sm"
                     />
-                </div>
+                </div> */}
 
                 <div>
                     <label className="block text-sm text-white/80 mb-1">Описание пакетов услуг</label>

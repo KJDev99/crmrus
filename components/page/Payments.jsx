@@ -435,14 +435,14 @@ export default function Payments() {
 
                       <td className="py-6 px-6 font-normal text-[20px] leading-[1] tracking-normal">
                         <div className="flex items-center gap-2">
-                          <span>{formatDate(item.start_date)}</span>
+                          <span>{(item.start_date)}</span>
                         </div>
                       </td>
 
                       <td className="py-6 px-6 font-normal text-[20px] leading-[1] tracking-normal">
                         <div className="flex items-center gap-2">
                           <span className={new Date(item.next_payment_date) < new Date() ? 'text-red-400' : 'text-green-400'}>
-                            {formatDate(item.next_payment_date)}
+                            {(item.next_payment_date)}
                           </span>
                           {new Date(item.next_payment_date) < new Date() && (
                             <span className="text-xs text-red-400">(Просрочено)</span>

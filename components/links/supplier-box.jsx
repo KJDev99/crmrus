@@ -40,7 +40,7 @@ export default function SupplierBox() {
         cabinet_furniture: [],    // YANGI
         technique: [],            // YANGI
         decor: [],                // YANGI
-        speed_of_execution: ''
+        speed_of_execution: []
     });
 
     const [showModal, setShowModal] = useState(false);
@@ -173,6 +173,14 @@ export default function SupplierBox() {
             segments: prev.segments.includes(segmentValue)
                 ? prev.segments.filter(s => s !== segmentValue)
                 : [...prev.segments, segmentValue]
+        }));
+    };
+    const handleSpeedToggle = (speedValue) => {
+        setFormData(prev => ({
+            ...prev,
+            speed_of_execution: prev.speed_of_execution.includes(speedValue)
+                ? prev.speed_of_execution.filter(s => s !== speedValue)
+                : [...prev.speed_of_execution, speedValue]
         }));
     };
     const handleCategoryToggle = (categoryValue) => {
@@ -404,7 +412,7 @@ export default function SupplierBox() {
                     filteredContacts.forEach(contact => {  // ✅ TO'G'RI
                         submitFormData.append(key, JSON.stringify(contact));
                     });
-                } else if (['segments', 'magazine_cards'].includes(key)) {
+                } else if (['segments', 'magazine_cards', 'speed_of_execution'].includes(key)) {
                     if (value.length > 0) submitFormData.append(key, JSON.stringify(value));
                 } else if (['categories'].includes(key)) {
                     if (Array.isArray(value)) {
@@ -423,7 +431,7 @@ export default function SupplierBox() {
                 else if (['rough_materials', 'finishing_materials', 'upholstered_furniture',
                     'cabinet_furniture', 'technique', 'decor'].includes(key)) {
                     if (Array.isArray(value) && value.length > 0) {
-                        console.log(`Sending ${key}:`, value);
+
                         value.forEach(item => {
                             submitFormData.append(key, item);
                         });
@@ -435,6 +443,7 @@ export default function SupplierBox() {
                     submitFormData.append(key, value);
                 }
             });
+
 
             await axios.post('https://api.reiting-profi.ru/api/v1/accounts/supplier-questionnaires/', submitFormData, {
                 headers: {
@@ -478,7 +487,7 @@ export default function SupplierBox() {
                 cabinet_furniture: [],    // YANGI
                 technique: [],            // YANGI
                 decor: [], // YANGI
-                speed_of_execution: ''
+                speed_of_execution: []
             });
             setLogoPreview(null);
             setCardFileName('');
@@ -983,17 +992,14 @@ export default function SupplierBox() {
                             <label className="block text-sm font-medium mb-3 text-white">
                                 Сроки поставки <span className="text-red-400">*</span>
                             </label>
-                            <div className="flex flex-col sm:flex-row gap-3">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
                                 {speedOptions.map(option => (
-                                    <label key={option.value} className="bg-glass2 px-4 py-3 rounded-lg cursor-pointer hover:bg-opacity-80 transition-all flex items-center gap-2 mobile-full">
+                                    <label key={option.value} className="bg-glass2 px-4 py-3 rounded-lg cursor-pointer hover:bg-opacity-80 transition-all flex items-center gap-2">
                                         <input
-                                            type="radio"
-                                            name="speed_of_execution"
-                                            value={option.value}
-                                            checked={formData.speed_of_execution === option.value}
-                                            onChange={handleInputChange}
-                                            className="radio-glass"
-                                            required
+                                            type="checkbox"
+                                            checked={formData.speed_of_execution.includes(option.value)}
+                                            onChange={() => handleSpeedToggle(option.value)}
+                                            className="checkbox-glass"
                                         />
                                         <span className="text-white text-sm sm:text-base">{option.label}</span>
                                     </label>

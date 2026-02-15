@@ -34,7 +34,7 @@ export default function DesignBox() {
         photo: null,
         categories: [],
         purpose_of_property: [],
-        area_of_object: '',
+        area_of_object: [],
         cost_per_m2: '',
         experience: ''
     });
@@ -214,6 +214,14 @@ export default function DesignBox() {
             purpose_of_property: prev.purpose_of_property.includes(purposeValue)
                 ? prev.purpose_of_property.filter(c => c !== purposeValue)
                 : [...prev.purpose_of_property, purposeValue]
+        }));
+    };
+    const handleAreaToggle = (speedValue) => {
+        setFormData(prev => ({
+            ...prev,
+            area_of_object: prev.area_of_object.includes(speedValue)
+                ? prev.area_of_object.filter(s => s !== speedValue)
+                : [...prev.area_of_object, speedValue]
         }));
     };
 
@@ -415,7 +423,7 @@ export default function DesignBox() {
                     if (filteredContacts.length > 0) {
                         submitFormData.append(key, JSON.stringify(filteredContacts));
                     }
-                } else if (key === 'segments' || key === 'magazine_cards') {
+                } else if (key === 'segments' || key === 'magazine_cards' || key == 'area_of_object') {
                     if (value.length > 0) submitFormData.append(key, JSON.stringify(value));
                 } else if (key === 'data_processing_consent') {
                     submitFormData.append(key, value.toString());
@@ -436,7 +444,7 @@ export default function DesignBox() {
             setShowModal(true);
             toast.success('Анкета успешно отправлена!');
 
-            // Reset form
+
             setFormData({
                 group: 'designer',
                 full_name: '',
@@ -466,7 +474,7 @@ export default function DesignBox() {
                 photo: null,
                 categories: [],
                 purpose_of_property: [],
-                area_of_object: '',
+                area_of_object: [],
                 cost_per_m2: '',
                 experience: ''
             });
@@ -969,15 +977,12 @@ export default function DesignBox() {
                             </label>
                             <div className="flex flex-col sm:flex-row gap-3">
                                 {areaOptions.map(option => (
-                                    <label key={option.value} className="bg-glass2 px-4 py-3 rounded-lg cursor-pointer hover:bg-opacity-80 transition-all flex items-center gap-2 mobile-full">
+                                    <label key={option.value} className="bg-glass2 px-4 py-3 rounded-lg cursor-pointer hover:bg-opacity-80 transition-all flex items-center gap-2">
                                         <input
-                                            type="radio"
-                                            name="area_of_object"
-                                            value={option.value}
-                                            checked={formData.area_of_object === option.value}
-                                            onChange={handleInputChange}
-                                            className="radio-glass"
-                                            required
+                                            type="checkbox"
+                                            checked={formData.area_of_object.includes(option.value)}
+                                            onChange={() => handleAreaToggle(option.value)}
+                                            className="checkbox-glass"
                                         />
                                         <span className="text-white text-sm sm:text-base">{option.label}</span>
                                     </label>
@@ -1032,7 +1037,7 @@ export default function DesignBox() {
                                 Специализация <span className="text-red-400">*</span>
                             </label>
                             <p className="text-white/50 text-xs mb-3 italic">
-                                Отметьте категории продукции, с которыми вы реально работаете. По этим параметрам дизайнеры смогут находить вас в поиске.
+                                Отметьте категории продукции, с которыми вы реально работаете. По данным параметрам Вас смогут находить в поиске.
                             </p>
                             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
                                 {categoryOptions.map(option => (
