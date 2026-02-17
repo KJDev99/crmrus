@@ -20,7 +20,7 @@ export default function MediaDetail({ questionnaire, onBack }) {
         }));
     };
 
-    const renderExpandableContent = (content, sectionKey, maxLength = 200) => {
+    const renderExpandableContent = (content, sectionKey, maxLength = 170) => {
         if (!content) return null;
 
         const contentStr = typeof content === 'object' ? JSON.stringify(content) : String(content);
@@ -183,6 +183,32 @@ export default function MediaDetail({ questionnaire, onBack }) {
             return null;
         }
     };
+    const getRepresentativeCities1 = (representativeCities) => {
+        if (!representativeCities) return '';
+
+        try {
+            const cities = typeof representativeCities === 'string'
+                ? JSON.parse(representativeCities)
+                : representativeCities;
+
+            if (Array.isArray(cities) && cities.length > 0) {
+                return cities
+                    .filter(city => city) // null/undefined ni olib tashlash
+                    .map(city => {
+                        if (typeof city === 'string') {
+                            // Yangi qator belgilarini vergul va probelga almashtiramiz
+                            return city.split('\n').map(part => part.trim()).filter(part => part).join(', ');
+                        }
+                        return city.city || '';
+                    })
+                    .filter(city => city) // bo'sh stringlarni olib tashlash
+                    .join(', ');
+            }
+            return '';
+        } catch (error) {
+            return '';
+        }
+    };
 
     const getBusinessFormDisplay = (businessForm) => {
         if (!businessForm) return 'Не указана';
@@ -266,8 +292,8 @@ export default function MediaDetail({ questionnaire, onBack }) {
                                 {questionnaire.brand_name || questionnaire.full_name || 'Медиа пространство'}
                             </h2>
                             <div className='w-[calc(100% + 32px)] h-0.25 bg-[#FFFFFF4F]  ml-[-32px]'></div>
-                            <p className='text-[#FFFFFF] uppercase text-sm leading-[100%] mt-3 max-md:text-xs line-clamp-2'>
-                                {questionnaire.welcome_message || 'Медиа'}
+                            <p className='text-[#FFFFFF] uppercase text-sm leading-[100%] mt-3 max-md:text-xs line-clamp-2 pr-10'>
+                                {getRepresentativeCities1(questionnaire.representative_cities) || 'Город не указан'}
                             </p>
                             <div className="absolute bottom-1 right-1 text-white">
                                 <span className='text-yellow-400'>★</span> {questionnaire?.rating_count?.total || 0}
@@ -304,19 +330,23 @@ export default function MediaDetail({ questionnaire, onBack }) {
                             </button>
                         </div>
                         <div className='space-y-4 max-md:space-y-2'>
-                            {questionnaire.activity_description && (
-                                <div className='text-[#FFFFFF] px-2 py-2 border-b border-[#FFFFFF91] max-md:px-1 max-md:text-sm'>
-                                    <p className='text-[19px] uppercase'>Деятельность:</p>
-                                    {renderExpandableContent(questionnaire.activity_description, 'activity_description')}
-                                </div>
-                            )}
-
                             {questionnaire.welcome_message && (
                                 <div className='text-[#FFFFFF] px-2 py-2 border-b border-[#FFFFFF91] max-md:px-1 max-md:text-sm'>
                                     <p className='text-[19px] uppercase'>Приветственное сообщение:</p>
                                     {renderExpandableContent(questionnaire.welcome_message, 'welcome_message')}
                                 </div>
                             )}
+
+                            {questionnaire.activity_description && (
+                                <div className='text-[#FFFFFF] px-2 py-2 border-b border-[#FFFFFF91] max-md:px-1 max-md:text-sm'>
+                                    <p className='text-[19px] uppercase'>Деятельность:</p>
+                                    {/* {renderExpandableContent(questionnaire.activity_description, 'activity_description')} */}
+                                    <div style={{ whiteSpace: 'pre-line' }}>
+                                        {renderExpandableContent(questionnaire.activity_description)}
+                                    </div>
+                                </div>
+                            )}
+
 
                             {questionnaire.cooperation_terms && (
                                 <div className='text-[#FFFFFF] px-2 py-2 border-b border-[#FFFFFF91] max-md:px-1 max-md:text-sm'>
@@ -510,7 +540,7 @@ export default function MediaDetail({ questionnaire, onBack }) {
 
                                     {/* Info Text */}
                                     <p className='text-xs text-[#FFFFFF80] mt-4'>
-                                        Кто оставил: 1 пользователь может оставить только 1 комментарий, при необходимости он может его удалить и оставить новый. Отзывы могут оставлять все рубрики.
+
                                     </p>
                                 </div>
                             )}

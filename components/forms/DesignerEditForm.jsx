@@ -567,7 +567,7 @@ export default function DesignerEditForm({ data, onChange, onSave, onCancel, sav
                 </div>
 
                 <div>
-                    <label className="block text-sm text-white/80 mb-1">Дополнительная информация</label>
+                    <label className="block text-sm text-white/80 mb-1">Дополнительная информация (Здесь можно оставить дополнительную информацию, которую вы хотели бы нам рассказать)</label>
                     <textarea
                         value={localData.additional_info || ''}
                         onChange={(e) => handleChange('additional_info', e.target.value)}

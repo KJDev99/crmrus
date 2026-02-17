@@ -505,7 +505,7 @@ export default function SupplierDetail({ questionnaire, onBack }) {
 
                                                 {/* Info Text */}
                                                 <p className='text-xs text-[#FFFFFF80] mt-4'>
-                                                    Кто оставил: 1 пользователь может оставить только 1 комментарий, при необходимости он может его удалить и оставить новый. Отзывы могут оставлять все рубрики.
+
                                                 </p>
                                             </div>
                                         )}

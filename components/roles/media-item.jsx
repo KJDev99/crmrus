@@ -124,8 +124,8 @@ export default function MediaItem({
                                         </p>
 
 
-                                        <p className='text-[#FFFFFF] text-sm mt-1 max-md:text-xs line-clamp-1'>
-                                            {getBusinessFormDisplay(questionnaire.business_form)}
+                                        <p className='text-[#FFFFFF] text-sm mt-1 max-md:text-xs line-clamp-2 leading-[100%] uppercase'>
+                                            {questionnaire.welcome_message}
                                         </p>
 
                                     </div>
