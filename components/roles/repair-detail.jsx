@@ -246,7 +246,7 @@ export default function RepairDetail({ questionnaire, onBack }) {
                     <IoIosArrowBack size={40} className='max-md:w-6 max-md:h-6' />
                 </button>
                 <img src="/icons/logo.svg" alt="a" className='max-md:w-20 w-50' />
-                <div className='max-md:w-8 max-md:h-8 md:w-30' onClick={handleLogout}>
+                <div className='max-md:w-8 max-md:h-8 md:w-30 flex justify-end ' onClick={handleLogout}>
                     <img src="/icons/share.svg" alt="a" className='max-md:w-6 max-md:h-6' />
                 </div>
             </div>
