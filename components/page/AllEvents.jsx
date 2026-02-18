@@ -646,17 +646,6 @@ export default function AllEvents() {
                                     </div>
 
                                     <div className="md:col-span-2">
-                                        <label className="block text-white mb-2">Анонс *</label>
-                                        <textarea
-                                            value={newEvent.announcement}
-                                            onChange={(e) => setNewEvent({ ...newEvent, announcement: e.target.value })}
-                                            rows="3"
-                                            className="w-full px-4 py-2 bg-[#2D2D2D] border border-gray-700 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-500"
-                                            required
-                                        />
-                                    </div>
-
-                                    <div className="md:col-span-2">
                                         <label className="block text-white mb-2">О мероприятии</label>
                                         <textarea
                                             value={newEvent.about_event}
