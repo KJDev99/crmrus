@@ -69,10 +69,19 @@ export default function MediaEditForm({ data, onChange, onSave, onCancel, saving
 
         return [{ type: '', value: '' }]
     }
-
+    const parseRepresentativeCities = (cities) => {
+        if (!cities) return ['']
+        if (Array.isArray(cities)) {
+            if (cities.length === 0) return ['']
+            return cities.map(city => typeof city === 'string' ? city : String(city))
+        }
+        if (typeof cities === 'string') return [cities]
+        return ['']
+    }
     const [localData, setLocalData] = useState({
         ...data,
-        other_contacts: parseOtherContacts(data?.other_contacts)
+        other_contacts: parseOtherContacts(data?.other_contacts),
+        representative_cities: parseRepresentativeCities(data?.representative_cities),
     })
     const [imagePreview, setImagePreview] = useState(data?.company_logo || null)
     const fileInputRef = useRef(null)
@@ -313,6 +322,46 @@ export default function MediaEditForm({ data, onChange, onSave, onCancel, saving
                         </select>
                     </div>
                 </div>
+            </div>
+            {/* ✅ Representative Cities */}
+            <div className="space-y-3">
+                <h3 className="text-lg font-semibold text-white mb-2">Города представительства</h3>
+
+                {(localData.representative_cities || ['']).map((city, index) => (
+                    <div key={index} className="flex items-center gap-2">
+                        <input
+                            type="text"
+                            value={city}
+                            onChange={(e) => {
+                                const newCities = [...(localData.representative_cities || [''])]
+                                newCities[index] = e.target.value
+                                handleChange('representative_cities', newCities)
+                            }}
+                            className="flex-1 bg-white/10 border border-white/30 rounded px-3 py-2 text-white text-sm"
+                            placeholder="Туапсе, ул. Кореновская, д. 4, офис 2, телефон: 8 800 500 00 00"
+                        />
+                        {(localData.representative_cities || []).length > 1 && (
+                            <button
+                                type="button"
+                                onClick={() => {
+                                    const newCities = (localData.representative_cities || []).filter((_, i) => i !== index)
+                                    handleChange('representative_cities', newCities)
+                                }}
+                                className="text-red-400 hover:text-red-300"
+                            >
+                                <FiTrash2 />
+                            </button>
+                        )}
+                    </div>
+                ))}
+
+                <button
+                    type="button"
+                    onClick={() => handleChange('representative_cities', [...(localData.representative_cities || ['']), ''])}
+                    className="w-full flex items-center justify-center gap-2 px-4 py-2 bg-white/10 hover:bg-white/20 border border-white/30 rounded text-white text-sm font-medium"
+                >
+                    <FiPlus /> Добавить город
+                </button>
             </div>
 
             {/* Текстовые поля */}

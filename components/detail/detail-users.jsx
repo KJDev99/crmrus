@@ -432,10 +432,14 @@ export default function DetailUsers() {
             if (Array.isArray(data.representative_cities) && data.representative_cities.length > 0) {
                 info += `\nГорода представительства:\n`
                 data.representative_cities.forEach(city => {
-                    const cityName = city.city || 'Не указано'
-                    const address = city.address || 'Не указано'
-                    const phone = city.phone ? formatPhone(city.phone) : 'Не указано'
-                    info += `  • ${cityName}: ${address}, тел: ${phone}\n`
+                    if (typeof city === 'string') {
+                        info += `  • ${city}\n`
+                    } else {
+                        const cityName = city.city || 'Не указано'
+                        const address = city.address || 'Не указано'
+                        const phone = city.phone ? formatPhone(city.phone) : 'Не указано'
+                        info += `  • ${cityName}: ${address}, тел: ${phone}\n`
+                    }
                 })
             } else if (typeof data.representative_cities === 'string') {
                 info += `\nГорода представительства: ${data.representative_cities}\n`
