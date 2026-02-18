@@ -327,9 +327,9 @@ export default function Users() {
                                     <th className="py-4 font-normal text-[20px] leading-[1] tracking-normal px-6 w-1/5">
                                         Email
                                     </th>
-                                    <th className="py-4 font-normal text-[20px] leading-[1] tracking-normal px-6 w-20">
+                                    {/* <th className="py-4 font-normal text-[20px] leading-[1] tracking-normal px-6 w-20">
                                         Детали
-                                    </th>
+                                    </th> */}
                                 </tr>
                             </thead>
 
@@ -345,7 +345,7 @@ export default function Users() {
                                         <React.Fragment key={user.id}>
                                             <tr
                                                 className="border-b border-line text-[22px] hover:bg-white/5 cursor-pointer"
-                                                onClick={() => toggleRow(user.id)}
+                                            // onClick={() => toggleRow(user.id)}
                                             >
                                                 <td className="py-6 px-6 font-normal text-[20px] leading-[1] tracking-normal">
                                                     <div className="flex items-center">
@@ -377,7 +377,7 @@ export default function Users() {
                                                     </div>
                                                 </td>
 
-                                                <td className="py-6 px-6 font-normal text-[20px] leading-[1] tracking-normal text-center">
+                                                {/* <td className="py-6 px-6 font-normal text-[20px] leading-[1] tracking-normal text-center">
                                                     <button
                                                         onClick={(e) => {
                                                             e.stopPropagation()
@@ -387,7 +387,7 @@ export default function Users() {
                                                     >
                                                         {expandedRows.includes(user.id) ? "Скрыть" : "Показать"}
                                                     </button>
-                                                </td>
+                                                </td> */}
                                             </tr>
 
                                             {/* Expanded details row */}
