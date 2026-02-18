@@ -518,7 +518,7 @@ export default function Payments() {
                               <span className="text-xs text-red-400">(Просрочено)</span>
                             )}
                             {/* + button — only if active and not expired */}
-                            {canExtend && (
+                            {!canExtend && (
                               <button
                                 onClick={() => openExtendModal(item)}
                                 title="Продлить оплату"
