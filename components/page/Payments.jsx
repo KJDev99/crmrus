@@ -134,7 +134,7 @@ export default function Payments() {
         "https://api.reiting-profi.ru/api/v1/accounts/reports/update/",
         {
           date: extendDate,
-          user_id: extendModal.item?.id
+          user_id: extendModal.item?.user_id
         },
         {
           headers: {
@@ -466,7 +466,7 @@ export default function Payments() {
                       onClick={() => handleSort('next_payment_date')}
                       className="flex items-center gap-1 hover:text-yellow-400 transition-colors"
                     >
-                      Дата окончания / Следующая оплата
+                      Дата окончания
                       {getSortIcon('next_payment_date')}
                     </button>
                   </th>
