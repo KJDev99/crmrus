@@ -1,0 +1,452 @@
+'use client';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import React, { useState } from 'react'
+import toast from 'react-hot-toast';
+import { IoIosArrowBack } from 'react-icons/io'
+
+export default function MediaDetail({ questionnaire, onBack }) {
+    const [showReviewForm, setShowReviewForm] = useState(false);
+    const [reviewType, setReviewType] = useState('positive');
+    const [reviewText, setReviewText] = useState('');
+    const [rating, setRating] = useState(5);
+    const [expandedSections, setExpandedSections] = useState({});
+    const [showAllReviews, setShowAllReviews] = useState(false);
+    const router = useRouter();
+    const toggleSection = (sectionKey) => {
+        setExpandedSections(prev => ({
+            ...prev,
+            [sectionKey]: !prev[sectionKey]
+        }));
+    };
+
+    const renderExpandableContent = (content, sectionKey, maxLength = 170) => {
+        if (!content) return null;
+
+        const contentStr = typeof content === 'object' ? JSON.stringify(content) : String(content);
+        const isExpanded = expandedSections[sectionKey];
+
+        if (contentStr.length <= maxLength) {
+            return <span>{content}</span>;
+        }
+
+        return (
+            <>
+                {isExpanded ? content : `${contentStr.substring(0, maxLength)}...`}
+                <button
+                    onClick={() => toggleSection(sectionKey)}
+                    className="ml-2 text-blue-400 hover:text-blue-300 underline"
+                >
+                    {isExpanded ? 'Скрыть' : 'Показать полностью'}
+                </button>
+            </>
+        );
+    };
+
+    const handleSubmitReview = async () => {
+        try {
+            const token = localStorage.getItem('access_token');
+
+            if (!token) {
+                toast.error('Токен не найден. Пожалуйста, войдите в систему.');
+                return;
+            }
+
+            const response = await fetch(`https://api.reiting-profi.ru/api/v1/ratings/questionnaire-ratings/`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`,
+                },
+                body: JSON.stringify({
+                    role: "Медиа",
+                    id_questionnaire: questionnaire.id,
+                    is_positive: reviewType === 'positive',
+                    is_constructive: reviewType === 'constructive',
+                    text: reviewText,
+                })
+            });
+
+            if (response.ok) {
+                toast.success('Отзыв отправлен на модерацию');
+                setReviewText('');
+                setRating(5);
+                setShowReviewForm(false);
+            } else {
+                const errorData = await response.json();
+
+                if (response.status === 401) {
+                    toast.error('Ошибка авторизации. Пожалуйста, войдите в систему заново.');
+                    localStorage.removeItem('access_token');
+                    localStorage.removeItem('accessToken');
+                    localStorage.removeItem('refreshToken');
+                    window.location.href = '/login';
+                } else {
+                    toast.error(`Ошибка при отправке отзыва: ${errorData.message || 'Неизвестная ошибка'}`);
+                }
+            }
+        } catch (error) {
+            console.error('Error submitting review:', error);
+            toast.error('Ошибка при отправке отзыва. Проверьте соединение с интернетом.');
+        }
+    };
+    const handleLogout = () => {
+
+        try {
+            // Barcha token va ma'lumotlarni o'chirish
+            localStorage.removeItem('access_token')
+            localStorage.removeItem('refresh_token')
+
+            // Session storage ni tozalash
+            sessionStorage.clear()
+
+            // Xabar berish
+            toast.success('Вы успешно вышли из системы', {
+                duration: 2000,
+                position: 'top-center'
+            })
+
+            // Login sahifasiga yo'naltirish
+            setTimeout(() => {
+                router.push('/login')
+            }, 1000)
+
+        } catch (error) {
+            console.error('Ошибка при выходе из системы:', error)
+            toast.error('Ошибка при выходе из системы')
+
+            // Xato bo'lsa ham login sahifasiga yo'naltirish
+            setTimeout(() => {
+                router.push('/login')
+            }, 1000)
+        }
+    }
+    if (!questionnaire) {
+        return (
+            <div className='max-md:px-4'>
+                <div className="text-white flex justify-between items-center mt-[0px] max-md:px-0">
+                    <button onClick={onBack} className="cursor-pointer max-md:w-8 max-md:h-8">
+                        <IoIosArrowBack size={40} className='max-md:w-6 max-md:h-6' />
+                    </button>
+                    <img src="/icons/logo.svg" alt="a" className='max-md:w-20 w-50' />
+                    <div className='max-md:w-8 max-md:h-8'>
+                        <img src="/icons/share.svg" alt="a" className='max-md:w-6 max-md:h-6' />
+                    </div>
+                </div>
+                <div className="text-center text-white py-10 max-md:py-6">
+                    <p className='max-md:text-sm'>Загрузка...</p>
+                </div>
+            </div>
+        );
+    }
+
+    const getSegmentDisplay = (segments) => {
+        if (!segments || !Array.isArray(segments)) return '';
+
+        const segmentMap = {
+            'economy': 'Эконом',
+            'comfort': 'Комфорт',
+            'business': 'Бизнес',
+            'premium': 'Премиум',
+            'horeca': 'Хорека',
+            'exclusive': 'Эксклюзив',
+            'medium': 'Средний',
+        };
+
+        return segments.map(segment => segmentMap[segment] || segment).join(', ');
+    };
+
+    const getRepresentativeCities = () => {
+        if (!questionnaire.representative_cities) return null;
+
+        try {
+            const cities = typeof questionnaire.representative_cities === 'string'
+                ? JSON.parse(questionnaire.representative_cities)
+                : questionnaire.representative_cities;
+
+            if (Array.isArray(cities) && cities.length > 0) {
+                return (
+                    <div className="space-y-2">
+                        {cities.map((city, index) => (
+                            <div key={index} className="border-l-2 border-purple-500 pl-3">
+                                <p><strong>Город:</strong> {city.city || 'Не указан'}</p>
+                                {city.address && <p><strong>Адрес:</strong> {city.address}</p>}
+                                {city.phone && <p><strong>Телефон:</strong> {city.phone}</p>}
+                                {city.district && <p><strong>Район:</strong> {city.district}</p>}
+                            </div>
+                        ))}
+                    </div>
+                );
+            }
+            return null;
+        } catch (error) {
+            return null;
+        }
+    };
+    const getRepresentativeCities1 = (representativeCities) => {
+        if (!representativeCities) return '';
+
+        try {
+            const cities = typeof representativeCities === 'string'
+                ? JSON.parse(representativeCities)
+                : representativeCities;
+
+            if (Array.isArray(cities) && cities.length > 0) {
+                return cities
+                    .filter(city => city) // null/undefined ni olib tashlash
+                    .map(city => {
+                        if (typeof city === 'string') {
+                            // Yangi qator belgilarini vergul va probelga almashtiramiz
+                            return city.split('\n').map(part => part.trim()).filter(part => part).join(', ');
+                        }
+                        return city.city || '';
+                    })
+                    .filter(city => city) // bo'sh stringlarni olib tashlash
+                    .join(', ');
+            }
+            return '';
+        } catch (error) {
+            return '';
+        }
+    };
+
+    const getBusinessFormDisplay = (businessForm) => {
+        if (!businessForm) return 'Не указана';
+
+        const businessFormMap = {
+            'own_business': 'Собственный бизнес',
+            'franchise': 'Франшиза',
+        };
+
+        if (businessForm.includes('(')) {
+            const parts = businessForm.split(' (');
+            const baseForm = parts[0];
+            const additional = parts[1]?.replace(')', '');
+            const displayBase = businessFormMap[baseForm] || baseForm;
+            return `${displayBase} (${additional})`;
+        }
+
+        return businessFormMap[businessForm] || businessForm;
+    };
+
+    const getOtherContacts = () => {
+        if (!questionnaire.other_contacts) return null;
+
+        try {
+            const contacts = typeof questionnaire.other_contacts === 'string'
+                ? JSON.parse(questionnaire.other_contacts)
+                : questionnaire.other_contacts;
+
+            if (Array.isArray(contacts) && contacts.length > 0) {
+                return (
+                    <div className="space-y-1">
+                        {contacts.map((contact, index) => (
+                            <p key={index}>{contact}</p>
+                        ))}
+                    </div>
+                );
+            }
+            return null;
+        } catch (error) {
+            return null;
+        }
+    };
+
+    const displayedReviews = showAllReviews
+        ? questionnaire.reviews_list
+        : questionnaire.reviews_list?.slice(0, 3) || [];
+
+    return (
+        <div className='max-md:px-4 max-w-7xl mx-auto'>
+            <div className="text-white flex justify-between items-center mt-[0px] max-md:px-0">
+                <button onClick={onBack} className="cursor-pointer max-md:w-8 max-md:h-8 md:w-30">
+                    <IoIosArrowBack size={40} className='max-md:w-6 max-md:h-6' />
+                </button>
+                <img src="/icons/logo.svg" alt="a" className='max-md:w-20 w-50' />
+                <div className='max-md:w-8 max-md:h-8 md:w-30' onClick={handleLogout}>
+                    <img src="/icons/share.svg" alt="a" className='max-md:w-6 max-md:h-6' />
+                </div>
+            </div>
+            <div className="max-w-xl mx-auto space-y-4 max-md:space-y-3 max-md:mt-2">
+                <div className="">
+                    <div className="flex mb-0 max-md:mb-0 max-md:flex-col">
+                        <div className='w-[120px] h-[100px] card_img flex-shrink-0 overflow-hidden max-md:w-full max-md:h-20'>
+                            <div className="w-full h-full rounded-lg flex items-center justify-center">
+                                {questionnaire.company_logo ? (
+                                    <img
+                                        src={questionnaire.company_logo}
+                                        alt={questionnaire.brand_name}
+                                        className="w-full h-full object-cover rounded-lg"
+                                    />
+                                ) : (
+                                    <div className="w-full h-full card_img rounded-lg flex items-center justify-center">
+                                        <span className="text-white text-2xl max-md:text-lg uppercase">
+                                            {questionnaire.brand_name ? questionnaire.brand_name.charAt(0) : '?'}
+                                        </span>
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+                        <div className="flex flex-col border-b border-b-[#FFFFFF91]  pl-12 ml-[-16px] flex-grow max-md:pl-3 max-md:ml-0 max-md:border-b-0 max-md:border-t max-md:pt-3 max-md:mt-2 relative">
+                            <h2 className='mb-0.5 text-[#FFFFFF] text-[25px] max-md:text-base'>
+                                {questionnaire.brand_name || questionnaire.full_name || 'Медиа пространство'}
+                            </h2>
+                            <div className='w-[calc(100% + 32px)] h-0.25 bg-[#FFFFFF4F]  ml-[-32px]'></div>
+                            <p className='text-[#FFFFFF] uppercase text-sm leading-[100%] mt-3 max-md:text-xs line-clamp-2 pr-10'>
+                                {getRepresentativeCities1(questionnaire.representative_cities) || 'Город не указан'}
+                            </p>
+                            <div className="absolute bottom-1 right-1 text-white">
+                                <span className='text-yellow-400'>★</span> {questionnaire?.rating_count?.total || 0}
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* <h2 className='mt-4 mb-4 text-center text-lg text-[#FFFFFF] max-md:text-base max-md:mb-2 max-md:mt-3'>Контактная информация</h2>
+                    <div className='text-lg border-y border-[#FFFFFF91] px-2 py-4 text-[#FFFFFF] space-y-2 max-md:text-base max-md:px-1 max-md:py-2 max-md:space-y-1'>
+                        <p className='max-md:text-sm'><strong>Бренд:</strong> {questionnaire.brand_name || 'Не указан'}</p>
+                        <p className='max-md:text-sm'><strong>ФИО:</strong> {questionnaire.full_name || 'Не указано'}</p>
+                        <p className='max-md:text-sm'><strong>Ответственное лицо:</strong> {questionnaire.responsible_person || 'Не указано'}</p>
+                        <p className='max-md:text-sm'><strong>Телефон:</strong> {questionnaire.phone || 'Не указан'}</p>
+                        <p className='max-md:text-sm'><strong>Email:</strong> {questionnaire.email || 'Не указан'}</p>
+                        <p className='max-md:text-sm'><strong>Форма бизнеса:</strong> {getBusinessFormDisplay(questionnaire.business_form)}</p>
+                        <p className='max-md:text-sm'><strong>НДС:</strong> {questionnaire.vat_payment_display || 'Не указано'}</p>
+                    </div> */}
+
+                    <div className='mt-0'>
+
+
+                        <div className='flex border-b border-[#FFFFFF91]'>
+                            <button
+
+                                className={`px-4 py-2 text-center text-[19px] text-[#FFFFFF] transition-all border-r `}
+                            >
+                                О компании
+                            </button>
+                            <button
+
+                                className={`flex-1 py-2 text-center text-[19px] text-[#FFFFFF] transition-all  `}
+                            >
+
+                            </button>
+                        </div>
+                        <div className='space-y-4 max-md:space-y-2'>
+                            {questionnaire.representative_cities && (
+                                <div className='text-[#FFFFFF] px-2 py-2 border-b border-[#FFFFFF91] max-md:px-1 max-md:text-sm'>
+                                    <p className='text-[19px] uppercase'>Города представительств:</p>
+                                    {renderExpandableContent(questionnaire.representative_cities, 'representative_cities')}
+                                </div>
+                            )}
+
+                            {questionnaire.business_form && (
+                                <div className='text-[#FFFFFF] px-2 py-2 border-b border-[#FFFFFF91] max-md:px-1 max-md:text-sm'>
+                                    <p className='text-[19px] uppercase'>Форма бизнеса:</p>
+                                    <span>
+                                        {questionnaire.business_form === 'own_business' ? 'Собственный бизнес'
+                                            : questionnaire.business_form === 'franchise' ? 'Франшиза'
+                                                : questionnaire.business_form}
+                                    </span>
+                                </div>
+                            )}
+                            {questionnaire.welcome_message && (
+                                <div className='text-[#FFFFFF] px-2 py-2 border-b border-[#FFFFFF91] max-md:px-1 max-md:text-sm'>
+                                    <p className='text-[19px] uppercase'>Приветственное сообщение:</p>
+                                    {renderExpandableContent(questionnaire.welcome_message, 'welcome_message')}
+                                </div>
+                            )}
+
+                            {questionnaire.activity_description && (
+                                <div className='text-[#FFFFFF] px-2 py-2 border-b border-[#FFFFFF91] max-md:px-1 max-md:text-sm'>
+                                    <p className='text-[19px] uppercase'>Деятельность:</p>
+                                    {/* {renderExpandableContent(questionnaire.activity_description, 'activity_description')} */}
+                                    <div style={{ whiteSpace: 'pre-line' }}>
+                                        {renderExpandableContent(questionnaire.activity_description)}
+                                    </div>
+                                </div>
+                            )}
+
+
+                            {questionnaire.cooperation_terms && (
+                                <div className='text-[#FFFFFF] px-2 py-2 border-b border-[#FFFFFF91] max-md:px-1 max-md:text-sm'>
+                                    <p className='text-[19px] uppercase'>Условия сотрудничества:</p>
+                                    {renderExpandableContent(questionnaire.cooperation_terms, 'cooperation_terms')}
+                                </div>
+                            )}
+
+                            <div className='text-[#FFFFFF] px-2 py-2 border-b border-[#FFFFFF91] max-md:px-1 max-md:text-sm'>
+                                <p className='text-[19px] uppercase'>Сегменты для публикации:</p>
+                                {getSegmentDisplay(questionnaire.segments)}
+                            </div>
+                        </div>
+
+
+                        <h2 className='mt-4  text-[19px] uppercase text-[#FFFFFF] max-md:text-base max-md:mb-2 max-md:mt-3 px-2'>Социальные сети:</h2>
+                        <div className='space-y-4 max-md:space-y-2'>
+                            {questionnaire.other_contacts && questionnaire.other_contacts.length > 0 ? (
+                                <div className='text-[#FFFFFF] px-2 py-2 space-y-2 border-b border-[#FFFFFF91] max-md:text-sm max-md:px-1 max-md:space-y-1'>
+                                    {questionnaire.other_contacts.map((contact, index) => {
+                                        try {
+                                            // JSON stringini parse qilish
+                                            let contactObj;
+                                            if (typeof contact === 'string') {
+                                                // String ichidagi qo'shtirnoqlarni to'g'rilash
+                                                const fixedString = contact.replace(/'/g, '"');
+                                                contactObj = JSON.parse(fixedString);
+                                            } else {
+                                                contactObj = contact;
+                                            }
+
+                                            const { type, value } = contactObj;
+
+                                            // Type bo'yicha label aniqlash
+                                            const getLabel = (type) => {
+                                                const socialMediaOptions = [
+                                                    { value: 'vk', label: 'ВК' },
+                                                    { value: 'telegram', label: 'Телеграм' },
+                                                    { value: 'pinterest', label: 'Пинтерест' },
+                                                    { value: 'instagram', label: 'Инстаграм' },
+                                                    { value: 'website', label: 'Веб-сайт' },
+                                                    { value: 'other', label: 'Другое' }
+                                                ];
+                                                return socialMediaOptions.find(opt => opt.value === type)?.label || type;
+                                            };
+
+                                            return (
+                                                <p key={index} className='max-md:text-sm'>
+                                                    <span>{getLabel(type)}:</span> {value}
+                                                </p>
+                                            );
+                                        } catch (error) {
+                                            // Agar parse qilishda xatolik bo'lsa, oddiy ko'rsatish
+                                            return (
+                                                <p key={index} className='max-md:text-sm'>
+                                                    <span>Контакт:</span> {typeof contact === 'string' ? contact : JSON.stringify(contact)}
+                                                </p>
+                                            );
+                                        }
+                                    })}
+                                </div>
+                            ) : (
+                                <div className='text-[#FFFFFF] px-2 py-2 space-y-2 border-b border-[#FFFFFF91] max-md:text-sm max-md:px-1 max-md:space-y-1'>
+                                    <p className='max-md:text-sm'>Контакты не указаны</p>
+                                </div>
+                            )}
+                        </div>
+
+                        {questionnaire.additional_info && (
+                            <>
+                                <h2 className='mt-4 text-[19px] uppercase text-[#FFFFFF] max-md:text-base max-md:mb-2 max-md:mt-3 px-2'>Дополнительная информация:</h2>
+                                <div className='text-[#FFFFFF] px-2 py-2 border-b border-[#FFFFFF91] max-md:text-sm max-md:px-1'>
+                                    {renderExpandableContent(questionnaire.additional_info, 'additional_info')}
+                                </div>
+                            </>
+                        )}
+
+
+
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    )
+}

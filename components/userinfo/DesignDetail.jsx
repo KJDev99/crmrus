@@ -1,0 +1,494 @@
+'use client';
+import { useRouter } from 'next/navigation';
+import React, { useState } from 'react'
+import toast from 'react-hot-toast';
+import { IoIosArrowBack } from 'react-icons/io'
+
+export default function DesignDetail({ questionnaire, onBack }) {
+    const [activeTab, setActiveTab] = useState('company'); // 'company' or 'cooperation'
+    const [showReviewForm, setShowReviewForm] = useState(false);
+    const [reviewType, setReviewType] = useState('positive'); // 'positive' or 'constructive'
+    const [reviewText, setReviewText] = useState('');
+    const [rating, setRating] = useState(5);
+    const [expandedSections, setExpandedSections] = useState({});
+    const [showAllReviews, setShowAllReviews] = useState(false);
+    const router = useRouter();
+    const toggleSection = (sectionKey) => {
+        setExpandedSections(prev => ({
+            ...prev,
+            [sectionKey]: !prev[sectionKey]
+        }));
+    };
+
+    const renderExpandableContent = (content, sectionKey, maxLength = 200) => {
+        if (!content) return null;
+
+        const contentStr = typeof content === 'object' ? JSON.stringify(content) : String(content);
+        const isExpanded = expandedSections[sectionKey];
+
+        if (contentStr.length <= maxLength) {
+            return <span>{content}</span>;
+        }
+
+        return (
+            <>
+                {isExpanded ? content : `${contentStr.substring(0, maxLength)}...`}
+                <button
+                    onClick={() => toggleSection(sectionKey)}
+                    className="ml-2 text-blue-400 hover:text-blue-300 underline"
+                >
+                    {isExpanded ? 'Скрыть' : 'Показать полностью'}
+                </button>
+            </>
+        );
+    };
+
+    const handleSubmitReview = async () => {
+        try {
+            const token = localStorage.getItem('access_token');
+
+            if (!token) {
+                alert('Токен не найден. Пожалуйста, войдите в систему.');
+                return;
+            }
+
+            const response = await fetch(`https://api.reiting-profi.ru/api/v1/ratings/questionnaire-ratings/`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`,
+                },
+                body: JSON.stringify({
+                    role: "Дизайн",
+                    id_questionnaire: questionnaire.id,
+                    is_positive: reviewType === 'positive',
+                    is_constructive: reviewType === 'constructive',
+                    text: reviewText,
+                })
+            });
+
+            console.log('Response status:', response.status);
+
+            if (response.ok) {
+                const result = await response.json();
+                console.log('Success response:', result);
+                toast.success('Отзыв отправлен на модерацию');
+                setReviewText('');
+                setRating(5);
+                setShowReviewForm(false);
+            } else {
+                const errorData = await response.json();
+                console.error('Error response:', errorData);
+
+                if (response.status === 401) {
+                    toast.error('Ошибка авторизации. Пожалуйста, войдите в систему заново.');
+                    localStorage.removeItem('access_token');
+                    localStorage.removeItem('accessToken');
+                    localStorage.removeItem('refreshToken');
+                    window.location.href = '/login';
+                } else {
+                    toast.error(`Ошибка при отправке отзыва: ${errorData.message || 'Неизвестная ошибка'}`);
+                }
+            }
+        } catch (error) {
+            console.error('Error submitting review:', error);
+            toast.error('Ошибка при отправке отзыва. Проверьте соединение с интернетом.');
+        }
+    };
+
+    const handleLogout = () => {
+
+        try {
+            // Barcha token va ma'lumotlarni o'chirish
+            localStorage.removeItem('access_token')
+            localStorage.removeItem('refresh_token')
+
+            // Session storage ni tozalash
+            sessionStorage.clear()
+
+            // Xabar berish
+            toast.success('Вы успешно вышли из системы', {
+                duration: 2000,
+                position: 'top-center'
+            })
+
+            // Login sahifasiga yo'naltirish
+            setTimeout(() => {
+                router.push('/login')
+            }, 1000)
+
+        } catch (error) {
+            console.error('Ошибка при выходе из системы:', error)
+            toast.error('Ошибка при выходе из системы')
+
+            // Xato bo'lsa ham login sahifasiga yo'naltirish
+            setTimeout(() => {
+                router.push('/login')
+            }, 1000)
+        }
+    }
+
+    if (!questionnaire) {
+        return (
+            <div className='max-md:px-4'>
+                <div className="text-white flex justify-between items-center mt-[0px] max-md:px-0">
+                    <button onClick={onBack} className="cursor-pointer max-md:w-8 max-md:h-8 ">
+                        <IoIosArrowBack size={40} className='max-md:w-6 max-md:h-6' />
+                    </button>
+                    <img src="/icons/logo.svg" alt="a" className='max-md:w-20  w-50' />
+                    <div className='max-md:w-8 max-md:h-8'>
+                        <img src="/icons/share.svg" alt="a" className='max-md:w-6 max-md:h-6' />
+                    </div>
+                </div>
+                <div className="text-center text-white py-10 max-md:py-6">
+                    <p className='max-md:text-sm'>Загрузка...</p>
+                </div>
+            </div>
+        );
+    }
+
+    const getAboutValue = (type) => {
+        const item = questionnaire.about_company?.find(item => item.type === type);
+        if (!item) return null;
+
+        if (typeof item.value === 'object') {
+            if (type === 'experience_geography') {
+                return (
+                    <div className="space-y-2">
+                        {item.value.description && <div>{item.value.description}</div>}
+                        {item.value.city && <div>Город: {item.value.city}</div>}
+                        {item.value.work_cities && Array.isArray(item.value.work_cities) && (
+                            <div>Города работы: {item.value.work_cities.join(', ')}</div>
+                        )}
+                    </div>
+                );
+            } else
+                if (type === 'social_networks') {
+                    const socialData = item.value;
+
+                    const socialMediaOptions = [
+                        { value: 'vk', label: 'ВК' },
+                        { value: 'telegram', label: 'Телеграм' },
+                        { value: 'pinterest', label: 'Пинтерест' },
+                        { value: 'instagram', label: 'Инстаграм' },
+                        { value: 'website', label: 'Веб-сайт' },
+                        { value: 'other', label: 'Другое' }
+                    ];
+
+                    if (socialData && Array.isArray(socialData.other_contacts)) {
+                        return (
+                            <div className="space-y-0">
+                                {socialData.other_contacts.map((contactStr, index) => {
+                                    try {
+                                        const fixedJson = contactStr.replace(/'/g, '"');
+                                        const contact = JSON.parse(fixedJson);
+
+                                        // value bo'yicha label topamiz, topilmasa type o'zi
+                                        const label = socialMediaOptions.find(opt => opt.value === contact.type)?.label || contact.type;
+
+                                        return (
+                                            <div key={index} className="flex gap-2 items-center">
+                                                <span className="font-bold uppercase text-xs px-px rounded">
+                                                    {label}:
+                                                </span>
+                                                <a className='underline' href={contact.value} target='_blank'>{contact.value}</a>
+                                            </div>
+                                        );
+                                    } catch (e) {
+                                        console.error("Parsing error:", e);
+                                        return <div key={index}>{contactStr}</div>;
+                                    }
+                                })}
+                            </div>
+                        );
+                    }
+                }
+        }
+        return item.value;
+    };
+
+
+
+    const getTermValue = (type) => {
+        const item = questionnaire.terms_of_cooperation?.find(item => item.type === type);
+        return item?.value || null;
+    };
+
+    const getServiceDisplay = (services) => {
+        if (!services || !Array.isArray(services)) return '';
+
+        const serviceMap = {
+            'decorator': 'Декоратор',
+            'residential_designer': 'Дизайнер жилых помещений',
+            'commercial_designer': 'Дизайнер коммерческой недвижимости',
+            'home_stager': 'Хоустейджер',
+            'architect': 'Архитектор',
+            'landscape_designer': 'Ландшафтный дизайнер',
+            'light_designer': 'Светодизайнер',
+            'author_supervision': 'Авторский надзор',
+            'design': 'Дизайн',
+            'completing': 'Комплектация',
+            'architecture': 'Архитектура',
+            'landscape_design': 'Ландшафтный дизайн',
+            'designer_horika': 'Дизайнер Хорека',
+        };
+
+        return services.map(service => serviceMap[service] || service).join(', ');
+    };
+
+    const getSegmentDisplay = (segments) => {
+        if (!segments || !Array.isArray(segments)) return '';
+
+        const segmentMap = {
+            'economy': 'Эконом',
+            'comfort': 'Комфорт',
+            'business': 'Бизнес',
+            'premium': 'Премиум',
+            'horeca': 'Хорека',
+            'exclusive': 'Эксклюзив',
+            'medium': 'Средний',
+        };
+
+        return segments.map(segment => segmentMap[segment] || segment).join(', ');
+    };
+
+    const displayedReviews = showAllReviews
+        ? questionnaire.reviews_list
+        : questionnaire.reviews_list.slice(0, 3);
+
+    return (
+        <div className='max-md:px-4 max-w-7xl mx-auto'>
+            <div className="text-white flex justify-between items-center mt-[0px] max-md:px-0">
+                <button onClick={onBack} className="cursor-pointer max-md:w-8 max-md:h-8 md:w-30" >
+                    <IoIosArrowBack size={40} className='max-md:w-6 max-md:h-6' />
+                </button>
+                <img src="/icons/logo.svg" alt="a" className='max-md:w-20 w-50' />
+                <div onClick={handleLogout} className='max-md:w-8 max-md:h-8 md:w-30'>
+                    <img src="/icons/share.svg" alt="a" className='max-md:w-6 max-md:h-6' />
+                </div>
+            </div>
+            <div className="max-w-xl mx-auto space-y-6">
+                <div className="">
+                    <div className="flex mb-0">
+                        <div className='w-[125px] h-[100px] card_img flex-shrink-0 overflow-hidden'>
+                            {questionnaire.photo ? (
+                                <img
+                                    src={questionnaire.photo}
+                                    alt={questionnaire.full_name}
+                                    className="w-full h-full object-cover rounded-lg"
+                                />
+                            ) : (
+                                <div className="w-full h-full card_img rounded-lg flex items-center justify-center">
+                                    <span className="text-white text-2xl uppercase">
+                                        {questionnaire.full_name ? questionnaire.full_name.charAt(0) : '?'}
+                                    </span>
+                                </div>
+                            )}
+                        </div>
+                        <div className="flex flex-col border-b border-b-[#FFFFFF91]  pl-12 ml-[-16px] flex-grow relative">
+                            <h2 className='mb-px text-[#FFFFFF] text-[25px]'>
+                                {questionnaire.full_name || 'Имя не указано'}
+                            </h2>
+                            <div className='w-[calc(100% + 32px)] h-0.25 bg-[#FFFFFF4F]  ml-[-32px]'></div>
+
+                            <p className='text-[#FFFFFF] text-sm mt-1 line-clamp-1 pr-10'>
+                                Услуги: {getServiceDisplay(questionnaire.services)}
+                            </p>
+                            <p className='text-[#FFFFFF] text-sm mt-1 line-clamp-1 pr-10'>
+                                Сегменты: {getSegmentDisplay(questionnaire.segments)}
+                            </p>
+
+                            <div className="absolute bottom-1 right-1 text-white">
+                                <span className='text-yellow-400'>★</span> {questionnaire?.rating_count?.total || 0}
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Tabs */}
+                    <div className='mt-0'>
+                        <div className='flex border-b border-[#FFFFFF91]'>
+                            <button
+                                onClick={() => setActiveTab('company')}
+                                className={`px-4 py-2 text-center text-[19px] text-[#FFFFFF] transition-all border-r ${activeTab === 'company'
+                                    ? ''
+                                    : 'opacity-60'
+                                    }`}
+                            >
+                                О дизайнере
+                            </button>
+                            <button
+                                onClick={() => setActiveTab('cooperation')}
+                                className={`flex-1 py-2 text-center text-[19px] text-[#FFFFFF] transition-all  ${activeTab === 'cooperation'
+                                    ? ''
+                                    : 'opacity-60'
+                                    }`}
+                            >
+                                Условия сотрудничества
+                            </button>
+                        </div>
+
+                        {/* Tab Content */}
+                        <div className='mt-2'>
+                            {activeTab === 'company' && (
+                                <div className='space-y-2'>
+                                    {/* Приветственное сообщение */}
+                                    {questionnaire.phone && (
+                                        <div className='text-[#FFFFFF] px-2 py-2 border-b border-[#FFFFFF91]'>
+                                            <span className='text-[19px] uppercase'>Телефон: &nbsp;</span>
+                                            <span className='leading-[100%]'>
+                                                {questionnaire.phone}
+                                            </span>
+                                        </div>
+                                    )}
+                                    {questionnaire.city && (
+                                        <div className='text-[#FFFFFF] px-2 py-2 border-b border-[#FFFFFF91]'>
+                                            <span className='text-[19px] uppercase'>Город: &nbsp;</span>
+                                            <span className='leading-[100%]'>
+                                                {questionnaire.city}
+                                            </span>
+                                        </div>
+                                    )}
+
+                                    {questionnaire.experience && (
+                                        <div className='text-[#FFFFFF] px-2 py-2 border-b border-[#FFFFFF91]'>
+                                            <span className='text-[19px] uppercase'>Опыт работы: &nbsp;</span>
+                                            <span className='leading-[100%]'>
+                                                {questionnaire.experience}
+                                            </span>
+                                        </div>
+                                    )}
+                                    {/* Акции и УТП */}
+                                    {getAboutValue('promotions_utp') && (
+                                        <div className='text-[#FFFFFF] px-2 py-2 border-b border-[#FFFFFF91]'>
+                                            <span className='text-[19px] uppercase'>Акции и УТП:&nbsp;</span>
+                                            <span className='leading-[100%]'>
+                                                {renderExpandableContent(getAboutValue('promotions_utp'), 'promotions_utp')}
+                                            </span>
+                                        </div>
+                                    )}
+
+                                    {getAboutValue('welcome_message') && (
+                                        <div className='text-[#FFFFFF] px-2 py-2 border-b border-[#FFFFFF91]'>
+                                            <span className='text-[19px] uppercase'>Приветственное сообщение:</span>
+                                            <span className='leading-[100%]'>
+                                                {renderExpandableContent(getAboutValue('welcome_message'), 'welcome_message')}
+                                            </span>
+                                        </div>
+                                    )}
+
+                                    {/* Опыт и география */}
+                                    {getAboutValue('experience_geography') && (
+                                        <div className='text-[#FFFFFF] px-2 py-2 border-b border-[#FFFFFF91]'>
+                                            <span className='text-[19px] uppercase'>Опыт и география работы: &nbsp;</span>
+                                            <span className='leading-[100%]'>
+                                                {getAboutValue('experience_geography')}
+                                            </span>
+                                        </div>
+                                    )}
+
+                                    {/* Пакеты услуг и стоимость */}
+                                    {getAboutValue('service_packages') && (
+                                        <div className='text-[#FFFFFF] px-2 py-2 border-b border-[#FFFFFF91]'>
+                                            <span className='text-[19px] uppercase'>Пакеты услуг и их стоимость:&nbsp;</span>
+                                            <span className='leading-[100%]' style={{ whiteSpace: 'pre-line' }}>
+                                                {renderExpandableContent(getAboutValue('service_packages'), 'service_packages')}
+                                            </span>
+                                        </div>
+                                    )}
+
+
+                                    {/* Социальные сети */}
+                                    {getAboutValue('social_networks') && (
+                                        <div className='text-[#FFFFFF] px-2 py-2 border-b border-[#FFFFFF91]'>
+                                            <p className='text-[19px] uppercase'>Социальные сети:</p>
+                                            {getAboutValue('social_networks')}
+
+                                        </div>
+                                    )}
+                                </div>
+                            )}
+
+                            {activeTab === 'cooperation' && (
+                                <div className='space-y-4'>
+                                    {/* Периоды выполнения проекта */}
+
+                                    {questionnaire.work_type && (
+                                        <div className='text-[#FFFFFF] px-2 py-2 border-b border-[#FFFFFF91]'>
+                                            <span className='text-[19px] uppercase'>Тип работы: &nbsp;</span>
+                                            <span className='leading-[100%]'>
+                                                {questionnaire.work_type}
+                                            </span>
+                                        </div>
+                                    )}
+
+                                    {questionnaire.purpose_of_property?.length > 0 && (
+                                        <div className='text-[#FFFFFF] px-2 py-2 border-b border-[#FFFFFF91]'>
+                                            <span className='text-[19px] uppercase'>Назначение объекта: &nbsp;</span>
+                                            <span className='leading-[100%]'>
+                                                {questionnaire.purpose_of_property.map((item, index) => (
+                                                    <span key={index} className='block'>{item}</span>
+                                                ))}
+                                            </span>
+                                        </div>
+                                    )}
+
+                                    {questionnaire.area_of_object?.length > 0 && (
+                                        <div className='text-[#FFFFFF] px-2 py-2 border-b border-[#FFFFFF91]'>
+                                            <span className='text-[19px] uppercase'>Площадь объекта: &nbsp;</span>
+                                            <span className='leading-[100%]'>
+                                                {questionnaire.area_of_object.map((item, index) => (
+                                                    <span key={index} className='block'>{item}</span>
+                                                ))}
+                                            </span>
+                                        </div>
+                                    )}
+
+                                    {getTermValue('project_periods') && (
+                                        <div className='text-[#FFFFFF] px-2 py-2 border-b border-[#FFFFFF91]'>
+                                            <span className='text-[19px] uppercase'>Периоды выполнения проекта: &nbsp;</span>
+                                            <span className='leading-[100%]'>
+                                                {renderExpandableContent(getTermValue('project_periods'), 'project_periods')}
+                                            </span>
+                                        </div>
+                                    )}
+
+                                    {/* НДС */}
+                                    {getTermValue('vat_payment') && (
+                                        <div className='text-[#FFFFFF] px-2 py-2 border-b border-[#FFFFFF91]'>
+                                            <span className='text-[19px] uppercase'>НДС: &nbsp;</span> {getTermValue('vat_payment')}
+                                            <span className='leading-[100%]'>
+                                            </span>
+                                        </div>
+                                    )}
+
+                                    {/* Гарантии */}
+                                    {getTermValue('guarantees') && (
+                                        <div className='text-[#FFFFFF] px-2 py-2 border-b border-[#FFFFFF91]'>
+                                            <span className='text-[19px] uppercase'>Гарантии: &nbsp;</span>
+                                            {renderExpandableContent(getTermValue('guarantees'), 'guarantees')}
+                                            <span className='leading-[100%]'>
+                                            </span>
+                                        </div>
+                                    )}
+
+                                    {/* Условия работы с другими городами */}
+                                    {getTermValue('other_cities_terms') && (
+                                        <div className='text-[#FFFFFF] px-2 py-2 border-b border-[#FFFFFF91]'>
+                                            <span className='text-[19px] uppercase'>Условия работы с другими городами:&nbsp;</span>
+                                            <span className='leading-[100%]'>
+                                                {renderExpandableContent(getTermValue('other_cities_terms'), 'other_cities_terms')}
+                                            </span>
+                                        </div>
+                                    )}
+
+
+                                </div>
+                            )}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    )
+}

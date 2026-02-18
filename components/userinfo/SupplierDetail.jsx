@@ -1,0 +1,482 @@
+'use client';
+import { useRouter } from 'next/navigation';
+import React, { useState } from 'react'
+import toast from 'react-hot-toast';
+import { IoIosArrowBack } from 'react-icons/io'
+
+export default function SupplierDetail({ questionnaire, onBack }) {
+    const [activeTab, setActiveTab] = useState('company'); // 'company' or 'cooperation'
+    const [showReviewForm, setShowReviewForm] = useState(false);
+    const [reviewType, setReviewType] = useState('positive');
+    const [reviewText, setReviewText] = useState('');
+    const [rating, setRating] = useState(5);
+    const [expandedSections, setExpandedSections] = useState({});
+    const [showAllReviews, setShowAllReviews] = useState(false);
+    const router = useRouter();
+    const toggleSection = (sectionKey) => {
+        setExpandedSections(prev => ({
+            ...prev,
+            [sectionKey]: !prev[sectionKey]
+        }));
+    };
+    const parseAddresses = (value) => {
+        if (!value) return "";
+
+        if (Array.isArray(value)) {
+            // Massiv kelgan bo'lsa, har bir elementni tekshir
+            return value.map(item => {
+                // Element o'zi ham JSON string bo'lishi mumkin (ichma-ich)
+                try {
+                    const parsed = JSON.parse(item);
+                    if (Array.isArray(parsed)) {
+                        return parsed.join(', ');
+                    }
+                    return parsed;
+                } catch {
+                    return item;
+                }
+            }).join(', ');
+        }
+
+        if (typeof value === 'string') {
+            try {
+                const parsed = JSON.parse(value);
+                // Recursively qayta chaqir
+                return parseAddresses(parsed);
+            } catch {
+                return value;
+            }
+        }
+
+        return String(value);
+    };
+    const renderExpandableContent = (content, sectionKey, maxLength = 200) => {
+        if (!content) return null;
+
+        const contentStr = typeof content === 'object' ? JSON.stringify(content) : String(content);
+        const isExpanded = expandedSections[sectionKey];
+
+        if (contentStr.length <= maxLength) {
+            return <span>{content}</span>;
+        }
+
+        return (
+            <>
+                {isExpanded ? content : `${contentStr.substring(0, maxLength)}...`}
+                <button
+                    onClick={() => toggleSection(sectionKey)}
+                    className="ml-2 text-blue-400 hover:text-blue-300 underline"
+                >
+                    {isExpanded ? 'Скрыть' : 'Показать полностью'}
+                </button>
+            </>
+        );
+    };
+
+    const handleSubmitReview = async () => {
+        try {
+            const token = localStorage.getItem('access_token');
+
+            if (!token) {
+                toast.error('Токен не найден. Пожалуйста, войдите в систему.');
+                return;
+            }
+
+            const response = await fetch(`https://api.reiting-profi.ru/api/v1/ratings/questionnaire-ratings/`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`,
+                },
+                body: JSON.stringify({
+                    role: "Поставщик",
+                    id_questionnaire: questionnaire.id,
+                    is_positive: reviewType === 'positive',
+                    is_constructive: reviewType === 'constructive',
+                    text: reviewText,
+                })
+            });
+
+            if (response.ok) {
+                toast.success('Отзыв отправлен на модерацию');
+                setReviewText('');
+                setRating(5);
+                setShowReviewForm(false);
+            } else {
+                const errorData = await response.json();
+
+                if (response.status === 401) {
+                    toast.error('Ошибка авторизации. Пожалуйста, войдите в систему заново.');
+                    localStorage.removeItem('access_token');
+                    localStorage.removeItem('accessToken');
+                    localStorage.removeItem('refreshToken');
+                    window.location.href = '/login';
+                } else {
+                    toast.error(`Ошибка при отправке отзыва: ${errorData.message || 'Неизвестная ошибка'}`);
+                }
+            }
+        } catch (error) {
+            console.error('Error submitting review:', error);
+            toast.error('Ошибка при отправке отзыва. Проверьте соединение с интернетом.');
+        }
+    };
+
+    const handleLogout = () => {
+
+        try {
+            // Barcha token va ma'lumotlarni o'chirish
+            localStorage.removeItem('access_token')
+            localStorage.removeItem('refresh_token')
+
+            // Session storage ni tozalash
+            sessionStorage.clear()
+
+            // Xabar berish
+            toast.success('Вы успешно вышли из системы', {
+                duration: 2000,
+                position: 'top-center'
+            })
+
+            // Login sahifasiga yo'naltirish
+            setTimeout(() => {
+                router.push('/login')
+            }, 1000)
+
+        } catch (error) {
+            console.error('Ошибка при выходе из системы:', error)
+            toast.error('Ошибка при выходе из системы')
+
+            // Xato bo'lsa ham login sahifasiga yo'naltirish
+            setTimeout(() => {
+                router.push('/login')
+            }, 1000)
+        }
+    }
+
+    if (!questionnaire) {
+        return (
+            <div className='max-md:px-4'>
+                <div className="text-white flex justify-between items-center mt-[0px] max-md:px-0">
+                    <button onClick={onBack} className="cursor-pointer max-md:w-8 max-md:h-8">
+                        <IoIosArrowBack size={40} className='max-md:w-6 max-md:h-6' />
+                    </button>
+                    <img src="/icons/logo.svg" alt="a" className='max-md:w-20 w-50' />
+                    <div className='max-md:w-8 max-md:h-8'>
+                        <img src="/icons/share.svg" alt="a" className='max-md:w-6 max-md:h-6' />
+                    </div>
+                </div>
+                <div className="text-center text-white py-10 max-md:py-6">
+                    <p className='max-md:text-sm'>Загрузка...</p>
+                </div>
+            </div>
+        );
+    }
+
+
+    const getAboutValue = (type) => {
+        const item = questionnaire.about_company?.find(item => item.type === type);
+        if (!item) return null;
+
+        if (type === 'social_networks') {
+            const socialData = item.value;
+
+            const socialMediaOptions = [
+                { value: 'vk', label: 'ВК' },
+                { value: 'telegram', label: 'Телеграм' },
+                { value: 'pinterest', label: 'Пинтерест' },
+                { value: 'instagram', label: 'Инстаграм' },
+                { value: 'website', label: 'Веб-сайт' },
+                { value: 'other', label: 'Другое' }
+            ];
+
+            if (socialData && Array.isArray(socialData.other_contacts)) {
+                return (
+                    <div className="space-y-0">
+                        {socialData.other_contacts.map((contactStr, index) => {
+                            try {
+                                const fixedJson = contactStr.replace(/'/g, '"');
+                                const contact = JSON.parse(fixedJson);
+
+                                // value bo'yicha label topamiz, topilmasa type o'zi
+                                const label = socialMediaOptions.find(opt => opt.value === contact.type)?.label || contact.type;
+
+                                return (
+                                    <div key={index} className="flex gap-2 items-center">
+                                        <span className="font-bold uppercase text-xs px-px rounded">
+                                            {label}:
+                                        </span>
+                                        <a className='underline' href={contact.value} target='_blank'>{contact.value}</a>
+                                    </div>
+                                );
+                            } catch (e) {
+                                console.error("Parsing error:", e);
+                                return <div key={index}>{contactStr}</div>;
+                            }
+                        })}
+                    </div>
+                );
+            }
+        }
+
+        if (type === 'office_addresses') {
+            return Array.isArray(item.value) ? item.value.join(', ') : item.value;
+        }
+
+        return item.value;
+    };
+    const getTermValue = (type) => {
+        const item = questionnaire.terms_of_cooperation?.find(item => item.type === type);
+        return item?.value || null;
+    };
+
+    const getCategoryDisplay = () => {
+        const categoryMap = {
+            'rough_materials': 'Черновые материалы',
+            'finishing_materials': 'Чистовые материалы',
+            'soft_furniture': 'Мягкая мебель',
+            'cabinet_furniture': 'Корпусная мебель',
+            'appliances': 'Техника',
+            'decor': 'Декор',
+            'all': 'Все категории',
+        };
+        return categoryMap[questionnaire.group] || questionnaire.group;
+    };
+
+    const getSegmentDisplay = (segments) => {
+        if (!segments || !Array.isArray(segments)) return '';
+
+        const segmentMap = {
+            'economy': 'Эконом',
+            'comfort': 'Комфорт',
+            'business': 'Бизнес',
+            'premium': 'Премиум',
+            'horeca': 'Хорека',
+            'exclusive': 'Эксклюзив',
+            'medium': 'Средний',
+        };
+
+        return segments.map(segment => segmentMap[segment] || segment).join(', ');
+    };
+
+    const displayedReviews = showAllReviews
+        ? questionnaire.reviews_list
+        : questionnaire.reviews_list?.slice(0, 3) || [];
+
+    return (
+        <div className='max-md:px-4 max-w-7xl'>
+            <div className="text-white flex justify-between items-center mt-[0px] max-md:px-0">
+                <button onClick={onBack} className="cursor-pointer max-md:w-8 max-md:h-8 md:w-30">
+                    <IoIosArrowBack size={40} className='max-md:w-6 max-md:h-6' />
+                </button>
+                <img src="/icons/logo.svg" alt="a" className='max-md:w-20 w-50' />
+                <div className='max-md:w-8 max-md:h-8 md:w-30' onClick={handleLogout}>
+                    <img src="/icons/share.svg" alt="a" className='max-md:w-6 max-md:h-6' />
+                </div>
+            </div>
+            <div className="max-w-xl mx-auto space-y-6">
+                <div className="">
+                    <div className="flex mb-0">
+                        <div className='w-[125px] h-[100px] card_img flex-shrink-0 overflow-hidden'>
+                            {questionnaire.company_logo ? (
+                                <img
+                                    src={questionnaire.company_logo}
+                                    alt={questionnaire.brand_name}
+                                    className="w-full h-full object-cover rounded-lg"
+                                />
+                            ) : (
+                                <div className="w-full h-full card_img rounded-lg flex items-center justify-center">
+                                    <span className="text-white text-2xl uppercase">
+                                        {questionnaire.brand_name ? questionnaire.brand_name.charAt(0) : '?'}
+                                    </span>
+                                </div>
+                            )}
+                        </div>
+                        <div className="flex flex-col border-b border-b-[#FFFFFF91]  pl-12 ml-[-16px] flex-grow relative">
+                            <h2 className='mb-0.5 text-[#FFFFFF] text-[25px]'>
+                                {questionnaire.brand_name || questionnaire.full_name || 'Название организации'}
+                            </h2>
+                            <div className='w-[calc(100% + 32px)] h-0.25 bg-[#FFFFFF4F]  ml-[-32px]'></div>
+
+                            <p className='text-[#FFFFFF] text-sm mt-1 pr-10 leading-[100%]'>
+                                Сегменты: {getSegmentDisplay(questionnaire.segments)}
+                            </p>
+
+                            <div className="absolute bottom-1 right-1 text-white">
+                                <span className='text-yellow-400'>★</span> {questionnaire?.rating_count?.total || 0}
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Tabs */}
+                    <div className='mt-0'>
+                        <div className='flex border-b border-[#FFFFFF91]'>
+                            <button
+                                onClick={() => setActiveTab('company')}
+                                className={`px-4 py-2 text-center text-[19px] text-[#FFFFFF] transition-all border-r ${activeTab === 'company'
+                                    ? ''
+                                    : 'opacity-60'
+                                    }`}
+                            >
+                                О компании
+                            </button>
+                            <button
+                                onClick={() => setActiveTab('cooperation')}
+                                className={`flex-1 py-2 text-center text-[19px] text-[#FFFFFF] transition-all  ${activeTab === 'cooperation'
+                                    ? ''
+                                    : 'opacity-60'
+                                    }`}
+                            >
+                                Условия сотрудничества
+                            </button>
+                        </div>
+
+                        {/* Tab Content */}
+                        <div className='mt-2'>
+                            {activeTab === 'company' && (
+                                <div className='space-y-2'>
+
+                                    {getAboutValue('company_description') && (
+                                        <div className='text-[#FFFFFF] px-2 py-2 border-b border-[#FFFFFF91]'>
+                                            <span className='text-[19px] uppercase'>Описание компании: </span>
+                                            <span className='leading-[100%]' >
+                                                {renderExpandableContent(getAboutValue('company_description'), 'company_description')}
+                                            </span>
+
+                                        </div>
+                                    )}
+                                    {getAboutValue('office_addresses') && (
+                                        <div className='text-[#FFFFFF] px-2 py-2 border-b border-[#FFFFFF91]'>
+                                            <span className='text-[19px] uppercase'>Адреса офисов:</span> <br />
+                                            <span className='leading-[100%]' style={{ whiteSpace: 'pre-line' }}>
+                                                {renderExpandableContent(parseAddresses(getAboutValue('office_addresses')), 'office_addresses')}
+                                            </span>
+                                        </div>
+                                    )}
+                                    {questionnaire.phone && (
+                                        <div className='text-[#FFFFFF] px-2 py-2 border-b border-[#FFFFFF91]'>
+                                            <span className='text-[19px] uppercase'>Телефон: &nbsp;</span>
+                                            <span className='leading-[100%]'>
+                                                {questionnaire.phone}
+                                            </span>
+                                        </div>
+                                    )}
+
+                                    {questionnaire.email && (
+                                        <div className='text-[#FFFFFF] px-2 py-2 border-b border-[#FFFFFF91]'>
+                                            <span className='text-[19px] uppercase'>Email: &nbsp;</span>
+                                            <span className='leading-[100%]'>
+                                                {questionnaire.email}
+                                            </span>
+                                        </div>
+                                    )}
+
+                                    {questionnaire.responsible_person && (
+                                        <div className='text-[#FFFFFF] px-2 py-2 border-b border-[#FFFFFF91]'>
+                                            <span className='text-[19px] uppercase'>Ответственное лицо: &nbsp;</span>
+                                            <span className='leading-[100%]'>
+                                                {questionnaire.responsible_person}
+                                            </span>
+                                        </div>
+                                    )}
+
+                                    {questionnaire.business_form_display && (
+                                        <div className='text-[#FFFFFF] px-2 py-2 border-b border-[#FFFFFF91]'>
+                                            <span className='text-[19px] uppercase'>Форма бизнеса: &nbsp;</span>
+                                            <span className='leading-[100%]'>
+                                                {questionnaire.business_form_display}
+                                            </span>
+                                        </div>
+                                    )}
+                                    {questionnaire?.welcome_message && (
+                                        <div className='text-[#FFFFFF] px-2 py-2 border-b border-[#FFFFFF91]'>
+                                            <span className='text-[19px] uppercase'>Акции и УТП: &nbsp;</span>
+                                            <span className='leading-[100%]' style={{ whiteSpace: 'pre-line' }}>
+                                                {questionnaire?.welcome_message}
+                                            </span>
+                                        </div>
+                                    )}
+
+
+                                    {getAboutValue('product_assortment') && (
+                                        <div className='text-[#FFFFFF] px-2 py-2 border-b border-[#FFFFFF91]'>
+                                            <span className='text-[19px] uppercase'>Ассортимент продукции:</span>
+                                            <span className='leading-[100%]' style={{ whiteSpace: 'pre-line' }}>
+                                                {renderExpandableContent(getAboutValue('product_assortment'), 'product_assortment')}
+                                            </span>
+                                        </div>
+                                    )}
+
+
+
+
+                                    {getAboutValue('social_networks') && (
+                                        <div className='text-[#FFFFFF] px-2 py-2 border-b border-[#FFFFFF91]'>
+                                            <span className='text-[19px] uppercase'>Социальные сети:</span>
+                                            <span className='leading-[100%]'>
+                                                {getAboutValue('social_networks')}
+                                            </span>
+                                        </div>
+                                    )}
+                                </div>
+                            )}
+
+                            {activeTab === 'cooperation' && (
+                                <div className='space-y-2'>
+                                    {getTermValue('delivery_periods') && (
+                                        <div className='text-[#FFFFFF] px-2 py-2 border-b border-[#FFFFFF91]'>
+                                            <span className='text-[19px] uppercase'>Сроки поставки:  </span>
+                                            <span className='leading-[100%]'>
+                                                {renderExpandableContent(getTermValue('delivery_periods'), 'delivery_periods')}
+                                            </span>
+                                        </div>
+                                    )}
+
+                                    {getTermValue('vat_payment') && (
+                                        <div className='text-[#FFFFFF] px-2 py-2 border-b border-[#FFFFFF91]'>
+                                            <span className='text-[19px] uppercase'>НДС:  </span>
+                                            <span className='leading-[100%]'>
+                                                {getTermValue('vat_payment')}
+                                            </span>
+                                        </div>
+                                    )}
+
+                                    {getTermValue('guarantees') && (
+                                        <div className='text-[#FFFFFF] px-2 py-2 border-b border-[#FFFFFF91]'>
+                                            <span className='text-[19px] uppercase'>Гарантии:  </span>
+                                            <span className='leading-[100%]'>
+                                                {renderExpandableContent(getTermValue('guarantees'), 'guarantees')}
+                                            </span>
+
+                                        </div>
+                                    )}
+
+                                    {getTermValue('magazine_cards') && (
+                                        <div className='text-[#FFFFFF] px-2 py-2 border-b border-[#FFFFFF91]'>
+                                            <span className='text-[19px] uppercase'>Карточки журнала: </span>
+                                            <span className='leading-[100%]'>
+                                                {getTermValue('magazine_cards')}
+                                            </span>
+                                        </div>
+                                    )}
+
+                                    {getTermValue('designer_contractor_terms') && (
+                                        <div className='text-[#FFFFFF] px-2 py-2 border-b border-[#FFFFFF91]'>
+                                            <span className='text-[19px] uppercase'>Условия для дизайнеров и прорабов:  </span>
+                                            <span className='leading-[100%]'>
+                                                {renderExpandableContent(getTermValue('designer_contractor_terms'), 'designer_contractor_terms')}
+                                            </span>
+
+                                        </div>
+                                    )}
+
+
+                                </div>
+                            )}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    )
+}

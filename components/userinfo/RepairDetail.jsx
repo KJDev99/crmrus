@@ -239,7 +239,7 @@ export default function RepairDetail({ questionnaire, onBack }) {
         : questionnaire.reviews_list.slice(0, 3);
 
     return (
-        <div className='max-md:px-4'>
+        <div className='max-md:px-4 max-w-7xl mx-auto'>
             <div className="text-white flex justify-between items-center mt-[0px] max-md:px-0">
                 <button onClick={onBack} className="cursor-pointer max-md:w-8 max-md:h-8 md:w-30">
                     <IoIosArrowBack size={40} className='max-md:w-6 max-md:h-6' />
@@ -528,137 +528,14 @@ export default function RepairDetail({ questionnaire, onBack }) {
                                         </div>
                                     )}
 
-                                    {/* Reviews Section */}
-                                    <div className='mt-8 text-[#FFFFFF] px-2 py-4 border-b border-[#FFFFFF91]'>
-                                        <div
-                                            className="flex gap-x-4 cursor-pointer hover:opacity-80"
-                                            onClick={() => setShowReviewForm(!showReviewForm)}
-                                        >
-                                            <h3 className='text-[19px] uppercase'>ОТЗЫВЫ:</h3>
-                                            <div className='flex items-center gap-x-5'>
-                                                <p>
-                                                    <span className='text-yellow-400 lowercase'>★</span> Положительных: {questionnaire.rating_count?.positive || 0}
-                                                </p>
-                                                <p>
-                                                    <span className='text-gray-400 lowercase'>☆</span> Конструктивных: {questionnaire.rating_count?.constructive || 0}
-                                                </p>
-                                            </div>
-                                        </div>
 
-                                        {!showReviewForm && (
-                                            <>
-                                                {displayedReviews.map((review, index) => (
-                                                    <div key={index} className='mt-4 border-b border-[#FFFFFF40] pb-3'>
-                                                        <div className='flex items-center mb-2'>
-                                                            <span className='text-yellow-400 mr-2'>
-                                                                {review.is_positive ? '★' : '☆'}
-                                                            </span>
-                                                            <span className='text-sm text-[#FFFFFFCC]'>
-                                                                {review.reviewer_phone || 'Аноним'}
-                                                            </span>
-                                                            <span className='text-xs text-[#FFFFFF80] ml-2'>
-                                                                ({review.status_display})
-                                                            </span>
-                                                        </div>
-                                                        <p className='text-[#FFFFFFCC] text-sm pl-6'>
-                                                            {review.text}
-                                                        </p>
-                                                    </div>
-                                                ))}
-
-                                                {questionnaire.reviews_list.length > 3 && (
-                                                    <button
-                                                        onClick={() => setShowAllReviews(!showAllReviews)}
-                                                        className="mt-4 text-blue-400 hover:text-blue-300 underline"
-                                                    >
-                                                        {showAllReviews ? 'Скрыть' : `Показать все отзывы (${questionnaire.reviews_list.length})`}
-                                                    </button>
-                                                )}
-                                            </>
-                                        )}
-
-                                        {/* Review Form */}
-                                        {showReviewForm && (
-                                            <div className='mt-6 space-y-4 border-t border-[#FFFFFF40] pt-4'>
-                                                <h4 className='text-md font-semibold'>Оставить отзыв:</h4>
-
-                                                {/* Review Type Selection */}
-                                                <div className='flex gap-x-6'>
-                                                    <label className='flex items-center gap-x-2 cursor-pointer'>
-                                                        <input
-                                                            type='radio'
-                                                            name='reviewType'
-                                                            value='positive'
-                                                            checked={reviewType === 'positive'}
-                                                            onChange={(e) => setReviewType(e.target.value)}
-                                                            className='w-4 h-4'
-                                                        />
-                                                        <span className='text-yellow-400'>★</span>
-                                                        <span className='lowercase'>Положительный</span>
-                                                    </label>
-                                                    <label className='flex items-center gap-x-2 cursor-pointer'>
-                                                        <input
-                                                            type='radio'
-                                                            name='reviewType'
-                                                            value='constructive'
-                                                            checked={reviewType === 'constructive'}
-                                                            onChange={(e) => setReviewType(e.target.value)}
-                                                            className='w-4 h-4'
-                                                        />
-                                                        <span className='text-gray-400'>☆</span>
-                                                        <span className='lowercase'>Конструктивный</span>
-                                                    </label>
-                                                </div>
-
-
-
-                                                {/* Text Area */}
-                                                <textarea
-                                                    value={reviewText}
-                                                    onChange={(e) => setReviewText(e.target.value)}
-                                                    placeholder='Напишите ваш отзыв...'
-                                                    className='w-full h-32 px-4 py-2 bg-[#FFFFFF20] text-white rounded-lg border border-[#FFFFFF40] focus:outline-none focus:border-[#FFFFFF80] resize-none'
-                                                />
-
-                                                {/* Submit Button */}
-                                                <div className='flex gap-x-4'>
-                                                    <button
-                                                        onClick={handleSubmitReview}
-                                                        disabled={!reviewText.trim()}
-                                                        className='px-6 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-600 disabled:cursor-not-allowed text-white rounded-lg transition-colors'
-                                                    >
-                                                        Отправить
-                                                    </button>
-                                                    <button
-                                                        onClick={() => {
-                                                            setShowReviewForm(false);
-                                                            setReviewText('');
-                                                            setRating(5);
-                                                        }}
-                                                        className='px-6 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-lg transition-colors'
-                                                    >
-                                                        Отмена
-                                                    </button>
-                                                </div>
-
-                                                {/* Info Text */}
-                                                <p className='text-xs text-[#FFFFFF80] mt-4'>
-
-                                                </p>
-                                            </div>
-                                        )}
-                                    </div>
                                 </div>
                             )}
                         </div>
                     </div>
                 </div>
             </div>
-            <div className="relative w-full max-w-[1200px] mx-auto mt-[79px] mb-[64px] flex justify-center">
-                <div className="absolute right-0 top-1/2 -translate-y-1/2 text-white text-[50px]">
-                    ★
-                </div>
-            </div>
+
         </div>
     )
 }
