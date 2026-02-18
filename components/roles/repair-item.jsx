@@ -131,10 +131,11 @@ export default function RepairItem({
                                         <h2 className='mb-[-8px] text-[#FFFFFF] text-[22px] line-clamp-1'>
                                             {questionnaire.brand_name || questionnaire.full_name || 'Название организации'}
                                         </h2>
-                                        <p className='text-[#FFFFFF] text-sm max-md:text-xs line-clamp-1 mb-2 grow'>
+                                        <p className='text-[#FFFFFF] text-sm max-md:text-xs line-clamp-1 mb-2'>
                                             {questionnaire?.about_company[2]?.value.join(', ') || ""}
                                         </p>
-                                        <p className='text-[#FFFFFF] text-sm max-md:text-xs mt-1 line-clamp-2 leading-[100%]'>
+                                        <p className='grow'></p>
+                                        <p className='text-[#FFFFFF] text-sm max-md:text-xs mt-1 line-clamp-2 leading-[100%] uppercase'>
                                             {questionnaire?.about_company[0]?.value || ""}
                                         </p>
                                     </div>

@@ -330,6 +330,23 @@ export default function MediaDetail({ questionnaire, onBack }) {
                             </button>
                         </div>
                         <div className='space-y-4 max-md:space-y-2'>
+                            {questionnaire.representative_cities && (
+                                <div className='text-[#FFFFFF] px-2 py-2 border-b border-[#FFFFFF91] max-md:px-1 max-md:text-sm'>
+                                    <p className='text-[19px] uppercase'>Города представительств:</p>
+                                    {renderExpandableContent(questionnaire.representative_cities, 'representative_cities')}
+                                </div>
+                            )}
+
+                            {questionnaire.business_form && (
+                                <div className='text-[#FFFFFF] px-2 py-2 border-b border-[#FFFFFF91] max-md:px-1 max-md:text-sm'>
+                                    <p className='text-[19px] uppercase'>Форма бизнеса:</p>
+                                    <span>
+                                        {questionnaire.business_form === 'own_business' ? 'Собственный бизнес'
+                                            : questionnaire.business_form === 'franchise' ? 'Франшиза'
+                                                : questionnaire.business_form}
+                                    </span>
+                                </div>
+                            )}
                             {questionnaire.welcome_message && (
                                 <div className='text-[#FFFFFF] px-2 py-2 border-b border-[#FFFFFF91] max-md:px-1 max-md:text-sm'>
                                     <p className='text-[19px] uppercase'>Приветственное сообщение:</p>
@@ -382,18 +399,15 @@ export default function MediaDetail({ questionnaire, onBack }) {
 
                                             // Type bo'yicha label aniqlash
                                             const getLabel = (type) => {
-                                                const labels = {
-                                                    vk: 'VK',
-                                                    instagram: 'Instagram',
-                                                    telegram: 'Telegram',
-                                                    telegram_channel: 'Telegram канал',
-                                                    pinterest: 'Pinterest',
-                                                    website: 'Website',
-                                                    facebook: 'Facebook',
-                                                    youtube: 'YouTube',
-                                                    tiktok: 'TikTok'
-                                                };
-                                                return labels[type] || type;
+                                                const socialMediaOptions = [
+                                                    { value: 'vk', label: 'ВК' },
+                                                    { value: 'telegram', label: 'Телеграм' },
+                                                    { value: 'pinterest', label: 'Пинтерест' },
+                                                    { value: 'instagram', label: 'Инстаграм' },
+                                                    { value: 'website', label: 'Веб-сайт' },
+                                                    { value: 'other', label: 'Другое' }
+                                                ];
+                                                return socialMediaOptions.find(opt => opt.value === type)?.label || type;
                                             };
 
                                             return (
@@ -436,10 +450,10 @@ export default function MediaDetail({ questionnaire, onBack }) {
                                 <h3 className='text-[19px] font-normal uppercase max-md:text-base'>ОТЗЫВЫ:</h3>
                                 <div className='flex items-center gap-x-5 max-md:gap-x-3'>
                                     <p className='max-md:text-sm lowercase'>
-                                        <span className='text-yellow-400 '>★</span> Положительных: {questionnaire.rating_count?.positive || 0}
+                                        <span className='text-yellow-400 lowercase'>★</span> Положительных: {questionnaire.rating_count?.positive || 0}
                                     </p>
                                     <p className='max-md:text-sm lowercase'>
-                                        <span className='text-gray-400 '>☆</span> Конструктивных: {questionnaire.rating_count?.constructive || 0}
+                                        <span className='text-gray-400 lowercase'>☆</span> Конструктивных: {questionnaire.rating_count?.constructive || 0}
                                     </p>
                                 </div>
                             </div>

@@ -155,27 +155,32 @@ export default function RepairDetail({ questionnaire, onBack }) {
         if (type === 'social_networks') {
             const socialData = item.value;
 
+            const socialMediaOptions = [
+                { value: 'vk', label: 'ВК' },
+                { value: 'telegram', label: 'Телеграм' },
+                { value: 'pinterest', label: 'Пинтерест' },
+                { value: 'instagram', label: 'Инстаграм' },
+                { value: 'website', label: 'Веб-сайт' },
+                { value: 'other', label: 'Другое' }
+            ];
+
             if (socialData && Array.isArray(socialData.other_contacts)) {
                 return (
                     <div className="space-y-0">
                         {socialData.other_contacts.map((contactStr, index) => {
                             try {
-                                // Backenddan ' (yagona tirnoq) bilan kelayotgani uchun uni " ga almashtiramiz
                                 const fixedJson = contactStr.replace(/'/g, '"');
                                 const contact = JSON.parse(fixedJson);
 
+                                // value bo'yicha label topamiz, topilmasa type o'zi
+                                const label = socialMediaOptions.find(opt => opt.value === contact.type)?.label || contact.type;
+
                                 return (
                                     <div key={index} className="flex gap-2 items-center">
-                                        <span className="font-bold uppercase text-xs  px-px rounded">
-                                            {contact.type}:
+                                        <span className="font-bold uppercase text-xs px-px rounded">
+                                            {label}:
                                         </span>
-                                        {contact.type === 'telegram' || contact.value.startsWith('http') ? (
-                                            <a href={contact.value} target="_blank" rel="noreferrer" className="underline hover:text-blue-300">
-                                                {contact.value}
-                                            </a>
-                                        ) : (
-                                            <span className=''>{contact.value}</span>
-                                        )}
+                                        <a className='underline' href={contact.value} target='_blank'>{contact.value}</a>
                                     </div>
                                 );
                             } catch (e) {
@@ -187,7 +192,6 @@ export default function RepairDetail({ questionnaire, onBack }) {
                 );
             }
         }
-
         if (type === 'office_addresses') {
             return Array.isArray(item.value) ? item.value.join(', ') : item.value;
         }
@@ -269,7 +273,7 @@ export default function RepairDetail({ questionnaire, onBack }) {
                             </h2>
                             <div className='w-[calc(100% + 32px)] h-0.25 bg-[#FFFFFF4F]  ml-[-32px]'></div>
 
-                            <p className='text-[#FFFFFF] text-sm mt-1'>
+                            <p className='text-[#FFFFFF] text-sm mt-1 pr-10'>
                                 Сегменты: {getSegmentDisplay(questionnaire.segments)}
                             </p>
 
@@ -279,13 +283,6 @@ export default function RepairDetail({ questionnaire, onBack }) {
                         </div>
                     </div>
 
-                    {/* <h2 className='mt-4 mb-4 text-center text-lg text-[#FFFFFF]'>Контактная информация</h2>
-                    <div className='text-lg border-y border-[#FFFFFF91] px-2 py-4 text-[#FFFFFF] space-y-2'>
-                        <p><strong>Бренд:</strong> {questionnaire.brand_name || 'Не указан'}</p>
-                        <p><strong>Ответственное лицо:</strong> {questionnaire.responsible_person || 'Не указано'}</p>
-                        <p><strong>Телефон:</strong> {questionnaire.phone || 'Не указан'}</p>
-                        <p><strong>Email:</strong> {questionnaire.email || 'Не указан'}</p>
-                    </div> */}
 
                     {/* Tabs */}
                     <div className='mt-0'>
@@ -314,29 +311,23 @@ export default function RepairDetail({ questionnaire, onBack }) {
                         <div className='mt-2'>
                             {activeTab === 'company' && (
                                 <div className='space-y-2'>
-                                    {/* Приветственное сообщение */}
-                                    {getAboutValue('welcome_message') && (
-                                        <div className='text-[#FFFFFF] px-2 py-2'>
-                                            <p className='text-[19px] uppercase'>Приветственное сообщение:</p>
-                                            {renderExpandableContent(getAboutValue('welcome_message'), 'welcome_message')}
+                                    {questionnaire.phone && (
+                                        <div className='text-[#FFFFFF] px-2 py-2 border-b border-[#FFFFFF91]'>
+                                            <span className='text-[19px] uppercase'>Телефон: &nbsp;</span>
+                                            <span className='leading-[100%]'>
+                                                {questionnaire.phone}
+                                            </span>
                                         </div>
                                     )}
 
-                                    {/* Сколько лет в профессии */}
-                                    {getAboutValue('years_in_profession') && (
-                                        <div className='text-[#FFFFFF] px-2 py-2'>
-                                            <p className='text-[19px] uppercase'>Сколько лет в профессии:</p> {getAboutValue('years_in_profession')}
+                                    {questionnaire.email && (
+                                        <div className='text-[#FFFFFF] px-2 py-2 border-b border-[#FFFFFF91]'>
+                                            <span className='text-[19px] uppercase'>Email: &nbsp;</span>
+                                            <span className='leading-[100%]'>
+                                                {questionnaire.email}
+                                            </span>
                                         </div>
                                     )}
-
-                                    {/* География */}
-                                    {getAboutValue('geography') && (
-                                        <div className='text-[#FFFFFF] px-2 py-2'>
-                                            <p className='text-[19px] uppercase'>География:</p>
-                                            {renderExpandableContent(getAboutValue('geography'), 'geography')}
-                                        </div>
-                                    )}
-
                                     {/* Описание компании */}
                                     {getAboutValue('company_description') && (
                                         <div className='text-[#FFFFFF] px-2 py-2 border-b border-[#FFFFFF91]'>
@@ -392,12 +383,55 @@ export default function RepairDetail({ questionnaire, onBack }) {
                                     {/* Адреса офисов */}
                                     {getAboutValue('office_addresses') && (
                                         <div className='text-[#FFFFFF] px-2 py-2 border-b border-[#FFFFFF91]'>
-                                            <span className='text-[19px] uppercase'>Адреса офисов:  &nbsp;</span>
+                                            <span className='text-[19px] uppercase'>Адреса офисов:  &nbsp;</span> <br />
                                             <span className='leading-[100%]'>
                                                 {renderExpandableContent(getAboutValue('office_addresses'), 'office_addresses')}
                                             </span>
                                         </div>
                                     )}
+                                    {questionnaire.work_format && (
+                                        <div className='text-[#FFFFFF] px-2 py-2 border-b border-[#FFFFFF91]'>
+                                            <span className='text-[19px] uppercase'>Формат работы: &nbsp;</span>
+                                            <span className='leading-[100%]'>
+                                                {renderExpandableContent(questionnaire.work_format)}
+                                            </span>
+                                        </div>
+                                    )}
+
+                                    {questionnaire.speed_of_execution?.length > 0 && (
+                                        <div className='text-[#FFFFFF] px-2 py-2 border-b border-[#FFFFFF91]'>
+                                            <span className='text-[19px] uppercase'>Скорость выполнения: &nbsp;</span>
+                                            <span className='leading-[100%]'>
+                                                {questionnaire.speed_of_execution.map((item, index) => (
+                                                    <span key={index} className='block'>{item}</span>
+                                                ))}
+                                            </span>
+                                        </div>
+                                    )}
+                                    {/* Приветственное сообщение */}
+                                    {getAboutValue('welcome_message') && (
+                                        <div className='text-[#FFFFFF] px-2 py-2'>
+                                            <p className='text-[19px] uppercase'>Приветственное сообщение:</p>
+                                            {renderExpandableContent(getAboutValue('welcome_message'), 'welcome_message')}
+                                        </div>
+                                    )}
+
+                                    {/* Сколько лет в профессии */}
+                                    {getAboutValue('years_in_profession') && (
+                                        <div className='text-[#FFFFFF] px-2 py-2'>
+                                            <p className='text-[19px] uppercase'>Сколько лет в профессии:</p> {getAboutValue('years_in_profession')}
+                                        </div>
+                                    )}
+
+                                    {/* География */}
+                                    {getAboutValue('geography') && (
+                                        <div className='text-[#FFFFFF] px-2 py-2'>
+                                            <p className='text-[19px] uppercase'>География:</p>
+                                            {renderExpandableContent(getAboutValue('geography'), 'geography')}
+                                        </div>
+                                    )}
+
+
 
 
                                     {getAboutValue('social_networks') && (
@@ -430,8 +464,8 @@ export default function RepairDetail({ questionnaire, onBack }) {
                                     {/* Сроки ремонта */}
                                     {getTermValue('repair_periods') && (
                                         <div className='text-[#FFFFFF] px-2 py-2 border-b border-[#FFFFFF91]'>
-                                            <span className='text-[19px] uppercase'>Сроки ремонта: &nbsp;</span>
-                                            <span className='leading-[100%]'>
+                                            <span className='text-[19px] uppercase'>Сроки ремонта: &nbsp;</span> <br />
+                                            <span className='leading-[100%]' style={{ whiteSpace: 'pre-line' }}>
                                                 {renderExpandableContent(getTermValue('repair_periods'), 'repair_periods')}
                                             </span>
                                         </div>
@@ -441,7 +475,7 @@ export default function RepairDetail({ questionnaire, onBack }) {
                                     {getTermValue('vat_payment') && (
                                         <div className='text-[#FFFFFF] px-2 py-2 border-b border-[#FFFFFF91]'>
                                             <span className='text-[19px] uppercase'>НДС: &nbsp;</span>
-                                            <span className='leading-[100%]'>
+                                            <span className='leading-[100%]' style={{ whiteSpace: 'pre-line' }}>
                                                 {getTermValue('vat_payment')}
 
                                             </span>
@@ -451,8 +485,8 @@ export default function RepairDetail({ questionnaire, onBack }) {
                                     {/* Гарантии */}
                                     {getTermValue('guarantees') && (
                                         <div className='text-[#FFFFFF] px-2 py-2 border-b border-[#FFFFFF91]'>
-                                            <span className='text-[19px] uppercase'>Гарантии: &nbsp;</span>
-                                            <span>
+                                            <span className='text-[19px] uppercase'>Гарантии: &nbsp;</span> <br />
+                                            <span style={{ whiteSpace: 'pre-line' }}>
 
                                                 {renderExpandableContent(getTermValue('guarantees'), 'guarantees')}
                                             </span>
@@ -485,7 +519,8 @@ export default function RepairDetail({ questionnaire, onBack }) {
                                     {getTermValue('designer_supplier_terms') && (
                                         <div className='text-[#FFFFFF] px-2 py-2 border-b border-[#FFFFFF91]'>
                                             <span className='text-[19px] uppercase'>Условия работы с учетом рекомендации: &nbsp;</span>
-                                            <span className='leading-[100%]'>
+                                            <br />
+                                            <span className='leading-[100%]' style={{ whiteSpace: 'pre-line' }}>
 
                                                 {renderExpandableContent(getTermValue('designer_supplier_terms'), 'designer_supplier_terms')}
                                             </span>
@@ -501,10 +536,10 @@ export default function RepairDetail({ questionnaire, onBack }) {
                                             <h3 className='text-[19px] uppercase'>ОТЗЫВЫ:</h3>
                                             <div className='flex items-center gap-x-5'>
                                                 <p>
-                                                    <span className='text-yellow-400'>★</span> Положительных: {questionnaire.rating_count?.positive || 0}
+                                                    <span className='text-yellow-400 lowercase'>★</span> Положительных: {questionnaire.rating_count?.positive || 0}
                                                 </p>
                                                 <p>
-                                                    <span className='text-gray-400'>☆</span> Конструктивных: {questionnaire.rating_count?.constructive || 0}
+                                                    <span className='text-gray-400 lowercase'>☆</span> Конструктивных: {questionnaire.rating_count?.constructive || 0}
                                                 </p>
                                             </div>
                                         </div>
@@ -558,7 +593,7 @@ export default function RepairDetail({ questionnaire, onBack }) {
                                                             className='w-4 h-4'
                                                         />
                                                         <span className='text-yellow-400'>★</span>
-                                                        <span>Положительный</span>
+                                                        <span className='lowercase'>Положительный</span>
                                                     </label>
                                                     <label className='flex items-center gap-x-2 cursor-pointer'>
                                                         <input
@@ -570,7 +605,7 @@ export default function RepairDetail({ questionnaire, onBack }) {
                                                             className='w-4 h-4'
                                                         />
                                                         <span className='text-gray-400'>☆</span>
-                                                        <span>Конструктивный</span>
+                                                        <span className='lowercase'>Конструктивный</span>
                                                     </label>
                                                 </div>
 

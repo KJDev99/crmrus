@@ -139,7 +139,7 @@ export default function EventDetail({ setStep, selectedEvent }) {
                             )}
                         </div>
                         <div className="flex flex-col border-b border-b-[#FFFFFF91]  pl-12 ml-[-16px] flex-grow">
-                            <h2 className='mb-0.5 text-[#FFFFFF] text-[25px] capitalize'>
+                            <h2 className='mb-0.5 text-[#FFFFFF] text-[25px] capitalize line-clamp-1    '>
                                 {eventDetail.organization_name || 'Название организации'}
                             </h2>
                             <div className='w-[calc(100% + 32px)] h-0.25 bg-[#FFFFFF4F]  ml-[-32px]'></div>

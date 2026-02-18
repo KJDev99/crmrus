@@ -19,7 +19,37 @@ export default function SupplierDetail({ questionnaire, onBack }) {
             [sectionKey]: !prev[sectionKey]
         }));
     };
+    const parseAddresses = (value) => {
+        if (!value) return "";
 
+        if (Array.isArray(value)) {
+            // Massiv kelgan bo'lsa, har bir elementni tekshir
+            return value.map(item => {
+                // Element o'zi ham JSON string bo'lishi mumkin (ichma-ich)
+                try {
+                    const parsed = JSON.parse(item);
+                    if (Array.isArray(parsed)) {
+                        return parsed.join(', ');
+                    }
+                    return parsed;
+                } catch {
+                    return item;
+                }
+            }).join(', ');
+        }
+
+        if (typeof value === 'string') {
+            try {
+                const parsed = JSON.parse(value);
+                // Recursively qayta chaqir
+                return parseAddresses(parsed);
+            } catch {
+                return value;
+            }
+        }
+
+        return String(value);
+    };
     const renderExpandableContent = (content, sectionKey, maxLength = 200) => {
         if (!content) return null;
 
@@ -150,21 +180,32 @@ export default function SupplierDetail({ questionnaire, onBack }) {
         if (type === 'social_networks') {
             const socialData = item.value;
 
+            const socialMediaOptions = [
+                { value: 'vk', label: 'ВК' },
+                { value: 'telegram', label: 'Телеграм' },
+                { value: 'pinterest', label: 'Пинтерест' },
+                { value: 'instagram', label: 'Инстаграм' },
+                { value: 'website', label: 'Веб-сайт' },
+                { value: 'other', label: 'Другое' }
+            ];
+
             if (socialData && Array.isArray(socialData.other_contacts)) {
                 return (
                     <div className="space-y-0">
                         {socialData.other_contacts.map((contactStr, index) => {
                             try {
-                                // Backenddan ' (yagona tirnoq) bilan kelayotgani uchun uni " ga almashtiramiz
                                 const fixedJson = contactStr.replace(/'/g, '"');
                                 const contact = JSON.parse(fixedJson);
 
+                                // value bo'yicha label topamiz, topilmasa type o'zi
+                                const label = socialMediaOptions.find(opt => opt.value === contact.type)?.label || contact.type;
+
                                 return (
                                     <div key={index} className="flex gap-2 items-center">
-                                        <span className="font-bold uppercase text-xs  px-px rounded">
-                                            {contact.type}:
+                                        <span className="font-bold uppercase text-xs px-px rounded">
+                                            {label}:
                                         </span>
-                                        <span>{contact.value}</span>
+                                        <a className='underline' href={contact.value} target='_blank'>{contact.value}</a>
                                     </div>
                                 );
                             } catch (e) {
@@ -256,7 +297,7 @@ export default function SupplierDetail({ questionnaire, onBack }) {
                             </h2>
                             <div className='w-[calc(100% + 32px)] h-0.25 bg-[#FFFFFF4F]  ml-[-32px]'></div>
 
-                            <p className='text-[#FFFFFF] text-sm mt-1'>
+                            <p className='text-[#FFFFFF] text-sm mt-1 pr-10 leading-[100%]'>
                                 Сегменты: {getSegmentDisplay(questionnaire.segments)}
                             </p>
 
@@ -265,17 +306,6 @@ export default function SupplierDetail({ questionnaire, onBack }) {
                             </div>
                         </div>
                     </div>
-
-                    {/* <h2 className='mt-4 mb-4 text-center text-lg text-[#FFFFFF]'>Контактная информация</h2>
-                    <div className='text-lg border-y border-[#FFFFFF91] px-2 py-4 text-[#FFFFFF] space-y-2'>
-                        <p><p>Бренд:</p> {questionnaire.brand_name || 'Не указан'}</p>
-                        <p><strong>Ответственное лицо:</strong> {questionnaire.responsible_person || 'Не указано'}</p>
-                        <p><strong>Телефон:</strong> {questionnaire.phone || 'Не указан'}</p>
-                        <p><strong>Email:</strong> {questionnaire.email || 'Не указан'}</p>
-                        <p><strong>Форма бизнеса:</strong> {questionnaire.business_form_display || 'Не указана'}</p>
-                        <p><strong>НДС:</strong> {questionnaire.vat_payment_display || 'Не указано'}</p>
-                        <p><strong>Карточки журнала:</strong> {questionnaire.magazine_cards_display || 'Не указаны'}</p>
-                    </div> */}
 
                     {/* Tabs */}
                     <div className='mt-0'>
@@ -304,33 +334,80 @@ export default function SupplierDetail({ questionnaire, onBack }) {
                         <div className='mt-2'>
                             {activeTab === 'company' && (
                                 <div className='space-y-2'>
+
                                     {getAboutValue('company_description') && (
                                         <div className='text-[#FFFFFF] px-2 py-2 border-b border-[#FFFFFF91]'>
                                             <span className='text-[19px] uppercase'>Описание компании: </span>
-                                            <span className='leading-[100%]'>
+                                            <span className='leading-[100%]' >
                                                 {renderExpandableContent(getAboutValue('company_description'), 'company_description')}
                                             </span>
 
                                         </div>
                                     )}
+                                    {getAboutValue('office_addresses') && (
+                                        <div className='text-[#FFFFFF] px-2 py-2 border-b border-[#FFFFFF91]'>
+                                            <span className='text-[19px] uppercase'>Адреса офисов:</span> <br />
+                                            <span className='leading-[100%]' style={{ whiteSpace: 'pre-line' }}>
+                                                {renderExpandableContent(parseAddresses(getAboutValue('office_addresses')), 'office_addresses')}
+                                            </span>
+                                        </div>
+                                    )}
+                                    {questionnaire.phone && (
+                                        <div className='text-[#FFFFFF] px-2 py-2 border-b border-[#FFFFFF91]'>
+                                            <span className='text-[19px] uppercase'>Телефон: &nbsp;</span>
+                                            <span className='leading-[100%]'>
+                                                {questionnaire.phone}
+                                            </span>
+                                        </div>
+                                    )}
+
+                                    {questionnaire.email && (
+                                        <div className='text-[#FFFFFF] px-2 py-2 border-b border-[#FFFFFF91]'>
+                                            <span className='text-[19px] uppercase'>Email: &nbsp;</span>
+                                            <span className='leading-[100%]'>
+                                                {questionnaire.email}
+                                            </span>
+                                        </div>
+                                    )}
+
+                                    {questionnaire.responsible_person && (
+                                        <div className='text-[#FFFFFF] px-2 py-2 border-b border-[#FFFFFF91]'>
+                                            <span className='text-[19px] uppercase'>Ответственное лицо: &nbsp;</span>
+                                            <span className='leading-[100%]'>
+                                                {questionnaire.responsible_person}
+                                            </span>
+                                        </div>
+                                    )}
+
+                                    {questionnaire.business_form_display && (
+                                        <div className='text-[#FFFFFF] px-2 py-2 border-b border-[#FFFFFF91]'>
+                                            <span className='text-[19px] uppercase'>Форма бизнеса: &nbsp;</span>
+                                            <span className='leading-[100%]'>
+                                                {questionnaire.business_form_display}
+                                            </span>
+                                        </div>
+                                    )}
+                                    {questionnaire?.welcome_message && (
+                                        <div className='text-[#FFFFFF] px-2 py-2 border-b border-[#FFFFFF91]'>
+                                            <span className='text-[19px] uppercase'>Акции и УТП: &nbsp;</span>
+                                            <span className='leading-[100%]' style={{ whiteSpace: 'pre-line' }}>
+                                                {questionnaire?.welcome_message}
+                                            </span>
+                                        </div>
+                                    )}
+
 
                                     {getAboutValue('product_assortment') && (
                                         <div className='text-[#FFFFFF] px-2 py-2 border-b border-[#FFFFFF91]'>
                                             <span className='text-[19px] uppercase'>Ассортимент продукции:</span>
-                                            <span className='leading-[100%]'>
+                                            <span className='leading-[100%]' style={{ whiteSpace: 'pre-line' }}>
                                                 {renderExpandableContent(getAboutValue('product_assortment'), 'product_assortment')}
                                             </span>
                                         </div>
                                     )}
 
-                                    {getAboutValue('office_addresses') && (
-                                        <div className='text-[#FFFFFF] px-2 py-2 border-b border-[#FFFFFF91]'>
-                                            <span className='text-[19px] uppercase'>Адреса офисов:</span>
-                                            <span className='leading-[100%]'>
-                                                {renderExpandableContent(getAboutValue('office_addresses'), 'office_addresses')}
-                                            </span>
-                                        </div>
-                                    )}
+
+
 
                                     {getAboutValue('social_networks') && (
                                         <div className='text-[#FFFFFF] px-2 py-2 border-b border-[#FFFFFF91]'>
@@ -458,7 +535,7 @@ export default function SupplierDetail({ questionnaire, onBack }) {
                                                             className='w-4 h-4'
                                                         />
                                                         <span className='text-yellow-400'>★</span>
-                                                        <span>Положительный</span>
+                                                        <span className='lowercase'>Положительный</span>
                                                     </label>
                                                     <label className='flex items-center gap-x-2 cursor-pointer'>
                                                         <input
@@ -470,7 +547,7 @@ export default function SupplierDetail({ questionnaire, onBack }) {
                                                             className='w-4 h-4'
                                                         />
                                                         <span className='text-gray-400'>☆</span>
-                                                        <span>Конструктивный</span>
+                                                        <span className='lowercase'>Конструктивный</span>
                                                     </label>
                                                 </div>
 

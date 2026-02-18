@@ -42,7 +42,7 @@ export default function AllEvents() {
         city: '',
         registration_phone: '',
         about_event: '',
-        status: 'draft'
+        status: 'Опубликовано'
     })
 
     const eventTypes = [
@@ -147,7 +147,7 @@ export default function AllEvents() {
             formData.append('city', newEvent.city)
             formData.append('registration_phone', newEvent.registration_phone.replace(/\D/g, ''))
             formData.append('about_event', newEvent.about_event)
-            formData.append('status', newEvent.status)
+            formData.append('status', 'published')
 
             // Добавляем файл постара если есть
             if (posterFile) {
@@ -666,7 +666,7 @@ export default function AllEvents() {
                                         />
                                     </div>
 
-                                    <div>
+                                    {/* <div>
                                         <label className="block text-white mb-2">Статус</label>
                                         <select
                                             value={newEvent.status}
@@ -677,7 +677,7 @@ export default function AllEvents() {
                                                 <option key={status.value} value={status.value} className="text-white">{status.label}</option>
                                             ))}
                                         </select>
-                                    </div>
+                                    </div> */}
 
                                     <div className="md:col-span-2">
                                         <label className="block text-white mb-2">Постер мероприятия</label>
@@ -855,7 +855,7 @@ export default function AllEvents() {
                                     <th className="py-4 px-6 text-left text-white font-semibold">Тип</th>
                                     <th className="py-4 px-6 text-left text-white font-semibold">Город</th>
                                     <th className="py-4 px-6 text-left text-white font-semibold">Дата и время</th>
-                                    <th className="py-4 px-6 text-left text-white font-semibold">Статус</th>
+                                    {/* <th className="py-4 px-6 text-left text-white font-semibold">Статус</th> */}
                                     <th className="py-4 px-6 text-left text-white font-semibold">Действия</th>
                                 </tr>
                             </thead>
@@ -882,11 +882,11 @@ export default function AllEvents() {
                                             </td>
                                             <td className="py-4 px-6 text-white">{event.city}</td>
                                             <td className="py-4 px-6 text-white">{formatDate(event.event_date)}</td>
-                                            <td className="py-4 px-6">
+                                            {/* <td className="py-4 px-6">
                                                 <span className={`px-3 py-1 rounded-full ${getStatusColor(event.status)} text-sm font-medium`}>
                                                     {event.status_display}
                                                 </span>
-                                            </td>
+                                            </td> */}
                                             <td className="py-4 px-6">
                                                 <div className="flex items-center gap-2">
                                                     <button

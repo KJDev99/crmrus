@@ -166,26 +166,32 @@ export default function DesignDetail({ questionnaire, onBack }) {
                 if (type === 'social_networks') {
                     const socialData = item.value;
 
+                    const socialMediaOptions = [
+                        { value: 'vk', label: 'ВК' },
+                        { value: 'telegram', label: 'Телеграм' },
+                        { value: 'pinterest', label: 'Пинтерест' },
+                        { value: 'instagram', label: 'Инстаграм' },
+                        { value: 'website', label: 'Веб-сайт' },
+                        { value: 'other', label: 'Другое' }
+                    ];
+
                     if (socialData && Array.isArray(socialData.other_contacts)) {
                         return (
-                            <div className="space-y-2">
+                            <div className="space-y-0">
                                 {socialData.other_contacts.map((contactStr, index) => {
                                     try {
                                         const fixedJson = contactStr.replace(/'/g, '"');
                                         const contact = JSON.parse(fixedJson);
 
+                                        // value bo'yicha label topamiz, topilmasa type o'zi
+                                        const label = socialMediaOptions.find(opt => opt.value === contact.type)?.label || contact.type;
+
                                         return (
                                             <div key={index} className="flex gap-2 items-center">
-                                                <span className="font-bold uppercase text-xs  px-px rounded">
-                                                    {contact.type}:
+                                                <span className="font-bold uppercase text-xs px-px rounded">
+                                                    {label}:
                                                 </span>
-                                                {contact.type === 'telegram' || contact.value.startsWith('http') ? (
-                                                    <a href={contact.value} target="_blank" rel="noreferrer" className="underline hover:text-blue-300">
-                                                        {contact.value}
-                                                    </a>
-                                                ) : (
-                                                    <span>{contact.value}</span>
-                                                )}
+                                                <a className='underline' href={contact.value} target='_blank'>{contact.value}</a>
                                             </div>
                                         );
                                     } catch (e) {
@@ -285,10 +291,10 @@ export default function DesignDetail({ questionnaire, onBack }) {
                             </h2>
                             <div className='w-[calc(100% + 32px)] h-0.25 bg-[#FFFFFF4F]  ml-[-32px]'></div>
 
-                            <p className='text-[#FFFFFF] text-sm mt-1 line-clamp-1'>
+                            <p className='text-[#FFFFFF] text-sm mt-1 line-clamp-1 pr-10'>
                                 Услуги: {getServiceDisplay(questionnaire.services)}
                             </p>
-                            <p className='text-[#FFFFFF] text-sm mt-1'>
+                            <p className='text-[#FFFFFF] text-sm mt-1 line-clamp-1 pr-10'>
                                 Сегменты: {getSegmentDisplay(questionnaire.segments)}
                             </p>
 
@@ -297,16 +303,6 @@ export default function DesignDetail({ questionnaire, onBack }) {
                             </div>
                         </div>
                     </div>
-
-                    {/* <h2 className='mt-4 mb-4 text-center text-lg text-[#FFFFFF]'>Контактная информация</h2>
-                    <div className='text-lg border-y border-[#FFFFFF91] px-2 py-4 text-[#FFFFFF] space-y-2'>
-                        <p><strong>ФИО:</strong> {questionnaire.full_name || 'Не указано'}</p>
-                        <p><strong>Английское имя:</strong> {questionnaire.full_name_en || 'Не указано'}</p>
-                        <p><strong>Телефон:</strong> {questionnaire.phone || 'Не указан'}</p>
-                        <p><strong>Email:</strong> {questionnaire.email || 'Не указан'}</p>
-                        <p><strong>Город:</strong> {questionnaire.city || 'Не указан'}</p>
-                        <p><strong>Дата рождения:</strong> {questionnaire.birth_date || 'Не указана'}</p>
-                    </div> */}
 
                     {/* Tabs */}
                     <div className='mt-0'>
@@ -336,6 +332,41 @@ export default function DesignDetail({ questionnaire, onBack }) {
                             {activeTab === 'company' && (
                                 <div className='space-y-2'>
                                     {/* Приветственное сообщение */}
+                                    {questionnaire.phone && (
+                                        <div className='text-[#FFFFFF] px-2 py-2 border-b border-[#FFFFFF91]'>
+                                            <span className='text-[19px] uppercase'>Телефон: &nbsp;</span>
+                                            <span className='leading-[100%]'>
+                                                {questionnaire.phone}
+                                            </span>
+                                        </div>
+                                    )}
+                                    {questionnaire.city && (
+                                        <div className='text-[#FFFFFF] px-2 py-2 border-b border-[#FFFFFF91]'>
+                                            <span className='text-[19px] uppercase'>Город: &nbsp;</span>
+                                            <span className='leading-[100%]'>
+                                                {questionnaire.city}
+                                            </span>
+                                        </div>
+                                    )}
+
+                                    {questionnaire.experience && (
+                                        <div className='text-[#FFFFFF] px-2 py-2 border-b border-[#FFFFFF91]'>
+                                            <span className='text-[19px] uppercase'>Опыт работы: &nbsp;</span>
+                                            <span className='leading-[100%]'>
+                                                {questionnaire.experience}
+                                            </span>
+                                        </div>
+                                    )}
+                                    {/* Акции и УТП */}
+                                    {getAboutValue('promotions_utp') && (
+                                        <div className='text-[#FFFFFF] px-2 py-2 border-b border-[#FFFFFF91]'>
+                                            <span className='text-[19px] uppercase'>Акции и УТП:&nbsp;</span>
+                                            <span className='leading-[100%]'>
+                                                {renderExpandableContent(getAboutValue('promotions_utp'), 'promotions_utp')}
+                                            </span>
+                                        </div>
+                                    )}
+
                                     {getAboutValue('welcome_message') && (
                                         <div className='text-[#FFFFFF] px-2 py-2 border-b border-[#FFFFFF91]'>
                                             <span className='text-[19px] uppercase'>Приветственное сообщение:</span>
@@ -359,21 +390,12 @@ export default function DesignDetail({ questionnaire, onBack }) {
                                     {getAboutValue('service_packages') && (
                                         <div className='text-[#FFFFFF] px-2 py-2 border-b border-[#FFFFFF91]'>
                                             <span className='text-[19px] uppercase'>Пакеты услуг и их стоимость:&nbsp;</span>
-                                            <span className='leading-[100%]'>
+                                            <span className='leading-[100%]' style={{ whiteSpace: 'pre-line' }}>
                                                 {renderExpandableContent(getAboutValue('service_packages'), 'service_packages')}
                                             </span>
                                         </div>
                                     )}
 
-                                    {/* Акции и УТП */}
-                                    {getAboutValue('promotions_utp') && (
-                                        <div className='text-[#FFFFFF] px-2 py-2 border-b border-[#FFFFFF91]'>
-                                            <span className='text-[19px] uppercase'>Акции и УТП:&nbsp;</span>
-                                            <span className='leading-[100%]'>
-                                                {renderExpandableContent(getAboutValue('promotions_utp'), 'promotions_utp')}
-                                            </span>
-                                        </div>
-                                    )}
 
                                     {/* Социальные сети */}
                                     {getAboutValue('social_networks') && (
@@ -389,6 +411,38 @@ export default function DesignDetail({ questionnaire, onBack }) {
                             {activeTab === 'cooperation' && (
                                 <div className='space-y-4'>
                                     {/* Периоды выполнения проекта */}
+
+                                    {questionnaire.work_type && (
+                                        <div className='text-[#FFFFFF] px-2 py-2 border-b border-[#FFFFFF91]'>
+                                            <span className='text-[19px] uppercase'>Тип работы: &nbsp;</span>
+                                            <span className='leading-[100%]'>
+                                                {questionnaire.work_type}
+                                            </span>
+                                        </div>
+                                    )}
+
+                                    {questionnaire.purpose_of_property?.length > 0 && (
+                                        <div className='text-[#FFFFFF] px-2 py-2 border-b border-[#FFFFFF91]'>
+                                            <span className='text-[19px] uppercase'>Назначение объекта: &nbsp;</span>
+                                            <span className='leading-[100%]'>
+                                                {questionnaire.purpose_of_property.map((item, index) => (
+                                                    <span key={index} className='block'>{item}</span>
+                                                ))}
+                                            </span>
+                                        </div>
+                                    )}
+
+                                    {questionnaire.area_of_object?.length > 0 && (
+                                        <div className='text-[#FFFFFF] px-2 py-2 border-b border-[#FFFFFF91]'>
+                                            <span className='text-[19px] uppercase'>Площадь объекта: &nbsp;</span>
+                                            <span className='leading-[100%]'>
+                                                {questionnaire.area_of_object.map((item, index) => (
+                                                    <span key={index} className='block'>{item}</span>
+                                                ))}
+                                            </span>
+                                        </div>
+                                    )}
+
                                     {getTermValue('project_periods') && (
                                         <div className='text-[#FFFFFF] px-2 py-2 border-b border-[#FFFFFF91]'>
                                             <span className='text-[19px] uppercase'>Периоды выполнения проекта: &nbsp;</span>
@@ -493,7 +547,7 @@ export default function DesignDetail({ questionnaire, onBack }) {
                                                             className='w-4 h-4'
                                                         />
                                                         <span className='text-yellow-400'>★</span>
-                                                        <span>Положительный</span>
+                                                        <span className='lowercase'>Положительный</span>
                                                     </label>
                                                     <label className='flex items-center gap-x-2 cursor-pointer'>
                                                         <input
@@ -505,7 +559,7 @@ export default function DesignDetail({ questionnaire, onBack }) {
                                                             className='w-4 h-4'
                                                         />
                                                         <span className='text-gray-400'>☆</span>
-                                                        <span>Конструктивный</span>
+                                                        <span className='lowercase'>Конструктивный</span>
                                                     </label>
                                                 </div>
 

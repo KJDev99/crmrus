@@ -127,9 +127,10 @@ export default function DesignItem({
                                         <h2 className='mb-[-8px] text-[#FFFFFF] text-[22px] line-clamp-1'>
                                             {questionnaire.full_name || 'Название организации'}
                                         </h2>
-                                        <p className='text-[#FFFFFF] text-sm max-md:text-xs line-clamp-1 mb-2 grow'>
+                                        <p className='text-[#FFFFFF] text-sm max-md:text-xs line-clamp-1 mb-2'>
                                             {questionnaire.city || 'Город не указан'}
                                         </p>
+                                        <p className='grow'></p>
                                         <p className='text-[#FFFFFF] uppercase text-sm max-md:text-xs leading-[100%] mt-2 line-clamp-2'>
                                             {getServiceDisplay(questionnaire.services)}
                                         </p>

@@ -70,13 +70,14 @@ export default function ConstructionBox() {
     ];
 
     const socialMediaOptions = [
-        { value: 'vk', label: 'VK', placeholder: 'Ссылка на VK' },
-        { value: 'telegram', label: 'Telegram канал', placeholder: 'Ссылка на Telegram канал' },
-        { value: 'pinterest', label: 'Pinterest', placeholder: 'Ссылка на Pinterest' },
-        { value: 'instagram', label: 'Instagram', placeholder: 'Ссылка на Instagram' },
+        { value: 'vk', label: 'ВК', placeholder: 'Ссылка на ВК' },
+        { value: 'telegram', label: 'Телеграм канал', placeholder: 'Ссылка на Телеграм канал' },
+        { value: 'pinterest', label: 'Пинтерест', placeholder: 'Ссылка на Пинтерест' },
+        { value: 'instagram', label: 'Инстаграм', placeholder: 'Ссылка на Инстаграм' },
         { value: 'website', label: 'Веб-сайт', placeholder: 'https://example.com' },
         { value: 'other', label: 'Другое', placeholder: 'Другой контакт' }
     ];
+
 
     const categoryOptions = [
         { value: 'ПОД КЛЮЧ', label: 'ПОД КЛЮЧ' },
@@ -608,7 +609,7 @@ export default function ConstructionBox() {
                         {/* Phone */}
                         <div>
                             <label className="block text-sm font-medium mb-2 text-white">
-                                Номер телефона
+                                Номер телефона <span className="text-red-400">*</span>
                             </label>
                             <input
                                 type="tel"

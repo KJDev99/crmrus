@@ -84,6 +84,38 @@ export default function SupplierItem({
         }));
     };
 
+    const parseAddresses = (value) => {
+        if (!value) return "";
+
+        if (Array.isArray(value)) {
+            // Massiv kelgan bo'lsa, har bir elementni tekshir
+            return value.map(item => {
+                // Element o'zi ham JSON string bo'lishi mumkin (ichma-ich)
+                try {
+                    const parsed = JSON.parse(item);
+                    if (Array.isArray(parsed)) {
+                        return parsed.join(', ');
+                    }
+                    return parsed;
+                } catch {
+                    return item;
+                }
+            }).join(', ');
+        }
+
+        if (typeof value === 'string') {
+            try {
+                const parsed = JSON.parse(value);
+                // Recursively qayta chaqir
+                return parseAddresses(parsed);
+            } catch {
+                return value;
+            }
+        }
+
+        return String(value);
+    };
+
     // YANGI - Apply filters and close modal
     const handleApplyFilters = () => {
         // Filterlarni birgalikda update qilish
@@ -147,6 +179,7 @@ export default function SupplierItem({
 
         return segments.map(segment => segmentMap[segment] || segment).join(' / ');
     };
+
 
     return (
         <div className='max-md:px-4 relative max-w-7xl min-h-screen'>
@@ -289,10 +322,11 @@ export default function SupplierItem({
                                         <h2 className='mb-[-8px] text-[#FFFFFF] text-[22px] line-clamp-1'>
                                             {questionnaire.brand_name || questionnaire.full_name || 'Название организации'}
                                         </h2>
-                                        <p className='text-[#FFFFFF] text-sm max-md:text-xs line-clamp-1 mb-2 grow'>
-                                            {questionnaire?.about_company[2]?.value.join(', ') || ""}
+                                        <p className='text-[#FFFFFF] text-sm max-md:text-xs line-clamp-1 mb-2'>
+                                            {parseAddresses(questionnaire?.about_company[2]?.value) || ""}
                                         </p>
-                                        <p className='text-[#FFFFFF] text-sm max-md:text-xs mt-1 line-clamp-2 leading-[100%]'>
+                                        <p className='grow'></p>
+                                        <p className='text-[#FFFFFF] text-sm max-md:text-xs mt-1 line-clamp-2 leading-[100%] uppercase'>
                                             {questionnaire?.about_company[0]?.value || ""}
                                         </p>
                                     </div>

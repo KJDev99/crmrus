@@ -119,11 +119,10 @@ export default function MediaItem({
                                         <h2 className='mb-[-8px] text-[#FFFFFF] text-[22px] line-clamp-1'>
                                             {questionnaire.brand_name || questionnaire.full_name || 'Медиа пространство'}
                                         </h2>
-                                        <p className='text-[#FFFFFF] text-sm max-md:text-xs line-clamp-2 mb-2 grow'>
+                                        <p className='text-[#FFFFFF] text-sm max-md:text-xs line-clamp-1 mb-2'>
                                             {getRepresentativeCities(questionnaire.representative_cities) || 'Город не указан'}
                                         </p>
-
-
+                                        <p className='grow'></p>
                                         <p className='text-[#FFFFFF] text-sm mt-1 max-md:text-xs line-clamp-2 leading-[100%] uppercase'>
                                             {questionnaire.welcome_message}
                                         </p>

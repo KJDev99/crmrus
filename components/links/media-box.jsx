@@ -64,13 +64,14 @@ export default function MediaBox() {
         { value: 'no', label: 'Нет' }
     ];
     const socialMediaOptions = [
-        { value: 'vk', label: 'VK', placeholder: 'Ссылка на VK' },
-        { value: 'telegram', label: 'Telegram канал', placeholder: 'Ссылка на Telegram канал' },
-        { value: 'pinterest', label: 'Pinterest', placeholder: 'Ссылка на Pinterest' },
-        { value: 'instagram', label: 'Instagram', placeholder: 'Ссылка на Instagram' },
+        { value: 'vk', label: 'ВК', placeholder: 'Ссылка на ВК' },
+        { value: 'telegram', label: 'Телеграм канал', placeholder: 'Ссылка на Телеграм канал' },
+        { value: 'pinterest', label: 'Пинтерест', placeholder: 'Ссылка на Пинтерест' },
+        { value: 'instagram', label: 'Инстаграм', placeholder: 'Ссылка на Инстаграм' },
         { value: 'website', label: 'Веб-сайт', placeholder: 'https://example.com' },
         { value: 'other', label: 'Другое', placeholder: 'Другой контакт' }
     ];
+
     const handleInputChange = (e) => {
         const { name, value, type, checked } = e.target;
         setFormData(prev => ({
