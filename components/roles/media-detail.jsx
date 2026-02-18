@@ -257,7 +257,7 @@ export default function MediaDetail({ questionnaire, onBack }) {
         : questionnaire.reviews_list?.slice(0, 3) || [];
 
     return (
-        <div className='max-md:px-4 max-w-7xl mx-auto'>
+        <div className='max-md:px-4 max-w-7xl mx-auto relative'>
             <div className="text-white flex justify-between items-center mt-[0px] max-md:px-0">
                 <button onClick={onBack} className="cursor-pointer max-md:w-8 max-md:h-8 md:w-30">
                     <IoIosArrowBack size={40} className='max-md:w-6 max-md:h-6' />
