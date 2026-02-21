@@ -150,7 +150,7 @@ export default function EventDetail({ setStep, selectedEvent }) {
                     </div>
 
                     <h2 className='mt-4 mb-4 text-center text-lg text-[#FFFFFF]'>Анонс мероприятия</h2>
-                    <div className='text-lg border-y border-[#FFFFFF91] px-2 py-4 text-[#FFFFFF] space-y-1'>
+                    <div className='text-lg border-y border-[#FFFFFF91]  py-4 text-[#FFFFFF] space-y-1'>
                         <p><span>Дата и время:</span> {formatDate(eventDetail.event_date)}</p>
                         <p><span>Место проведения:</span> {eventDetail.event_location || 'Не указано'}</p>
                         <p><span>Город:</span> {eventDetail.city || 'Не указан'}</p>

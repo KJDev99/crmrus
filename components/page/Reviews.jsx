@@ -92,7 +92,7 @@ function ReviewItem({ review, onApprove, onReject, onStatusUpdate }) {
         <div className="flex col-span-3">
           <div className="min-w-[160px] text-white">
             <p className="font-normal text-[20px] leading-[1] tracking-normal">
-              {review.reviewer_name || review?.questionnaire?.full_name || review?.questionnaire?.brand_name || 'Аноним'}
+              {review?.reviewer_company_name || review.reviewer_name || review?.questionnaire?.full_name || review?.questionnaire?.brand_name || 'Аноним'}
             </p>
             <p className="font-normal text-[20px] leading-[1] tracking-normal text-white/35 mt-3">
               {review.role}
