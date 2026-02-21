@@ -444,7 +444,7 @@ export default function SupplierDetail({ questionnaire, onBack }) {
                                     {getTermValue('guarantees') && (
                                         <div className='text-[#FFFFFF] px-2 py-2 border-b border-[#FFFFFF91]'>
                                             <span className='text-[19px] uppercase'>Гарантии:  </span>
-                                            <span className='leading-[100%]'>
+                                            <span className='leading-[100%]' style={{ whiteSpace: 'pre-line' }}>
                                                 {renderExpandableContent(getTermValue('guarantees'), 'guarantees')}
                                             </span>
 

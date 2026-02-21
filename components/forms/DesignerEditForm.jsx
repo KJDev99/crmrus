@@ -242,6 +242,11 @@ export default function DesignerEditForm({ data, onChange, onSave, onCancel, sav
                 if (Array.isArray(value) && value.length > 0) {
                     formData.append(key, JSON.stringify(value))
                 }
+            } else if (key === 'work_cities') {
+                const filtered = (value || []).filter(v => v && v.trim() !== '')
+                if (filtered.length > 0) {
+                    formData.append(key, JSON.stringify(filtered))
+                }
             }
             // Oddiy fieldlar
             else if (value !== '' && value !== null && value !== undefined) {
@@ -445,7 +450,46 @@ export default function DesignerEditForm({ data, onChange, onSave, onCancel, sav
             <div className="space-y-3">
                 <h3 className="text-lg font-semibold text-white mb-2">Текстовая информация</h3>
 
-                {/* <div>
+
+
+                <div>
+                    <label className="block text-sm text-white/80 mb-1">Города работы</label>
+                    <div className="space-y-2">
+                        {(localData.work_cities || ['']).map((city, index) => (
+                            <div key={index} className="flex gap-2">
+                                <textarea
+                                    value={city}
+                                    onChange={(e) => {
+                                        const newCities = [...(localData.work_cities || [''])]
+                                        newCities[index] = e.target.value
+                                        handleChange('work_cities', newCities)
+                                    }}
+                                    rows="2"
+                                    className="flex-1 bg-white/10 border border-white/30 rounded px-3 py-2 text-white text-sm resize-none"
+                                    placeholder="Город или условия работы"
+                                />
+                                {(localData.work_cities || []).length > 1 && (
+                                    <button
+                                        type="button"
+                                        onClick={() => handleChange('work_cities', localData.work_cities.filter((_, i) => i !== index))}
+                                        className="flex items-center text-red-400 hover:text-red-300 px-2"
+                                    >
+                                        <FiTrash2 />
+                                    </button>
+                                )}
+                            </div>
+                        ))}
+                        <button
+                            type="button"
+                            onClick={() => handleChange('work_cities', [...(localData.work_cities || ['']), ''])}
+                            className="w-full flex items-center justify-center gap-2 px-4 py-2 bg-white/10 hover:bg-white/20 border border-white/30 rounded text-white text-sm"
+                        >
+                            <FiPlus /> Добавить город
+                        </button>
+                    </div>
+                </div>
+
+                <div>
                     <label className="block text-sm text-white/80 mb-1">Приветственное сообщение</label>
                     <textarea
                         value={localData.welcome_message || ''}
@@ -453,7 +497,7 @@ export default function DesignerEditForm({ data, onChange, onSave, onCancel, sav
                         rows="3"
                         className="w-full bg-white/10 border border-white/30 rounded px-3 py-2 text-white text-sm"
                     />
-                </div> */}
+                </div>
 
                 <div>
                     <label className="block text-sm text-white/80 mb-1">Опыт работы</label>
@@ -546,15 +590,16 @@ export default function DesignerEditForm({ data, onChange, onSave, onCancel, sav
                     />
                 </div>
 
-                {/* <div>
+                <div>
                     <label className="block text-sm text-white/80 mb-1">Условия сотрудничества</label>
                     <textarea
-                        value={localData.cooperation_terms || ''}
-                        onChange={(e) => handleChange('cooperation_terms', e.target.value)}
+                        value={localData.supplier_contractor_recommendation_terms || ''}
+                        onChange={(e) => handleChange('supplier_contractor_recommendation_terms', e.target.value)}
                         rows="3"
                         className="w-full bg-white/10 border border-white/30 rounded px-3 py-2 text-white text-sm"
                     />
-                </div> */}
+                </div>
+
 
                 <div>
                     <label className="block text-sm text-white/80 mb-1">Описание пакетов услуг</label>

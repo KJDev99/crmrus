@@ -120,9 +120,9 @@ export default function AllEvents({ setStep, selectedCity, selectedDate, onEvent
                                     </p>
 
 
-                                    {event.announcement && (
+                                    {event.event_type_display && (
                                         <p className='text-[#B79F15] text-sm leading-[100%]  mt-2 uppercase line-clamp-2'>
-                                            {event.announcement}
+                                            {event.event_type_display}
                                         </p>
                                     )}
                                 </div>

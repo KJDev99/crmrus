@@ -376,7 +376,7 @@ export default function RepairDetail({ questionnaire, onBack }) {
                                     {getAboutValue('contract_guarantees') && (
                                         <div className='text-[#FFFFFF] px-2 py-2 border-b border-[#FFFFFF91]'>
                                             <span className='text-[19px] uppercase'>Условия договора и гарантии:  &nbsp;</span>
-                                            <span className='leading-[100%]'>
+                                            <span className='leading-[100%]' style={{ whiteSpace: 'pre-line' }}>
                                                 {renderExpandableContent(getAboutValue('contract_guarantees'), 'contract_guarantees')}
                                             </span>
                                         </div>

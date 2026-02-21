@@ -171,7 +171,7 @@ export default function EventDetail({ setStep, selectedEvent }) {
                     {eventDetail.about_event && (
                         <>
                             <h2 className='mt-4 mb-1  text-lg text-[#FFFFFF]'>О мероприятии:</h2>
-                            <div className='text-lg text-[#FFFFFF] border-b'>
+                            <div className='text-lg text-[#FFFFFF] border-b' style={{ whiteSpace: 'pre-line' }} >
                                 {eventDetail.about_event}
                             </div>
                         </>

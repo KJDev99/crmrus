@@ -156,8 +156,8 @@ export default function DesignDetail({ questionnaire, onBack }) {
             if (type === 'experience_geography') {
                 return (
                     <div className="space-y-2">
-                        {item.value.description && <div>{item.value.description}</div>}
-                        {item.value.city && <div>Город: {item.value.city}</div>}
+                        {/* {item.value.description && <div>{item.value.description}</div>} */}
+                        {/* {item.value.city && <div>Город: {item.value.city}</div>} */}
                         {item.value.work_cities && Array.isArray(item.value.work_cities) && (
                             <div>Города работы: {item.value.work_cities.join(', ')}</div>
                         )}
@@ -296,7 +296,7 @@ export default function DesignDetail({ questionnaire, onBack }) {
                                 Услуги: {getServiceDisplay(questionnaire.services)}
                             </p>
                             <p className='text-[#FFFFFF] text-sm mt-1 line-clamp-1 pr-10'>
-                                Сегменты: {getSegmentDisplay(questionnaire.segments)}
+                                Город:   {questionnaire.city}
                             </p>
 
                             <div className="absolute bottom-1 right-1 text-white">
@@ -341,14 +341,14 @@ export default function DesignDetail({ questionnaire, onBack }) {
                                             </span>
                                         </div>
                                     )}
-                                    {questionnaire.city && (
+                                    {/* {questionnaire.city && (
                                         <div className='text-[#FFFFFF] px-2 py-2 border-b border-[#FFFFFF91]'>
                                             <span className='text-[19px] uppercase'>Город: &nbsp;</span>
                                             <span className='leading-[100%]'>
                                                 {questionnaire.city}
                                             </span>
                                         </div>
-                                    )}
+                                    )} */}
 
                                     {questionnaire.experience && (
                                         <div className='text-[#FFFFFF] px-2 py-2 border-b border-[#FFFFFF91]'>
@@ -370,7 +370,7 @@ export default function DesignDetail({ questionnaire, onBack }) {
 
                                     {getAboutValue('welcome_message') && (
                                         <div className='text-[#FFFFFF] px-2 py-2 border-b border-[#FFFFFF91]'>
-                                            <span className='text-[19px] uppercase'>Приветственное сообщение:</span>
+                                            <span className='text-[19px] uppercase'>Приветственное сообщение:</span> <br />
                                             <span className='leading-[100%]'>
                                                 {renderExpandableContent(getAboutValue('welcome_message'), 'welcome_message')}
                                             </span>
@@ -444,14 +444,15 @@ export default function DesignDetail({ questionnaire, onBack }) {
                                         </div>
                                     )}
 
-                                    {getTermValue('project_periods') && (
+
+                                    {/* {getTermValue('project_periods') && (
                                         <div className='text-[#FFFFFF] px-2 py-2 border-b border-[#FFFFFF91]'>
                                             <span className='text-[19px] uppercase'>Периоды выполнения проекта: &nbsp;</span>
                                             <span className='leading-[100%]'>
                                                 {renderExpandableContent(getTermValue('project_periods'), 'project_periods')}
                                             </span>
                                         </div>
-                                    )}
+                                    )} */}
 
                                     {/* НДС */}
                                     {getTermValue('vat_payment') && (
@@ -466,8 +467,8 @@ export default function DesignDetail({ questionnaire, onBack }) {
                                     {getTermValue('guarantees') && (
                                         <div className='text-[#FFFFFF] px-2 py-2 border-b border-[#FFFFFF91]'>
                                             <span className='text-[19px] uppercase'>Гарантии: &nbsp;</span>
-                                            {renderExpandableContent(getTermValue('guarantees'), 'guarantees')}
-                                            <span className='leading-[100%]'>
+                                            <span className='leading-[100%]' style={{ whiteSpace: 'pre-line' }}>
+                                                {renderExpandableContent(getTermValue('guarantees'), 'guarantees')}
                                             </span>
                                         </div>
                                     )}
@@ -490,10 +491,10 @@ export default function DesignDetail({ questionnaire, onBack }) {
                                         >
                                             <h3 className='text-[19px] uppercase'>ОТЗЫВЫ:</h3>
                                             <div className='flex items-center gap-x-5'>
-                                                <p>
+                                                <p className='lowercase'>
                                                     <span className='text-yellow-400'>★</span> Положительных: {questionnaire.rating_count?.positive || 0}
                                                 </p>
-                                                <p>
+                                                <p className='lowercase'>
                                                     <span className='text-gray-400'>☆</span> Конструктивных: {questionnaire.rating_count?.constructive || 0}
                                                 </p>
                                             </div>

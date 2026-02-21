@@ -195,10 +195,14 @@ export default function HomeRestriction() {
 
       <div className="relative w-full max-w-[1200px] mx-auto mt-10 sm:mt-[79px] mb-12 sm:mb-[64px] flex justify-center px-4 sm:px-0">
         <div className="text-center text-white ">
-          <Link href={'/events'} className="font-normal text-sm sm:text-[20px] leading-[100%] tracking-[0%] text-center uppercase hover:underline hover:cursor-pointer block underline mb-[30px]">
-            Ближайшие мероприятия
-          </Link>
-
+          {roles.some(role => (role.id === 1 || role.id === 2) && role.is_locked === true)
+            ? null
+            : (
+              <Link href={'/events'} className="font-normal text-sm sm:text-[20px] leading-[100%] tracking-[0%] text-center uppercase hover:underline hover:cursor-pointer block underline mb-[30px]">
+                Ближайшие мероприятия
+              </Link>
+            )
+          }
           <div>
             <Link href={'/role/media'} className="font-normal text-sm sm:text-[20px] leading-[100%] tracking-[0%] text-center hover:underline hover:cursor-pointer block underline">
               Интерьерные журналы

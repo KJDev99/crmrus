@@ -415,7 +415,11 @@ export default function DesignBox() {
 
                 if (key === 'company_logo' || key === 'legal_entity_card') {
                     if (value) submitFormData.append(key, value);
-                } else if (key === 'representative_cities') {
+                } else if (key === 'work_cities') {
+                    const filteredValues = value.filter(v => v.trim() !== '');
+                    if (filteredValues.length > 0) submitFormData.append(key, JSON.stringify(filteredValues));
+                }
+                else if (key === 'representative_cities') {
                     const filteredValues = value.filter(v => v.trim() !== '');
                     if (filteredValues.length > 0) submitFormData.append(key, JSON.stringify(filteredValues));
                 } else if (key === 'other_contacts') {

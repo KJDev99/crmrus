@@ -155,8 +155,8 @@ export default function DesignDetail({ questionnaire, onBack }) {
             if (type === 'experience_geography') {
                 return (
                     <div className="space-y-2">
-                        {item.value.description && <div>{item.value.description}</div>}
-                        {item.value.city && <div>Город: {item.value.city}</div>}
+                        {/* {item.value.description && <div>{item.value.description}</div>} */}
+                        {/* {item.value.city && <div>Город: {item.value.city}</div>} */}
                         {item.value.work_cities && Array.isArray(item.value.work_cities) && (
                             <div>Города работы: {item.value.work_cities.join(', ')}</div>
                         )}
@@ -295,7 +295,8 @@ export default function DesignDetail({ questionnaire, onBack }) {
                                 Услуги: {getServiceDisplay(questionnaire.services)}
                             </p>
                             <p className='text-[#FFFFFF] text-sm mt-1 line-clamp-1 pr-10'>
-                                Сегменты: {getSegmentDisplay(questionnaire.segments)}
+                                {/* Сегменты: {getSegmentDisplay(questionnaire.segments)} */}
+                                Город:   {questionnaire.city}
                             </p>
 
                             <div className="absolute bottom-1 right-1 text-white">
@@ -340,14 +341,14 @@ export default function DesignDetail({ questionnaire, onBack }) {
                                             </span>
                                         </div>
                                     )}
-                                    {questionnaire.city && (
+                                    {/* {questionnaire.city && (
                                         <div className='text-[#FFFFFF] px-2 py-2 border-b border-[#FFFFFF91]'>
                                             <span className='text-[19px] uppercase'>Город: &nbsp;</span>
                                             <span className='leading-[100%]'>
                                                 {questionnaire.city}
                                             </span>
                                         </div>
-                                    )}
+                                    )} */}
 
                                     {questionnaire.experience && (
                                         <div className='text-[#FFFFFF] px-2 py-2 border-b border-[#FFFFFF91]'>
@@ -369,7 +370,7 @@ export default function DesignDetail({ questionnaire, onBack }) {
 
                                     {getAboutValue('welcome_message') && (
                                         <div className='text-[#FFFFFF] px-2 py-2 border-b border-[#FFFFFF91]'>
-                                            <span className='text-[19px] uppercase'>Приветственное сообщение:</span>
+                                            <span className='text-[19px] uppercase'>Приветственное сообщение:</span> <br />
                                             <span className='leading-[100%]'>
                                                 {renderExpandableContent(getAboutValue('welcome_message'), 'welcome_message')}
                                             </span>
@@ -443,14 +444,14 @@ export default function DesignDetail({ questionnaire, onBack }) {
                                         </div>
                                     )}
 
-                                    {getTermValue('project_periods') && (
+                                    {/* {getTermValue('project_periods') && (
                                         <div className='text-[#FFFFFF] px-2 py-2 border-b border-[#FFFFFF91]'>
                                             <span className='text-[19px] uppercase'>Периоды выполнения проекта: &nbsp;</span>
                                             <span className='leading-[100%]'>
                                                 {renderExpandableContent(getTermValue('project_periods'), 'project_periods')}
                                             </span>
                                         </div>
-                                    )}
+                                    )} */}
 
                                     {/* НДС */}
                                     {getTermValue('vat_payment') && (
@@ -481,6 +482,55 @@ export default function DesignDetail({ questionnaire, onBack }) {
                                         </div>
                                     )}
 
+                                    <div className='mt-0 text-[#FFFFFF] px-2 py-4 border-b border-[#FFFFFF91]'>
+                                        <div
+                                            className="flex gap-x-4 cursor-pointer hover:opacity-80"
+                                        >
+                                            <h3 className='text-[19px] uppercase'>ОТЗЫВЫ:</h3>
+                                            <div className='flex items-center gap-x-5'>
+                                                <p className='lowercase'>
+                                                    <span className='text-yellow-400'>★</span> Положительных: {questionnaire.rating_count?.positive || 0}
+                                                </p>
+                                                <p className='lowercase'>
+                                                    <span className='text-gray-400'>☆</span> Конструктивных: {questionnaire.rating_count?.constructive || 0}
+                                                </p>
+                                            </div>
+                                        </div>
+
+                                        {!showReviewForm && (
+                                            <>
+                                                {displayedReviews.map((review, index) => (
+                                                    <div key={index} className='mt-4 border-b border-[#FFFFFF40] pb-3'>
+                                                        <div className='flex items-center mb-2'>
+                                                            <span className='text-yellow-400 mr-2'>
+                                                                {review.is_positive ? '★' : '☆'}
+                                                            </span>
+                                                            <span className='text-sm text-[#FFFFFFCC]'>
+                                                                {review.reviewer_phone || 'Аноним'}
+                                                            </span>
+                                                            <span className='text-xs text-[#FFFFFF80] ml-2'>
+                                                                ({review.status_display})
+                                                            </span>
+                                                        </div>
+                                                        <p className='text-[#FFFFFFCC] text-sm pl-6'>
+                                                            {review.text}
+                                                        </p>
+                                                    </div>
+                                                ))}
+
+                                                {questionnaire.reviews_list.length > 3 && (
+                                                    <button
+                                                        onClick={() => setShowAllReviews(!showAllReviews)}
+                                                        className="mt-4 text-blue-400 hover:text-blue-300 underline"
+                                                    >
+                                                        {showAllReviews ? 'Скрыть' : `Показать все отзывы (${questionnaire.reviews_list.length})`}
+                                                    </button>
+                                                )}
+                                            </>
+                                        )}
+
+
+                                    </div>
 
                                 </div>
                             )}
