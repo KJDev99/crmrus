@@ -537,10 +537,10 @@ export default function RepairDetail({ questionnaire, onBack }) {
                                         >
                                             <h3 className='text-[19px] uppercase'>ОТЗЫВЫ:</h3>
                                             <div className='flex items-center gap-x-5'>
-                                                <p>
+                                                <p className='lowercase'>
                                                     <span className='text-yellow-400 lowercase'>★</span> Положительных: {questionnaire.rating_count?.positive || 0}
                                                 </p>
-                                                <p>
+                                                <p className='lowercase'>
                                                     <span className='text-gray-400 lowercase'>☆</span> Конструктивных: {questionnaire.rating_count?.constructive || 0}
                                                 </p>
                                             </div>
@@ -555,7 +555,7 @@ export default function RepairDetail({ questionnaire, onBack }) {
                                                                 {review.is_positive ? '★' : '☆'}
                                                             </span>
                                                             <span className='text-sm text-[#FFFFFFCC]'>
-                                                                {review.reviewer_phone || 'Аноним'}
+                                                                {review.reviewer_name || review.reviewer_company_name || ''}
                                                             </span>
                                                             <span className='text-xs text-[#FFFFFF80] ml-2'>
                                                                 ({review.status_display})

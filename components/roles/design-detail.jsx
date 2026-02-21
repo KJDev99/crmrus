@@ -509,7 +509,7 @@ export default function DesignDetail({ questionnaire, onBack }) {
                                                                 {review.is_positive ? '★' : '☆'}
                                                             </span>
                                                             <span className='text-sm text-[#FFFFFFCC]'>
-                                                                {review.reviewer_phone || 'Аноним'}
+                                                                {review.reviewer_name || review.reviewer_company_name || ''}
                                                             </span>
                                                             <span className='text-xs text-[#FFFFFF80] ml-2'>
                                                                 ({review.status_display})
