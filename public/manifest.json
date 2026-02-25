@@ -3,7 +3,7 @@
   "short_name": "Рейтинг Профи",
   "icons": [
     {
-      "src": "/icons/logo.png",
+      "src": "/icons/logo1.png",
       "sizes": "1024x1024",
       "type": "image/png"
     }
