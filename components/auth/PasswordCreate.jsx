@@ -3,6 +3,7 @@ import React, { useState } from 'react'
 import PhoneInput from '../ui/input'
 import GlassButton from '../ui/GlassButton'
 import { Eye, EyeOff } from 'lucide-react'
+import Link from 'next/link'
 
 export default function PasswordCreate({ onSubmit, error, loading, isNewUser }) {
     const [password, setPassword] = useState('')
@@ -104,6 +105,9 @@ export default function PasswordCreate({ onSubmit, error, loading, isNewUser }) 
                         disabled={loading || !password || (isNewUser && !confirmPassword)}
                     />
                 </div>
+                {!isNewUser && (
+                    <Link className='mt-2' href={'/reset-email'}>Забыли пароль?</Link>
+                )}
 
                 {!isNewUser && (
                     <p className="font-[JejuMyeongjo] text-base sm:text-[18px] leading-6 sm:leading-[22px] text-center mt-6 sm:mt-8 opacity-80">
@@ -117,6 +121,7 @@ export default function PasswordCreate({ onSubmit, error, loading, isNewUser }) 
                         </a>
                     </p>
                 )}
+
             </div>
         </div>
     )
