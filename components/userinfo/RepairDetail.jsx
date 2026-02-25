@@ -314,10 +314,10 @@ export default function RepairDetail({ questionnaire, onBack }) {
                                     {/* Описание компании */}
                                     {getAboutValue('company_description') && (
                                         <div className='text-[#FFFFFF] px-2 py-2 border-b border-[#FFFFFF91]'>
-                                            <span className='text-[19px] uppercase'>Описание компании: &nbsp;  </span>
-                                            <span className='leading-[100%]'>
+                                            <p className='text-[19px] uppercase'>Описание компании: &nbsp;  </p>
+                                            <p className='leading-[100%]'>
                                                 {renderExpandableContent(getAboutValue('company_description'), 'company_description')}
-                                            </span>
+                                            </p>
                                         </div>
                                     )}
                                     {questionnaire.phone && (
@@ -342,11 +342,11 @@ export default function RepairDetail({ questionnaire, onBack }) {
                                     {/* Пакеты услуг и стоимость */}
                                     {getAboutValue('service_packages') && (
                                         <div className='text-[#FFFFFF] px-2 py-2 border-b border-[#FFFFFF91]'>
-                                            <span className='text-[19px] uppercase'>Пакеты услуг и их стоимость:  &nbsp;
-                                            </span>
-                                            <span className='leading-[100%]'>
+                                            <p className='text-[19px] uppercase'>Пакеты услуг и их стоимость:  &nbsp;
+                                            </p>
+                                            <p className='leading-[100%]'>
                                                 {renderExpandableContent(getAboutValue('service_packages'), 'service_packages')}
-                                            </span>
+                                            </p>
                                         </div>
                                     )}
 

@@ -332,7 +332,6 @@ export default function DesignDetail({ questionnaire, onBack }) {
                         <div className='mt-2'>
                             {activeTab === 'company' && (
                                 <div className='space-y-2'>
-                                    {/* Приветственное сообщение */}
                                     {questionnaire.phone && (
                                         <div className='text-[#FFFFFF] px-2 py-2 border-b border-[#FFFFFF91]'>
                                             <span className='text-[19px] uppercase'>Телефон: &nbsp;</span>
@@ -358,6 +357,14 @@ export default function DesignDetail({ questionnaire, onBack }) {
                                             </span>
                                         </div>
                                     )}
+                                    {getAboutValue('welcome_message') && (
+                                        <div className='text-[#FFFFFF] px-2 py-2 border-b border-[#FFFFFF91]'>
+                                            <span className='text-[19px] uppercase'>Приветственное сообщение:</span> <br />
+                                            <span className='leading-[100%]'>
+                                                {renderExpandableContent(getAboutValue('welcome_message'), 'welcome_message')}
+                                            </span>
+                                        </div>
+                                    )}
                                     {/* Акции и УТП */}
                                     {getAboutValue('promotions_utp') && (
                                         <div className='text-[#FFFFFF] px-2 py-2 border-b border-[#FFFFFF91]'>
@@ -368,20 +375,13 @@ export default function DesignDetail({ questionnaire, onBack }) {
                                         </div>
                                     )}
 
-                                    {getAboutValue('welcome_message') && (
-                                        <div className='text-[#FFFFFF] px-2 py-2 border-b border-[#FFFFFF91]'>
-                                            <span className='text-[19px] uppercase'>Приветственное сообщение:</span> <br />
-                                            <span className='leading-[100%]'>
-                                                {renderExpandableContent(getAboutValue('welcome_message'), 'welcome_message')}
-                                            </span>
-                                        </div>
-                                    )}
+
 
                                     {/* Опыт и география */}
                                     {getAboutValue('experience_geography') && (
                                         <div className='text-[#FFFFFF] px-2 py-2 border-b border-[#FFFFFF91]'>
                                             <span className='text-[19px] uppercase'>Опыт и география работы: &nbsp;</span>
-                                            <span className='leading-[100%]'>
+                                            <span className='leading-[100%]' style={{ whiteSpace: 'pre-line' }} >
                                                 {getAboutValue('experience_geography')}
                                             </span>
                                         </div>
@@ -390,10 +390,10 @@ export default function DesignDetail({ questionnaire, onBack }) {
                                     {/* Пакеты услуг и стоимость */}
                                     {getAboutValue('service_packages') && (
                                         <div className='text-[#FFFFFF] px-2 py-2 border-b border-[#FFFFFF91]'>
-                                            <span className='text-[19px] uppercase'>Пакеты услуг и их стоимость:&nbsp;</span>
-                                            <span className='leading-[100%]' style={{ whiteSpace: 'pre-line' }}>
+                                            <p className='text-[19px] uppercase'>Пакеты услуг и их стоимость:&nbsp;</p>
+                                            <p className='leading-[100%]' style={{ whiteSpace: 'pre-line' }}>
                                                 {renderExpandableContent(getAboutValue('service_packages'), 'service_packages')}
-                                            </span>
+                                            </p>
                                         </div>
                                     )}
 
@@ -413,11 +413,20 @@ export default function DesignDetail({ questionnaire, onBack }) {
                                 <div className='space-y-4'>
                                     {/* Периоды выполнения проекта */}
 
+
                                     {questionnaire.work_type && (
                                         <div className='text-[#FFFFFF] px-2 py-2 border-b border-[#FFFFFF91]'>
                                             <span className='text-[19px] uppercase'>Тип работы: &nbsp;</span>
                                             <span className='leading-[100%]'>
                                                 {questionnaire.work_type}
+                                            </span>
+                                        </div>
+                                    )}
+                                    {questionnaire.supplier_contractor_recommendation_terms && (
+                                        <div className='text-[#FFFFFF] px-2 py-2 border-b border-[#FFFFFF91]'>
+                                            <p className='text-[19px] uppercase'>Условия сотрудничества: &nbsp;</p>
+                                            <span className='leading-[100%]'>
+                                                {questionnaire.supplier_contractor_recommendation_terms}
                                             </span>
                                         </div>
                                     )}
@@ -464,14 +473,6 @@ export default function DesignDetail({ questionnaire, onBack }) {
                                     )}
 
                                     {/* Гарантии */}
-                                    {getTermValue('guarantees') && (
-                                        <div className='text-[#FFFFFF] px-2 py-2 border-b border-[#FFFFFF91]'>
-                                            <span className='text-[19px] uppercase'>Гарантии: &nbsp;</span>
-                                            <span className='leading-[100%]' style={{ whiteSpace: 'pre-line' }}>
-                                                {renderExpandableContent(getTermValue('guarantees'), 'guarantees')}
-                                            </span>
-                                        </div>
-                                    )}
 
                                     {/* Условия работы с другими городами */}
                                     {getTermValue('other_cities_terms') && (

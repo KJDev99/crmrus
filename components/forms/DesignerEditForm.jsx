@@ -91,7 +91,7 @@ const areaOptions = [
     { value: 'до 10 м2', label: 'до 10 м2' },
     { value: 'до 40 м2', label: 'до 40 м2' },
     { value: 'до 80 м2', label: 'до 80 м2' },
-    { value: 'дома', label: 'дома' },
+    { value: 'Без ограничений', label: 'Без ограничений' },
 ]
 
 const costOptions = [

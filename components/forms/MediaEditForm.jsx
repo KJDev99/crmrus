@@ -4,12 +4,12 @@ import { FiSave, FiX, FiUpload, FiPlus, FiTrash2 } from 'react-icons/fi'
 
 
 const segmentOptions = [
-    { value: 'horeca', label: 'HoReCa' },
-    { value: 'business', label: 'Бизнес' },
-    { value: 'comfort', label: 'Комфорт' },
-    { value: 'premium', label: 'Премиум' },
-    { value: 'medium', label: 'Средний' },
-    { value: 'economy', label: 'Эконом' }
+    { value: 'HoReCa', label: 'HoReCa' },
+    { value: 'Бизнес', label: 'Бизнес' },
+    { value: 'Комфорт', label: 'Комфорт' },
+    { value: 'Премиум', label: 'Премиум' },
+    { value: 'Средний', label: 'Средний' },
+    { value: 'Эконом', label: 'Эконом' }
 ]
 
 const vatOptions = [

@@ -338,10 +338,10 @@ export default function SupplierDetail({ questionnaire, onBack }) {
 
                                     {getAboutValue('company_description') && (
                                         <div className='text-[#FFFFFF] px-2 py-2 border-b border-[#FFFFFF91]'>
-                                            <span className='text-[19px] uppercase'>Описание компании: </span>
-                                            <span className='leading-[100%]' >
+                                            <p className='text-[19px] uppercase'>Описание компании: </p>
+                                            <p className='leading-[100%]' >
                                                 {renderExpandableContent(getAboutValue('company_description'), 'company_description')}
-                                            </span>
+                                            </p>
 
                                         </div>
                                     )}
@@ -373,10 +373,10 @@ export default function SupplierDetail({ questionnaire, onBack }) {
 
                                     {questionnaire.responsible_person && (
                                         <div className='text-[#FFFFFF] px-2 py-2 border-b border-[#FFFFFF91]'>
-                                            <span className='text-[19px] uppercase'>Ответственное лицо: &nbsp;</span>
-                                            <span className='leading-[100%]'>
+                                            <p className='text-[19px] uppercase'>Ответственное лицо: &nbsp;</p>
+                                            <p className='leading-[100%]'>
                                                 {questionnaire.responsible_person}
-                                            </span>
+                                            </p>
                                         </div>
                                     )}
 
@@ -388,22 +388,22 @@ export default function SupplierDetail({ questionnaire, onBack }) {
                                             </span>
                                         </div>
                                     )}
-                                    {questionnaire?.welcome_message && (
+                                    {/* {questionnaire?.welcome_message && (
                                         <div className='text-[#FFFFFF] px-2 py-2 border-b border-[#FFFFFF91]'>
                                             <span className='text-[19px] uppercase'>Акции и УТП: &nbsp;</span>
                                             <span className='leading-[100%]' style={{ whiteSpace: 'pre-line' }}>
                                                 {questionnaire?.welcome_message}
                                             </span>
                                         </div>
-                                    )}
+                                    )} */}
 
 
                                     {getAboutValue('product_assortment') && (
                                         <div className='text-[#FFFFFF] px-2 py-2 border-b border-[#FFFFFF91]'>
-                                            <span className='text-[19px] uppercase'>Ассортимент продукции:</span>
-                                            <span className='leading-[100%]' style={{ whiteSpace: 'pre-line' }}>
+                                            <p className='text-[19px] uppercase'>Ассортимент продукции:</p>
+                                            <p className='leading-[100%]' style={{ whiteSpace: 'pre-line' }}>
                                                 {renderExpandableContent(getAboutValue('product_assortment'), 'product_assortment')}
-                                            </span>
+                                            </p>
                                         </div>
                                     )}
 
@@ -425,7 +425,7 @@ export default function SupplierDetail({ questionnaire, onBack }) {
                                 <div className='space-y-2'>
                                     {getTermValue('delivery_periods') && (
                                         <div className='text-[#FFFFFF] px-2 py-2 border-b border-[#FFFFFF91]'>
-                                            <span className='text-[19px] uppercase'>Сроки поставки:  </span>
+                                            <p className='text-[19px] uppercase'>Сроки поставки:  </p>
                                             <span className='leading-[100%]'>
                                                 {renderExpandableContent(getTermValue('delivery_periods'), 'delivery_periods')}
                                             </span>
@@ -443,7 +443,7 @@ export default function SupplierDetail({ questionnaire, onBack }) {
 
                                     {getTermValue('guarantees') && (
                                         <div className='text-[#FFFFFF] px-2 py-2 border-b border-[#FFFFFF91]'>
-                                            <span className='text-[19px] uppercase'>Гарантии:  </span>
+                                            <p className='text-[19px] uppercase'>Гарантии:  </p>
                                             <span className='leading-[100%]' style={{ whiteSpace: 'pre-line' }}>
                                                 {renderExpandableContent(getTermValue('guarantees'), 'guarantees')}
                                             </span>

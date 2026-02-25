@@ -92,7 +92,7 @@ export default function ConstructionBox() {
 
     const speedOptions = [
         { value: 'Предварительная запись', label: 'Предварительная запись' },
-        { value: 'быстрый старт', label: 'быстрый старт' },
+        { value: 'Быстрый старт', label: 'Быстрый старт' },
     ]
 
     const handleInputChange = (e) => {
@@ -348,10 +348,10 @@ export default function ConstructionBox() {
                     }
                 }
                 // 3. ASOSIY QISM: Backend array (massiv) sifatida kutadigan maydonlar
-                else if (['segments', 'magazine_cards', 'categories'].includes(key)) {
+                else if (['segments', 'magazine_cards', 'categories',].includes(key)) {
                     if (value.length > 0) submitFormData.append(key, JSON.stringify(value));
                 }
-                // else if (['categories'].includes(key)) {
+                // else if (['speed_of_execution'].includes(key)) {
                 //     if (Array.isArray(value)) {
                 //         value.forEach(item => {
                 //             submitFormData.append(key, item);

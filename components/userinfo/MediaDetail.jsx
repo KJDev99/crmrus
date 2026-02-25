@@ -23,7 +23,31 @@ export default function MediaDetail({ questionnaire, onBack }) {
     const renderExpandableContent = (content, sectionKey, maxLength = 170) => {
         if (!content) return null;
 
-        const contentStr = typeof content === 'object' ? JSON.stringify(content) : String(content);
+        // Agar massiv bo'lsa — alohida ko'rsatish
+        if (Array.isArray(content)) {
+            const isExpanded = expandedSections[sectionKey];
+            const displayItems = isExpanded ? content : content.slice(0, 2);
+
+            return (
+                <>
+                    <div className="space-y-1">
+                        {displayItems.map((item, index) => (
+                            <p key={index}>{item}</p>
+                        ))}
+                    </div>
+                    {content.length > 2 && (
+                        <button
+                            onClick={() => toggleSection(sectionKey)}
+                            className="ml-2 text-blue-400 hover:text-blue-300 underline"
+                        >
+                            {isExpanded ? 'Скрыть' : 'Показать полностью'}
+                        </button>
+                    )}
+                </>
+            );
+        }
+
+        const contentStr = String(content);
         const isExpanded = expandedSections[sectionKey];
 
         if (contentStr.length <= maxLength) {
@@ -292,7 +316,7 @@ export default function MediaDetail({ questionnaire, onBack }) {
                                 {questionnaire.brand_name || questionnaire.full_name || 'Медиа пространство'}
                             </h2>
                             <div className='w-[calc(100% + 32px)] h-0.25 bg-[#FFFFFF4F]  ml-[-32px]'></div>
-                            <p className='text-[#FFFFFF] uppercase text-sm leading-[100%] mt-3 max-md:text-xs line-clamp-2 pr-10'>
+                            <p className='text-[#FFFFFF] uppercase text-sm leading-[100%] mt-3 max-md:text-xs line-clamp-1 pr-10'>
                                 {getRepresentativeCities1(questionnaire.representative_cities) || 'Город не указан'}
                             </p>
                             <div className="absolute bottom-1 right-1 text-white">
@@ -332,14 +356,14 @@ export default function MediaDetail({ questionnaire, onBack }) {
                         <div className='space-y-4 max-md:space-y-2'>
                             {questionnaire.representative_cities && (
                                 <div className='text-[#FFFFFF] px-2 py-2 border-b border-[#FFFFFF91] max-md:px-1 max-md:text-sm'>
-                                    <p className='text-[19px] uppercase'>Города представительств:</p>
+                                    <span className='text-[19px] uppercase'>Города представительств:</span>
                                     {renderExpandableContent(questionnaire.representative_cities, 'representative_cities')}
                                 </div>
                             )}
 
                             {questionnaire.business_form && (
                                 <div className='text-[#FFFFFF] px-2 py-2 border-b border-[#FFFFFF91] max-md:px-1 max-md:text-sm'>
-                                    <p className='text-[19px] uppercase'>Форма бизнеса:</p>
+                                    <span className='text-[19px] uppercase'>Форма бизнеса:</span>
                                     <span>
                                         {questionnaire.business_form === 'own_business' ? 'Собственный бизнес'
                                             : questionnaire.business_form === 'franchise' ? 'Франшиза'
@@ -376,7 +400,13 @@ export default function MediaDetail({ questionnaire, onBack }) {
                                 <p className='text-[19px] uppercase'>Сегменты для публикации:</p>
                                 {getSegmentDisplay(questionnaire.segments)}
                             </div>
+                            <div className='text-[#FFFFFF] px-2 py-2 border-b border-[#FFFFFF91] max-md:px-1 max-md:text-sm'>
+                                <p className='text-[19px] uppercase'>Телефон:</p>
+                                <a target='_blank' href={`tel:${questionnaire.phone}`}> {questionnaire.phone}</a>
+                            </div>
                         </div>
+
+
 
 
                         <h2 className='mt-4  text-[19px] uppercase text-[#FFFFFF] max-md:text-base max-md:mb-2 max-md:mt-3 px-2'>Социальные сети:</h2>
@@ -411,9 +441,9 @@ export default function MediaDetail({ questionnaire, onBack }) {
                                             };
 
                                             return (
-                                                <p key={index} className='max-md:text-sm'>
+                                                <a target='_blank' href={value} key={index} className='max-md:text-sm h-6 overflow-hidden line-clamp-1 flex'>
                                                     <span>{getLabel(type)}:</span> {value}
-                                                </p>
+                                                </a>
                                             );
                                         } catch (error) {
                                             // Agar parse qilishda xatolik bo'lsa, oddiy ko'rsatish
