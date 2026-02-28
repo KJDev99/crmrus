@@ -233,7 +233,7 @@ export default function DesignerEditForm({ data, onChange, onSave, onCancel, sav
             const value = localData[key]
 
             // File va other_contacts'ni o'tkazib yuborish
-            if (key === 'company_logo' || key === 'other_contacts') {
+            if (key === 'photo' || key === 'other_contacts') {
                 return
             }
 
@@ -261,7 +261,7 @@ export default function DesignerEditForm({ data, onChange, onSave, onCancel, sav
 
         // Yangi rasm qo'shish
         if (newImageFile) {
-            formData.append('company_logo', newImageFile)
+            formData.append('photo', newImageFile)
         }
 
         onSave(formData)

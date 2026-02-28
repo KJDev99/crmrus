@@ -62,7 +62,7 @@ export default function Anketa() {
       const params = {};
       if (currentFilters.full_name) params.full_name = currentFilters.full_name;
       if (currentFilters.id) params.id = currentFilters.id;
-      if (currentFilters.organization_name) params.organization_name = currentFilters.organization_name;
+      // if (currentFilters.organization_name) params.organization_name = currentFilters.organization_name;
       if (currentFilters.phone) params.phone = currentFilters.phone;
       params.limit = currentFilters.limit || 10;
       params.offset = currentFilters.offset || 0;

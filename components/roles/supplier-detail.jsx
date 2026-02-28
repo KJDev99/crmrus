@@ -462,8 +462,8 @@ export default function SupplierDetail({ questionnaire, onBack }) {
 
                                     {getTermValue('designer_contractor_terms') && (
                                         <div className='text-[#FFFFFF] px-2 py-2 border-b border-[#FFFFFF91]'>
-                                            <span className='text-[19px] uppercase'>Условия для дизайнеров и прорабов:  </span>
-                                            <span className='leading-[100%]'>
+                                            <p className='text-[19px] uppercase'>Условия для дизайнеров и прорабов:  </p>
+                                            <span className='leading-[100%]' style={{ whiteSpace: 'pre-line' }}>
                                                 {renderExpandableContent(getTermValue('designer_contractor_terms'), 'designer_contractor_terms')}
                                             </span>
 

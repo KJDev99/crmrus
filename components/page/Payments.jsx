@@ -31,10 +31,19 @@ export default function Payments() {
   const [sortOrder, setSortOrder] = useState('desc')
   const [dateFilterOpen, setDateFilterOpen] = useState(false)
 
+  const [groupFilter, setGroupFilter] = useState([])
+  const [groupModalOpen, setGroupModalOpen] = useState(false)
+
+
+
   // Modal state
   const [extendModal, setExtendModal] = useState({ open: false, item: null })
   const [extendDate, setExtendDate] = useState('')
   const [extendLoading, setExtendLoading] = useState(false)
+
+  const filteredData = groupFilter.length > 0
+    ? data.filter(item => groupFilter.includes(item.group))
+    : data
 
   const debouncedFetch = useCallback(
     debounce((filters) => {
@@ -55,7 +64,7 @@ export default function Payments() {
     fetchReports(filters)
   }, [sortBy, sortOrder])
 
-  const fetchReports = async (currentFilters) => {
+  const fetchReports = async (currentFilters, currentGroupFilter = groupFilter) => {
     try {
       setLoading(true)
       setError(null)
@@ -74,6 +83,7 @@ export default function Payments() {
       if (currentFilters.search) params.search = currentFilters.search
       if (currentFilters.start_date) params.start_date = currentFilters.start_date
       if (currentFilters.end_date) params.end_date = currentFilters.end_date
+      if (currentGroupFilter.length > 0) params.group = currentGroupFilter.join(',')
 
       const response = await axios.get(
         "https://api.reiting-profi.ru/api/v1/events/reports/all/",
@@ -337,7 +347,7 @@ export default function Payments() {
 
         {/* Date filter */}
         <div className="relative">
-          <button
+          {/* <button
             onClick={() => setDateFilterOpen(!dateFilterOpen)}
             className="flex items-center gap-2 px-4 py-2 bg-[#B7B2B299] rounded-2xl text-white hover:bg-[#A09A9A99] transition-colors"
           >
@@ -346,7 +356,7 @@ export default function Payments() {
             {(filters.start_date || filters.end_date) && (
               <span className="w-2 h-2 bg-yellow-400 rounded-full"></span>
             )}
-          </button>
+          </button> */}
 
           {dateFilterOpen && (
             <div className="absolute top-full right-0 mt-2 p-4 bg-[#2D2D2D] rounded-xl shadow-lg z-10 min-w-[300px]">
@@ -389,13 +399,13 @@ export default function Payments() {
         </div>
 
         {/* Sort */}
-        <button
+        {/* <button
           className="text-gray-400 hover:text-white"
           onClick={() => handleSort('start_date')}
           title="Сортировать по дате начала"
         >
           <BiSortAlt2 size={32} className={`text-white ${sortBy === 'start_date' && sortOrder === 'desc' ? 'rotate-180' : ''}`} />
-        </button>
+        </button> */}
       </div>
 
       {/* Active date filter display */}
@@ -436,21 +446,54 @@ export default function Payments() {
                 <tr className="border-b border-line text-left text-[18px]">
                   <th className="py-4 font-normal text-[20px] leading-[1] tracking-normal px-6">
                     <button
-                      onClick={() => handleSort('name')}
-                      className="flex items-center gap-1 hover:text-yellow-400 transition-colors"
+                      // onClick={() => handleSort('name')}
+                      className="flex items-center gap-1  transition-colors"
                     >
                       Организация / ФИ
                       {getSortIcon('name')}
                     </button>
                   </th>
-                  <th className="py-4 font-normal text-[20px] leading-[1] tracking-normal px-6">
+                  <th className="py-4 font-normal text-[20px] leading-[1] tracking-normal px-6 relative">
                     <button
-                      onClick={() => handleSort('group')}
+                      onClick={() => setGroupModalOpen(true)}
                       className="flex items-center gap-1 hover:text-yellow-400 transition-colors"
                     >
                       Группа
-                      {getSortIcon('group')}
+                      {groupFilter.length > 0 && (
+                        <span className="ml-1 w-2 h-2 bg-yellow-400 rounded-full inline-block"></span>
+                      )}
                     </button>
+
+                    {groupModalOpen && (
+                      <div className="absolute top-full left-0 mt-1 z-50 bg-[#1E1E1E] border border-white/10 rounded-2xl p-5 w-52 shadow-2xl" onClick={e => e.stopPropagation()}>
+                        <div className="flex items-center justify-between mb-4">
+                          <h3 className="text-white font-semibold text-sm">Фильтр по группе</h3>
+                          <button onClick={() => setGroupModalOpen(false)} className="text-gray-400 hover:text-white"><FiX size={16} /></button>
+                        </div>
+                        <div className="space-y-1">
+                          {['Дизайн', 'Поставщик', 'Медиа', 'Ремонт'].map(group => (
+                            <label key={group} className="flex items-center gap-3 cursor-pointer p-2 rounded-lg hover:bg-white/5">
+                              <input
+                                type="checkbox"
+                                checked={groupFilter.includes(group)}
+                                onChange={() => {
+                                  setGroupFilter(prev =>
+                                    prev.includes(group) ? prev.filter(g => g !== group) : [...prev, group]
+                                  )
+                                }}
+                                className="w-4 h-4 accent-yellow-500"
+                              />
+                              <span className="text-white text-sm">{group}</span>
+                            </label>
+                          ))}
+                        </div>
+                        {groupFilter.length > 0 && (
+                          <button onClick={() => setGroupFilter([])} className="mt-3 w-full text-xs text-yellow-400 hover:text-yellow-300">
+                            Очистить
+                          </button>
+                        )}
+                      </div>
+                    )}
                   </th>
                   <th className="py-4 font-normal text-[20px] leading-[1] tracking-normal px-6">
                     <button
@@ -477,14 +520,14 @@ export default function Payments() {
               </thead>
 
               <tbody>
-                {data.length === 0 ? (
+                {filteredData.length === 0 ? (
                   <tr>
                     <td colSpan="5" className="py-8 text-center text-xl text-gray-400">
                       Нет данных для отображения
                     </td>
                   </tr>
                 ) : (
-                  data.map((item, i) => {
+                  filteredData.map((item, i) => {
                     const expired = isExpired(item.next_payment_date)
                     const canExtend = item.is_active && !expired
 

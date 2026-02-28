@@ -354,7 +354,7 @@ export default function RepairDetail({ questionnaire, onBack }) {
                                     {/* Перечень услуг */}
                                     {getAboutValue('services_list') && (
                                         <div className='text-[#FFFFFF] px-2 py-2 border-b border-[#FFFFFF91]'>
-                                            <span className='text-[19px] uppercase'>Перечень услуг:  &nbsp; </span>
+                                            <p className='text-[19px] uppercase'>Перечень услуг:  &nbsp; </p>
                                             <span className='leading-[100%]'>
                                                 {renderExpandableContent(getAboutValue('services_list'), 'services_list')}
                                             </span>
@@ -366,7 +366,7 @@ export default function RepairDetail({ questionnaire, onBack }) {
                                         <div className='text-[#FFFFFF] px-2 py-2 border-b border-[#FFFFFF91]'>
                                             <span className='text-[19px] uppercase'>Акции и УТП:  &nbsp;
                                             </span>
-                                            <span className='leading-[100%]'>
+                                            <span className='leading-[100%]' style={{ whiteSpace: 'pre-line' }}>
                                                 {renderExpandableContent(getAboutValue('promotions_utp'), 'promotions_utp')}
                                             </span>
                                         </div>
@@ -385,15 +385,15 @@ export default function RepairDetail({ questionnaire, onBack }) {
                                     {/* Адреса офисов */}
                                     {getAboutValue('office_addresses') && (
                                         <div className='text-[#FFFFFF] px-2 py-2 border-b border-[#FFFFFF91]'>
-                                            <span className='text-[19px] uppercase'>Адреса офисов:  &nbsp;</span> <br />
-                                            <span className='leading-[100%]'>
+                                            <p className='text-[19px] uppercase'>Адреса офисов:  &nbsp;</p>
+                                            <span className='leading-[100%]' style={{ whiteSpace: 'pre-line' }}>
                                                 {renderExpandableContent(getAboutValue('office_addresses'), 'office_addresses')}
                                             </span>
                                         </div>
                                     )}
                                     {questionnaire.work_format && (
                                         <div className='text-[#FFFFFF] px-2 py-2 border-b border-[#FFFFFF91]'>
-                                            <span className='text-[19px] uppercase'>Формат работы: &nbsp;</span>
+                                            <p className='text-[19px] uppercase'>Формат работы: &nbsp;</p>
                                             <span className='leading-[100%]'>
                                                 {renderExpandableContent(questionnaire.work_format)}
                                             </span>

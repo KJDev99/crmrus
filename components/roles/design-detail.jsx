@@ -454,14 +454,16 @@ export default function DesignDetail({ questionnaire, onBack }) {
                                     )}
 
 
-                                    {/* {getTermValue('project_periods') && (
+                                    {getTermValue('project_periods') && (
                                         <div className='text-[#FFFFFF] px-2 py-2 border-b border-[#FFFFFF91]'>
-                                            <span className='text-[19px] uppercase'>Периоды выполнения проекта: &nbsp;</span>
-                                            <span className='leading-[100%]'>
-                                                {renderExpandableContent(getTermValue('project_periods'), 'project_periods')}
+                                            <span className='text-[19px] uppercase'>Услуги: &nbsp;</span>
+                                            <span className='leading-[100%]' style={{ whiteSpace: 'pre-line' }}>
+                                                {questionnaire.services.map((item, index) => (
+                                                    <span key={index} className='block'>{item}</span>
+                                                ))}
                                             </span>
                                         </div>
-                                    )} */}
+                                    )}
 
                                     {/* НДС */}
                                     {getTermValue('vat_payment') && (
