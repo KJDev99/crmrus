@@ -160,7 +160,7 @@ export default function SupplierDetail({ questionnaire, onBack }) {
                     <button onClick={onBack} className="cursor-pointer max-md:w-8 max-md:h-8">
                         <IoIosArrowBack size={40} className='max-md:w-6 max-md:h-6' />
                     </button>
-                    <img src="/icons/logo.svg" alt="a" className='max-md:w-20 w-50' />
+                    <img src="/icons/logo2.svg" alt="a" className='max-md:w-20 w-40 mb-5' />
                     <div className='max-md:w-8 max-md:h-8'>
                         <img src="/icons/share.svg" alt="a" className='max-md:w-6 max-md:h-6' />
                     </div>
@@ -268,7 +268,7 @@ export default function SupplierDetail({ questionnaire, onBack }) {
                 <button onClick={onBack} className="cursor-pointer max-md:w-8 max-md:h-8 md:w-30">
                     <IoIosArrowBack size={40} className='max-md:w-6 max-md:h-6' />
                 </button>
-                <img src="/icons/logo.svg" alt="a" className='max-md:w-20 w-50' />
+                <img src="/icons/logo2.svg" alt="a" className='max-md:w-20 w-40 mb-5' />
                 <div className='max-md:w-8 max-md:h-8 md:w-30' onClick={handleLogout}>
                     <img src="/icons/share.svg" alt="a" className='max-md:w-6 max-md:h-6' />
                 </div>

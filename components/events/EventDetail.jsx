@@ -96,7 +96,7 @@ export default function EventDetail({ setStep, selectedEvent }) {
                     <button onClick={() => setStep(2)} className="cursor-pointer">
                         <IoIosArrowBack size={40} />
                     </button>
-                    <img src="/icons/logo.svg" alt="logo" className='max-md:w-20 w-50' />
+                    <img src="/icons/logo2.svg" alt="a" className='max-md:w-20 w-40 mb-5' />
                     <div>
                         <img src="/icons/share.svg" alt="share" />
                     </div>
@@ -114,7 +114,7 @@ export default function EventDetail({ setStep, selectedEvent }) {
                 <button onClick={() => setStep(2)} className="cursor-pointer md:w-30">
                     <IoIosArrowBack size={40} />
                 </button>
-                <img src="/icons/logo.svg" alt="logo" className='max-md:w-20 w-50' />
+                <img src="/icons/logo2.svg" alt="a" className='max-md:w-20 w-40 mb-5' />
                 <div onClick={handleLogout} className='md:w-30'>
                     <img src="/icons/share.svg" alt="share" className="cursor-pointer" />
                 </div>

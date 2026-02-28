@@ -187,7 +187,7 @@ export default function SupplierItem({
                 <button onClick={onResetFilter} className="cursor-pointer max-md:w-8 max-md:h-8 md:w-30">
                     <IoIosArrowBack size={40} className='max-md:w-6 max-md:h-6' />
                 </button>
-                <img src="/icons/logo.svg" alt="a" className='max-md:w-20 w-50' />
+                <img src="/icons/logo2.svg" alt="a" className='max-md:w-20 w-40 mb-5' />
                 <div className='md:w-30 flex items-end  justify-end'>
                     <img
                         src="/icons/filter.svg"

@@ -119,7 +119,7 @@ export default function HomeRestriction() {
           <div className="cursor-pointer">
             <IoIosArrowBack size={32} className='sm:size-[40px] opacity-0' />
           </div>
-          <img src="/icons/logo.svg" alt="logo" className='max-md:w-20 w-50' />
+          <img src="/icons/logo2.svg" alt="a" className='max-md:w-20 w-40 mb-5' />
           <a target='_blank' href='https://r-profi.taplink.ws'>
             <img src="/icons/support.svg" alt="support" className='w-10 h-10 sm:w-14 sm:h-14' />
           </a>
@@ -137,7 +137,7 @@ export default function HomeRestriction() {
         <div className="cursor-pointer md:w-30">
           <IoIosArrowBack size={32} className='sm:w-10 sm:h-10 opacity-0' />
         </div>
-        <img src="/icons/logo.svg" alt="logo" className='max-md:w-20 w-50' />
+        <img src="/icons/logo2.svg" alt="a" className='max-md:w-20 w-40 mb-5' />
         <div className="flex items-center gap-x-2 sm:gap-x-3 md:w-30">
 
           <a target='_blank' href='https://r-profi.taplink.ws'>
