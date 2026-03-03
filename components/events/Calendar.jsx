@@ -189,7 +189,7 @@ export default function Calendar({ setStep, selectedCity, onDateSelect }) {
           <button onClick={() => setStep(0)} className="cursor-pointer">
             <IoIosArrowBack size={40} />
           </button>
-          <img src="/icons/logo2.svg" alt="a" className='max-md:w-20 w-40 mb-5' />
+          <img src="/icons/logo22.svg" alt="a" className='max-md:w-20 w-40 mb-5' />
           <div className="text-white text-lg"></div>
         </div>
 

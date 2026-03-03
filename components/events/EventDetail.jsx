@@ -6,7 +6,7 @@ import { ru } from 'date-fns/locale'
 import axios from 'axios'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
-import toast from 'react-hot-toast'
+import { Toaster, toast } from 'react-hot-toast';
 
 export default function EventDetail({ setStep, selectedEvent }) {
     const [eventDetail, setEventDetail] = useState(null)
@@ -89,6 +89,15 @@ export default function EventDetail({ setStep, selectedEvent }) {
         }
     }
 
+    const handleShare = async () => {
+        try {
+            await navigator.clipboard.writeText('https://reiting-profi.ru/');
+            toast.success('Ссылка скопирована!');
+        } catch (err) {
+            toast.error('Ошибка при копировании');
+        }
+    };
+
     if (loading || !eventDetail) {
         return (
             <div>
@@ -96,9 +105,13 @@ export default function EventDetail({ setStep, selectedEvent }) {
                     <button onClick={() => setStep(2)} className="cursor-pointer">
                         <IoIosArrowBack size={40} />
                     </button>
-                    <img src="/icons/logo2.svg" alt="a" className='max-md:w-20 w-40 mb-5' />
-                    <div>
-                        <img src="/icons/share.svg" alt="share" />
+                    <img src="/icons/logo22.svg" alt="a" className='max-md:w-20 w-40 mb-5' />
+
+                    <div
+                        className='max-md:w-8 max-md:h-8 md:w-30 flex justify-end cursor-pointer'
+                        onClick={handleShare}
+                    >
+                        <img src="/icons/share.svg" alt="share" className='max-md:w-6 max-md:h-6' />
                     </div>
                 </div>
                 <div className="text-center text-white py-20">
@@ -114,9 +127,13 @@ export default function EventDetail({ setStep, selectedEvent }) {
                 <button onClick={() => setStep(2)} className="cursor-pointer md:w-30">
                     <IoIosArrowBack size={40} />
                 </button>
-                <img src="/icons/logo2.svg" alt="a" className='max-md:w-20 w-40 mb-5' />
-                <div onClick={handleLogout} className='md:w-30'>
-                    <img src="/icons/share.svg" alt="share" className="cursor-pointer" />
+                <img src="/icons/logo22.svg" alt="a" className='max-md:w-20 w-40 mb-5' />
+                <Toaster position="top-center" />
+                <div
+                    className='max-md:w-8 max-md:h-8 md:w-30 flex justify-end cursor-pointer'
+                    onClick={handleShare}
+                >
+                    <img src="/icons/share.svg" alt="share" className='max-md:w-6 max-md:h-6' />
                 </div>
             </div>
 

@@ -1,7 +1,7 @@
 'use client';
 import { useRouter } from 'next/navigation';
 import React, { useState } from 'react'
-import toast from 'react-hot-toast';
+import { Toaster, toast } from 'react-hot-toast';
 import { IoIosArrowBack } from 'react-icons/io'
 
 export default function SupplierDetail({ questionnaire, onBack }) {
@@ -72,7 +72,14 @@ export default function SupplierDetail({ questionnaire, onBack }) {
             </>
         );
     };
-
+    const handleShare = async () => {
+        try {
+            await navigator.clipboard.writeText('https://reiting-profi.ru/');
+            toast.success('Ссылка скопирована!');
+        } catch (err) {
+            toast.error('Ошибка при копировании');
+        }
+    };
     const handleSubmitReview = async () => {
         try {
             const token = localStorage.getItem('access_token');
@@ -160,7 +167,7 @@ export default function SupplierDetail({ questionnaire, onBack }) {
                     <button onClick={onBack} className="cursor-pointer max-md:w-8 max-md:h-8">
                         <IoIosArrowBack size={40} className='max-md:w-6 max-md:h-6' />
                     </button>
-                    <img src="/icons/logo2.svg" alt="a" className='max-md:w-20 w-40 mb-5' />
+                    <img src="/icons/logo22.svg" alt="a" className='max-md:w-20 w-40 mb-5' />
                     <div className='max-md:w-8 max-md:h-8'>
                         <img src="/icons/share.svg" alt="a" className='max-md:w-6 max-md:h-6' />
                     </div>
@@ -268,9 +275,13 @@ export default function SupplierDetail({ questionnaire, onBack }) {
                 <button onClick={onBack} className="cursor-pointer max-md:w-8 max-md:h-8 md:w-30">
                     <IoIosArrowBack size={40} className='max-md:w-6 max-md:h-6' />
                 </button>
-                <img src="/icons/logo2.svg" alt="a" className='max-md:w-20 w-40 mb-5' />
-                <div className='max-md:w-8 max-md:h-8 md:w-30' onClick={handleLogout}>
-                    <img src="/icons/share.svg" alt="a" className='max-md:w-6 max-md:h-6' />
+                <img src="/icons/logo22.svg" alt="a" className='max-md:w-20 w-40 mb-5' />
+                <Toaster position="top-center" />
+                <div
+                    className='max-md:w-8 max-md:h-8 md:w-30 flex justify-end cursor-pointer'
+                    onClick={handleShare}
+                >
+                    <img src="/icons/share.svg" alt="share" className='max-md:w-6 max-md:h-6' />
                 </div>
             </div>
             <div className="max-w-xl mx-auto space-y-6">

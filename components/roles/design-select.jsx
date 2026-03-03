@@ -109,7 +109,7 @@ export default function DesignSelect({ filterChoices, selectedFilters, onFilterC
                     <Link href={'/role'} className="cursor-pointer">
                         <IoIosArrowBack size={40} className='' />
                     </Link>
-                    <img src="/icons/logo2.svg" alt="a" className='max-md:w-20 w-40 mb-5' />
+                    <img src="/icons/logo22.svg" alt="a" className='max-md:w-20 w-40 mb-5' />
                     <div></div>
                 </div>
                 <div className='text-center mt-[13px] flex flex-col items-center'>
@@ -125,7 +125,7 @@ export default function DesignSelect({ filterChoices, selectedFilters, onFilterC
                 <Link href={'/role'} className="cursor-pointer md:w-30">
                     <IoIosArrowBack size={40} className='' />
                 </Link>
-                <img src="/icons/logo2.svg" alt="a" className='max-md:w-20 w-40 mb-5' />
+                <img src="/icons/logo22.svg" alt="a" className='max-md:w-20 w-40 mb-5' />
                 <div className='md:w-30'></div>
             </div>
             <div className='text-center mt-[13px] flex flex-col items-center'>

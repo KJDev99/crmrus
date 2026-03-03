@@ -532,7 +532,7 @@ export default function SupplierEditForm({ data, onChange, onSave, onCancel, sav
                 </div>
 
                 <div>
-                    <label className="block text-sm text-white/80 mb-1">Условия сотрудничества</label>
+                    <label className="block text-sm text-white/80 mb-1">Условия сотрудничества с клиентами из других городов и регионов</label>
                     <textarea
                         value={localData.cooperation_terms || ''}
                         onChange={(e) => handleChange('cooperation_terms', e.target.value)}

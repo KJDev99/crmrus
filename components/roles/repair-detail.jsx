@@ -2,7 +2,7 @@
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import React, { useState } from 'react'
-import toast from 'react-hot-toast';
+import { Toaster, toast } from 'react-hot-toast';
 import { IoIosArrowBack } from 'react-icons/io'
 
 export default function RepairDetail({ questionnaire, onBack }) {
@@ -52,6 +52,14 @@ export default function RepairDetail({ questionnaire, onBack }) {
             }, 1000)
         }
     }
+    const handleShare = async () => {
+        try {
+            await navigator.clipboard.writeText('https://reiting-profi.ru/');
+            toast.success('Ссылка скопирована!');
+        } catch (err) {
+            toast.error('Ошибка при копировании');
+        }
+    };
 
     const renderExpandableContent = (content, sectionKey, maxLength = 200) => {
         if (!content) return null;
@@ -137,7 +145,7 @@ export default function RepairDetail({ questionnaire, onBack }) {
                     <button onClick={onBack} className="cursor-pointer max-md:w-8 max-md:h-8">
                         <IoIosArrowBack size={40} className='max-md:w-6 max-md:h-6' />
                     </button>
-                    <img src="/icons/logo2.svg" alt="a" className='max-md:w-20 w-40 mb-5' />
+                    <img src="/icons/logo22.svg" alt="a" className='max-md:w-20 w-40 mb-5' />
                     <div className='max-md:w-8 max-md:h-8'>
                         <img src="/icons/share.svg" alt="a" className='max-md:w-6 max-md:h-6' />
                     </div>
@@ -245,9 +253,13 @@ export default function RepairDetail({ questionnaire, onBack }) {
                 <button onClick={onBack} className="cursor-pointer max-md:w-8 max-md:h-8 md:w-30">
                     <IoIosArrowBack size={40} className='max-md:w-6 max-md:h-6' />
                 </button>
-                <img src="/icons/logo2.svg" alt="a" className='max-md:w-20 w-40 mb-5' />
-                <div className='max-md:w-8 max-md:h-8 md:w-30 flex justify-end ' onClick={handleLogout}>
-                    <img src="/icons/share.svg" alt="a" className='max-md:w-6 max-md:h-6' />
+                <img src="/icons/logo22.svg" alt="a" className='max-md:w-20 w-40 mb-5' />
+                <Toaster position="top-center" />
+                <div
+                    className='max-md:w-8 max-md:h-8 md:w-30 flex justify-end cursor-pointer'
+                    onClick={handleShare}
+                >
+                    <img src="/icons/share.svg" alt="share" className='max-md:w-6 max-md:h-6' />
                 </div>
             </div>
             <div className="max-w-xl mx-auto space-y-6">
@@ -383,12 +395,15 @@ export default function RepairDetail({ questionnaire, onBack }) {
                                     )}
 
                                     {/* Адреса офисов */}
-                                    {getAboutValue('office_addresses') && (
+                                    {questionnaire.representative_cities && (
                                         <div className='text-[#FFFFFF] px-2 py-2 border-b border-[#FFFFFF91]'>
                                             <p className='text-[19px] uppercase'>Адреса офисов:  &nbsp;</p>
                                             <span className='leading-[100%]' style={{ whiteSpace: 'pre-line' }}>
-                                                {renderExpandableContent(getAboutValue('office_addresses'), 'office_addresses')}
+                                                {questionnaire.representative_cities.map((item, index) => (
+                                                    <span key={index} className='block'>{item}</span>
+                                                ))}
                                             </span>
+
                                         </div>
                                     )}
                                     {questionnaire.work_format && (
@@ -402,7 +417,7 @@ export default function RepairDetail({ questionnaire, onBack }) {
 
                                     {questionnaire.speed_of_execution?.length > 0 && (
                                         <div className='text-[#FFFFFF] px-2 py-2 border-b border-[#FFFFFF91]'>
-                                            <span className='text-[19px] uppercase'>Скорость выполнения: &nbsp;</span>
+                                            <span className='text-[19px] uppercase'>Сроки поставки: &nbsp;</span>
                                             <span className='leading-[100%]'>
                                                 {questionnaire.speed_of_execution.map((item, index) => (
                                                     <span key={index} className='block'>{item}</span>
@@ -487,7 +502,7 @@ export default function RepairDetail({ questionnaire, onBack }) {
                                     {/* Гарантии */}
                                     {getTermValue('guarantees') && (
                                         <div className='text-[#FFFFFF] px-2 py-2 border-b border-[#FFFFFF91]'>
-                                            <p className='text-[19px] uppercase'>Гарантии: &nbsp;</p> <br />
+                                            <p className='text-[19px] uppercase'>Гарантии: &nbsp;</p>
                                             <span style={{ whiteSpace: 'pre-line' }}>
 
                                                 {renderExpandableContent(getTermValue('guarantees'), 'guarantees')}

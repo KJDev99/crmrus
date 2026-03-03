@@ -2,7 +2,7 @@
 import { useState } from "react";
 import axios from "axios";
 import { useRouter } from "next/navigation";
-import { Eye, EyeOff, Phone, Lock } from "lucide-react";
+import { Eye, EyeOff } from "lucide-react";
 
 export default function LoginPage() {
     const [phone, setPhone] = useState("");
@@ -12,7 +12,6 @@ export default function LoginPage() {
     const [loading, setLoading] = useState(false);
     const router = useRouter();
 
-    // Telefon raqamni formatlash funksiyasi
     const formatPhone = (value) => {
         const numbers = value.replace(/\D/g, "");
         let formatted = "";
@@ -25,19 +24,16 @@ export default function LoginPage() {
         return formatted;
     };
 
-    // Telefon inputini o'zgartirish
     const handlePhoneChange = (e) => {
         const formattedPhone = formatPhone(e.target.value);
         setPhone(formattedPhone);
     };
 
-    // Login funksiyasi
     const handleSubmit = async (e) => {
         e.preventDefault();
         setError("");
         setLoading(true);
 
-        // Telefon raqamni formatdan faqat raqamlarga o'tkazish
         const cleanPhone = phone.replace(/\D/g, "");
 
         try {
@@ -51,14 +47,12 @@ export default function LoginPage() {
 
             console.log("Успешный вход:", response.data);
 
-            // Tokenlarni saqlash
             if (response.data.tokens) {
                 localStorage.setItem("accessToken", response.data.tokens.access);
                 localStorage.setItem("refreshToken", response.data.tokens.refresh);
                 localStorage.setItem("userLoggedIn", "true");
             }
 
-            // Asosiy sahifaga yo'naltirish
             router.push("/");
 
         } catch (err) {
@@ -83,68 +77,85 @@ export default function LoginPage() {
     };
 
     return (
-        <div className="min-h-screen flex items-center justify-center ">
-            <div className="p-12 rounded-4xl bg-gray-800/50 border border-gray-700 backdrop-blur-sm">
-                <h1 className="text-[26px] font-bold mb-10 text-center text-white">
+        <div className="min-h-screen flex items-center justify-center">
+            <div className="
+                p-6 rounded-3xl mx-4 w-full max-w-sm
+                bg-gray-800/50 border border-gray-700 backdrop-blur-sm
+                sm:p-12 sm:rounded-4xl sm:mx-0 sm:w-auto sm:max-w-none
+            ">
+                <h1 className="
+                    text-[18px] font-bold mb-6 text-center text-white
+                    sm:text-[26px] sm:mb-10
+                ">
                     Вход в Административную панель
                 </h1>
 
-                <form onSubmit={handleSubmit} className="space-y-8">
-                    {/* Телефон Input */}
-                    <div>
+                <form onSubmit={handleSubmit} className="space-y-5 sm:space-y-8">
 
-                        <div className="relative">
-                            <input
-                                type="text"
-                                placeholder="Введите номер телефона"
-                                value={phone}
-                                onChange={handlePhoneChange}
-                                className="px-5 w-[480px] h-[90px] text-[28px] text-yellow-400 rounded-3xl outline-none bg-white/10 placeholder:text-yellow-400/70 border border-white/30 focus:border-yellow-400 transition-colors"
-                            />
-                        </div>
+                    <div className="relative">
+                        <input
+                            type="text"
+                            placeholder="Введите номер телефона"
+                            value={phone}
+                            onChange={handlePhoneChange}
+                            className="
+                                w-full h-[56px] px-4 text-[16px] rounded-2xl outline-none
+                                text-yellow-400 bg-white/10 placeholder:text-yellow-400/70
+                                border border-white/30 focus:border-yellow-400 transition-colors
+                                sm:w-[480px] sm:h-[90px] sm:text-[28px] sm:rounded-3xl sm:px-5
+                            "
+                        />
                     </div>
 
-                    {/* Пароль Input */}
-                    <div>
-
-                        <div className="relative">
-                            <input
-                                type={showPassword ? "text" : "password"}
-                                placeholder="Введите пароль"
-                                value={password}
-                                onChange={(e) => setPassword(e.target.value)}
-                                className="px-5 pr-14 w-[480px] h-[90px] text-[28px] text-yellow-400 rounded-3xl outline-none bg-white/10 placeholder:text-yellow-400/70 border border-white/30 focus:border-yellow-400 transition-colors"
-                            />
-                            <button
-                                type="button"
-                                onClick={() => setShowPassword(!showPassword)}
-                                className="absolute right-8 top-1/2 transform -translate-y-1/2"
-                            >
-                                {showPassword ? (
-                                    <EyeOff className="w-8 h-8 text-yellow-400/70 hover:text-yellow-400 transition-colors" />
-                                ) : (
-                                    <Eye className="w-8 h-8 text-yellow-400/70 hover:text-yellow-400 transition-colors" />
-                                )}
-                            </button>
-                        </div>
+                    <div className="relative">
+                        <input
+                            type={showPassword ? "text" : "password"}
+                            placeholder="Введите пароль"
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
+                            className="
+                                w-full h-[56px] px-4 pr-12 text-[16px] rounded-2xl outline-none
+                                text-yellow-400 bg-white/10 placeholder:text-yellow-400/70
+                                border border-white/30 focus:border-yellow-400 transition-colors
+                                sm:w-[480px] sm:h-[90px] sm:text-[28px] sm:rounded-3xl sm:px-5 sm:pr-14
+                            "
+                        />
+                        <button
+                            type="button"
+                            onClick={() => setShowPassword(!showPassword)}
+                            className="absolute right-4 top-1/2 -translate-y-1/2 sm:right-8"
+                        >
+                            {showPassword ? (
+                                <EyeOff className="w-5 h-5 text-yellow-400/70 hover:text-yellow-400 transition-colors sm:w-8 sm:h-8" />
+                            ) : (
+                                <Eye className="w-5 h-5 text-yellow-400/70 hover:text-yellow-400 transition-colors sm:w-8 sm:h-8" />
+                            )}
+                        </button>
                     </div>
 
-                    {/* Сообщение об ошибке */}
                     {error && (
-                        <div className="text-3xl text-center p-5 rounded-2xl bg-red-900/30 text-red-400 border border-red-700">
+                        <div className="
+                            text-sm text-center p-3 rounded-xl
+                            bg-red-900/30 text-red-400 border border-red-700
+                            sm:text-3xl sm:p-5 sm:rounded-2xl
+                        ">
                             {error}
                         </div>
                     )}
 
-                    {/* Кнопка входа */}
                     <button
                         type="submit"
                         disabled={loading || !phone || !password}
-                        className="w-full h-[90px] text-3xl font-bold rounded-3xl transition-all duration-300 mt-6 relative overflow-hidden bg-glass1 hover:bg-glass2 disabled:opacity-50 disabled:cursor-not-allowed"
+                        className="
+                            w-full h-[52px] text-base font-bold rounded-2xl mt-3
+                            transition-all duration-300 relative overflow-hidden
+                            bg-glass1 hover:bg-glass2 disabled:opacity-50 disabled:cursor-not-allowed
+                            sm:h-[90px] sm:text-3xl sm:rounded-3xl sm:mt-6
+                        "
                     >
                         {loading ? (
                             <div className="flex items-center justify-center">
-                                <div className="w-10 h-10 border-4 border-white border-t-transparent rounded-full animate-spin mr-4"></div>
+                                <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin mr-2 sm:w-10 sm:h-10 sm:border-4 sm:mr-4"></div>
                                 Вход...
                             </div>
                         ) : (

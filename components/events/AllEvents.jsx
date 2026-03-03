@@ -71,7 +71,7 @@ export default function AllEvents({ setStep, selectedCity, selectedDate, onEvent
                 <button onClick={() => setStep(1)} className="cursor-pointer md:w-30">
                     <IoIosArrowBack size={40} />
                 </button>
-                <img src="/icons/logo2.svg" alt="a" className='max-md:w-20 w-40 mb-5' />
+                <img src="/icons/logo22.svg" alt="a" className='max-md:w-20 w-40 mb-5' />
                 <div className='md:w-30'></div>
             </div>
 
