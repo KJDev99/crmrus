@@ -69,7 +69,7 @@ export default function Event({ setStep, eventsData, onCitySelect }) {
     }
 
     return (
-        <div className='relative min-h-screen'>
+        <div className='relative min-h-screen max-md:px-4'>
             <div className="text-white flex justify-between items-center mt-[0px] mb-5">
                 <Link href={'/role'} className="cursor-pointer md:w-30 w-10">
                     <IoIosArrowBack size={40} />

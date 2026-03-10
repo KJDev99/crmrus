@@ -185,7 +185,7 @@ export default function SupplierItem({
         <div className='max-md:px-4 relative max-w-7xl min-h-screen'>
             <div className="text-white flex justify-between items-center mt-[0px] max-md:px-0 mb-5">
                 <button onClick={onResetFilter} className="cursor-pointer max-md:w-8 max-md:h-8 md:w-30">
-                    <IoIosArrowBack size={40} className='max-md:w-6 max-md:h-6' />
+                    <IoIosArrowBack size={40} className='max-md:w-8 max-md:h-8' />
                 </button>
                 <div className="flex items-center justify-center">
                     <img src="/icons/logo22.svg" alt="a" className='max-md:w-20 w-40' />

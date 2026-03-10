@@ -289,17 +289,16 @@ export default function MediaDetail({ questionnaire, onBack }) {
 
     return (
         <div className='max-md:px-4 max-w-7xl mx-auto relative'>
-            <div className="text-white flex justify-between items-center mt-[0px] max-md:px-0">
+            <div className="text-white flex justify-between items-center mt-[0px] max-md:px-0 mb-5">
                 <button onClick={onBack} className="cursor-pointer max-md:w-8 max-md:h-8 md:w-30">
-                    <IoIosArrowBack size={40} className='max-md:w-6 max-md:h-6' />
+                    <IoIosArrowBack size={40} className='max-md:w-8 max-md:h-8' />
                 </button>
-                <img src="/icons/logo22.svg" alt="a" className='max-md:w-20 w-40 mb-5' />
-                <Toaster position="top-center" />
+                <img src="/icons/logo22.svg" alt="a" className='max-md:w-20 w-40 ' />
                 <div
                     className='max-md:w-8 max-md:h-8 md:w-30 flex justify-end cursor-pointer'
                     onClick={handleShare}
                 >
-                    <img src="/icons/share.svg" alt="share" className='max-md:w-6 max-md:h-6' />
+                    <img src="/icons/share.svg" alt="share" className='max-md:w-8 max-md:h-8' />
                 </div>
             </div>
 

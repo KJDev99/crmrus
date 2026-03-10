@@ -7,6 +7,14 @@ body {
   font-family: "Nanum Myeongjo", serif;
 }
 
+img[src="/icons/logo22.svg"] {
+  display: block;
+  width: clamp(5rem, 12vw, 10rem);
+  height: auto;
+  margin-inline: auto;
+  justify-self: center;
+}
+
 .bg-glass2 {
   background: linear-gradient(91.53deg, rgba(255, 255, 255, 0.044) -6.96%, rgba(255, 255, 255, 0.029) 106.1%);
   border: 1px solid;

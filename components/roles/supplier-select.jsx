@@ -102,12 +102,12 @@ export default function SupplierSelect({ filterChoices, selectedFilters, onFilte
     if (!filterChoices) {
         return (
             <div className='max-w-7xl m-auto max-md:px-4'>
-                <div className="text-white flex justify-between items-center mt-[0px] max-md:px-0">
-                    <Link href={'/role'} className="cursor-pointer">
+                <div className="text-white flex justify-between items-center mt-[0px] mb-5">
+                    <Link href={'/role'} className="cursor-pointer md:w-30 w-10">
                         <IoIosArrowBack size={40} className='' />
                     </Link>
-                    <img src="/icons/logo22.svg" alt="a" className='max-md:w-20 w-40 mb-5' />
-                    <div></div>
+                    <img src="/icons/logo22.svg" alt="a" className='max-md:w-20 w-40 ' />
+                    <div className='md:w-30 w-10'></div>
                 </div>
                 <div className='text-center mt-[13px] flex flex-col items-center'>
                     <p className='text-white'>Загрузка...</p>
@@ -129,12 +129,12 @@ export default function SupplierSelect({ filterChoices, selectedFilters, onFilte
 
     return (
         <div className='max-w-7xl m-auto px-4'>
-            <div className="text-white flex justify-between items-center mt-[0px]">
+            <div className="text-white flex justify-between items-center mt-[0px] mb-10">
                 <Link href={'/role'} className="cursor-pointer md:w-30 w-10">
                     <IoIosArrowBack size={40} className='' />
                 </Link>
-                <img src="/icons/logo22.svg" alt="a" className='max-md:w-20 w-40 mb-5' />
-                <div className='md:w-30 w-10 '></div>
+                <img src="/icons/logo22.svg" alt="a" className='max-md:w-20 w-40 ' />
+                <div className='md:w-30 w-10'></div>
             </div>
             <div className='text-center mt-[13px] flex flex-col items-center'>
                 <h2 className='text-[24px] text-white mb-4'>ПОСТАВЩИКИ</h2>

@@ -74,14 +74,12 @@ export default function MediaItem({
     };
     return (
         <div className='max-md:px-4 max-w-7xl mx-auto min-h-screen relative'>
-            <div className="text-white flex justify-between items-center mt-[0px] max-md:px-0 mb-5">
-                <Link href={'/role'} className="cursor-pointer max-md:w-8 max-md:h-8 md:w-30">
-                    <IoIosArrowBack size={40} className='max-md:w-6 max-md:h-6' />
+            <div className="text-white flex justify-between items-center mt-[0px] mb-5">
+                <Link href={'/role'} className="cursor-pointer md:w-30 w-10">
+                    <IoIosArrowBack size={40} className='' />
                 </Link>
-                <div className="flex items-center justify-center">
-                    <img src="/icons/logo22.svg" alt="a" className='max-md:w-20 w-40' />
-                </div>
-                <div className='md:w-30'></div>
+                <img src="/icons/logo22.svg" alt="a" className='max-md:w-20 w-40 ' />
+                <div className='md:w-30 w-10'></div>
             </div>
 
             <div className='mt-[0] max-md:mt-2'>
