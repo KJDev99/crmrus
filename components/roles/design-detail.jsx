@@ -232,7 +232,7 @@ export default function DesignDetail({ questionnaire, onBack }) {
             'decorator': 'Декоратор',
             'residential_designer': 'Дизайнер жилых помещений',
             'commercial_designer': 'Дизайнер коммерческой недвижимости',
-            'home_stager': 'Хоустейджер',
+            'home_stager': 'Хоумстейджер',
             'architect': 'Архитектор',
             'landscape_designer': 'Ландшафтный дизайнер',
             'light_designer': 'Светодизайнер',
@@ -367,12 +367,7 @@ export default function DesignDetail({ questionnaire, onBack }) {
                                             </span>
                                         </div>
                                     )}
-                                    {questionnaire.additional_info && (
-                                        <div className='text-[#FFFFFF] px-2 py-2 border-b border-[#FFFFFF91]'>
-                                            <span className='text-[19px] uppercase'>Дополнительная информация: &nbsp;</span>
-                                            <p className='leading-[100%]'>{questionnaire.additional_info}</p>
-                                        </div>
-                                    )}
+
                                     {getAboutValue('experience_geography') && (
                                         <div className='text-[#FFFFFF] px-2 py-2 border-b border-[#FFFFFF91]'>
                                             <span className='text-[19px] uppercase'>Опыт и география работы: &nbsp;</span>
@@ -387,6 +382,12 @@ export default function DesignDetail({ questionnaire, onBack }) {
                                             <p className='leading-[100%]' style={{ whiteSpace: 'pre-line' }}>
                                                 {renderExpandableContent(getAboutValue('service_packages'), 'service_packages')}
                                             </p>
+                                        </div>
+                                    )}
+                                    {questionnaire.additional_info && (
+                                        <div className='text-[#FFFFFF] px-2 py-2 border-b border-[#FFFFFF91]'>
+                                            <span className='text-[19px] uppercase'>Дополнительная информация: &nbsp;</span>
+                                            <p className='leading-[100%]'>{questionnaire.additional_info}</p>
                                         </div>
                                     )}
                                     {getAboutValue('social_networks') && (
@@ -562,7 +563,7 @@ export default function DesignDetail({ questionnaire, onBack }) {
 
             <div className="absolute bottom-20 right-0">
                 <Link href={'/userinfo'}>
-                    <div className="absolute right-2 sm:right-0 top-1/2 -translate-y-1/2 text-white text-3xl sm:text-[50px] hidden sm:block">
+                    <div className="absolute right-2 sm:right-0 top-1/2 -translate-y-1/2 text-white text-3xl sm:text-[50px] block max-md:kerak max-md:hidden">
                         ★
                     </div>
                 </Link>

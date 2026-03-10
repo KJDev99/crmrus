@@ -5,6 +5,8 @@ html,
 body {
   background: #122161;
   font-family: "Nanum Myeongjo", serif;
+  margin: 0px !important;
+  padding: 0px !important;
 }
 
 img[src="/icons/logo22.svg"] {

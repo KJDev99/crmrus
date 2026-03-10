@@ -193,7 +193,7 @@ export default function SupplierSelect({ filterChoices, selectedFilters, onFilte
                     {loading ? 'Загрузка...' : 'ИСКАТЬ'}
                 </button>
                 <Link href={'/userinfo'}>
-                    <div className="absolute right-2 sm:right-0 top-1/2 -translate-y-1/2 text-white text-3xl sm:text-[50px] hidden sm:block">
+                    <div className="absolute right-2 sm:right-0 top-1/2 -translate-y-1/2 text-white text-3xl sm:text-[50px] block max-md:kerak">
                         ★
                     </div>
                 </Link>

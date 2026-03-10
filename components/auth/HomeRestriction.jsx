@@ -154,7 +154,7 @@ export default function HomeRestriction() {
             onClick={handleLogout}
             title="Выйти из системы"
           >
-            <IoMdExit size={36} className="group-hover:scale-110 transition-transform" />
+            <IoMdExit size={36} className=" transition-transform" />
           </div>
 
         </div>
@@ -219,7 +219,7 @@ export default function HomeRestriction() {
         </div>
         <div className="absolute bottom-20 right-0">
           <Link href={'/userinfo'}>
-            <div className="absolute right-2 sm:right-0 top-1/2 -translate-y-1/2 text-white text-3xl sm:text-[50px] hidden sm:block">
+            <div className="absolute right-2 sm:right-0 top-1/2 -translate-y-1/2 text-white text-3xl sm:text-[50px] block max-md:hidden max-md:kerak">
               ★
             </div>
           </Link>

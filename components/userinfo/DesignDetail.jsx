@@ -229,7 +229,7 @@ export default function DesignDetail({ questionnaire, onBack }) {
             'decorator': 'Декоратор',
             'residential_designer': 'Дизайнер жилых помещений',
             'commercial_designer': 'Дизайнер коммерческой недвижимости',
-            'home_stager': 'Хоустейджер',
+            'home_stager': 'Хоумстейджер',
             'architect': 'Архитектор',
             'landscape_designer': 'Ландшафтный дизайнер',
             'light_designer': 'Светодизайнер',
@@ -266,17 +266,17 @@ export default function DesignDetail({ questionnaire, onBack }) {
 
     return (
         <div className='max-md:px-4 max-w-7xl mx-auto'>
-            <div className="text-white flex justify-between items-center mt-[0px] max-md:px-0">
-                <button onClick={onBack} className="cursor-pointer max-md:w-8 max-md:h-8 md:w-30" >
+            <div className="text-white flex justify-between items-center mt-[0px] max-md:px-0 mb-5">
+                <button onClick={onBack} className="cursor-pointer max-md:w-8 max-md:h-8 md:w-30">
                     <IoIosArrowBack size={40} className='max-md:w-6 max-md:h-6' />
                 </button>
-                <img src="/icons/logo22.svg" alt="a" className='max-md:w-20 w-40 mb-5' />
+                <img src="/icons/logo22.svg" alt="a" className='max-md:w-20 w-40 ' />
                 <Toaster position="top-center" />
                 <div
                     className='max-md:w-8 max-md:h-8 md:w-30 flex justify-end cursor-pointer'
                     onClick={handleShare}
                 >
-                    <img src="/icons/share.svg" alt="share" className='max-md:w-6 max-md:h-6' />
+                    <img src="/icons/share.svg" alt="share" className='max-md:w-8 max-md:h-8' />
                 </div>
             </div>
             <div className="max-w-xl mx-auto space-y-6">

@@ -337,7 +337,7 @@ export default function Payments() {
         <div className='relative grow flex h-9.25 bg-[#B7B2B299] rounded-2xl px-5 flex items-center'>
           <input
             type="text"
-            placeholder="Поиск по телефону или имени пользователя"
+            placeholder="Поиск по имени пользователя"
             className="w-full outline-none text-[#FFF] font-normal not-italic text-[16px] leading-[100%] tracking-normal bg-transparent"
             value={filters.search}
             onChange={handleSearchChange}

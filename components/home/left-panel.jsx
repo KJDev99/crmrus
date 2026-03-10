@@ -148,7 +148,7 @@ export default function LeftPanel({ }) {
       </div>
 
       {/* User profili */}
-      <div className="flex flex-col items-center pt-[54px]">
+      {/* <div className="flex flex-col items-center pt-[54px]">
         <div className="w-[65px] h-[65px] rounded-full bg-gradient-to-br from-yellow-500 to-orange-500 mb-[14px] flex items-center justify-center text-white font-bold text-xl">
           {userData.name.charAt(0).toUpperCase()}
         </div>
@@ -158,10 +158,20 @@ export default function LeftPanel({ }) {
         <p className="text-[18px] opacity-80 max-w-[200px] truncate">
           {userData.email}
         </p>
-      </div>
+      </div> */}
 
+      <div className="w-full flex justify-center mb-0">
+        <Image
+          src="/icons/logo.svg"
+          width={190}
+          height={190}
+          alt="logo"
+          priority
+          className="hover:opacity-90 transition-opacity"
+        />
+      </div>
       {/* Menu buttonlari */}
-      <div className="flex flex-col gap-[22px] mt-[86px] pl-[30px] pr-[15px]">
+      <div className="flex flex-col gap-[22px] mt-[0px] pl-[30px] pr-[15px]">
         {menuItems.map((item) => (
           <Link
             key={item.name}
@@ -180,16 +190,7 @@ export default function LeftPanel({ }) {
       </div>
 
       {/* LOGO */}
-      <div className="w-full flex justify-center mb-8">
-        <Image
-          src="/icons/logo.svg"
-          width={190}
-          height={190}
-          alt="logo"
-          priority
-          className="hover:opacity-90 transition-opacity"
-        />
-      </div>
+
     </div>
   )
 }

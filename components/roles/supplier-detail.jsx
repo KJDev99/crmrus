@@ -389,6 +389,14 @@ export default function SupplierDetail({ questionnaire, onBack }) {
                                             </p>
                                         </div>
                                     )}
+                                    {questionnaire.cooperation_terms && (
+                                        <div className='text-[#FFFFFF] px-2 py-2 border-b border-[#FFFFFF91]'>
+                                            <p className='text-[19px] uppercase'>Условия сотрудничества с клиентами из других городов и регионов: &nbsp;</p>
+                                            <p className='leading-[100%]'>
+                                                {questionnaire.cooperation_terms}
+                                            </p>
+                                        </div>
+                                    )}
 
                                     {questionnaire.business_form_display && (
                                         <div className='text-[#FFFFFF] px-2 py-2 border-b border-[#FFFFFF91]'>
@@ -606,7 +614,7 @@ export default function SupplierDetail({ questionnaire, onBack }) {
             </div>
             <div className="absolute bottom-20 right-0">
                 <Link href={'/userinfo'}>
-                    <div className="absolute right-2 sm:right-0 top-1/2 -translate-y-1/2 text-white text-3xl sm:text-[50px] hidden sm:block">
+                    <div className="absolute right-2 sm:right-0 top-1/2 -translate-y-1/2 text-white text-3xl sm:text-[50px] block max-md:kerak max-md:hidden">
                         ★
                     </div>
                 </Link>

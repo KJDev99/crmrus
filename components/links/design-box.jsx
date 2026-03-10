@@ -140,8 +140,8 @@ export default function DesignBox() {
             label: "Декоратор"
         },
         {
-            value: "Хоустейджер",
-            label: "Хоустейджер"
+            value: "Хоумстейджер",
+            label: "Хоумстейджер"
         },
         {
             value: "Архитектор",

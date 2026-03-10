@@ -20,7 +20,7 @@ export default function DesignItem({
             'decorator': 'Декоратор',
             'residential_designer': 'Дизайнер жилых помещений',
             'commercial_designer': 'Дизайнер коммерческой недвижимости',
-            'home_stager': 'Хоустейджер',
+            'home_stager': 'Хоумстейджер',
             'architect': 'Архитектор',
             'landscape_designer': 'Ландшафтный дизайнер',
             'light_designer': 'Светодизайнер',
@@ -172,7 +172,7 @@ export default function DesignItem({
 
             <div className="absolute bottom-20 right-0">
                 <Link href={'/userinfo'}>
-                    <div className="absolute right-2 sm:right-0 top-1/2 -translate-y-1/2 text-white text-3xl sm:text-[50px] hidden sm:block">
+                    <div className="absolute right-2 sm:right-0 top-1/2 -translate-y-1/2 text-white text-3xl sm:text-[50px] block max-md:kerak">
                         ★
                     </div>
                 </Link>
