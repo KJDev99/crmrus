@@ -128,31 +128,30 @@ export default function SupplierSelect({ filterChoices, selectedFilters, onFilte
     ];
 
     return (
-        <div className='max-w-7xl m-auto'>
+        <div className='max-w-7xl m-auto px-4'>
             <div className="text-white flex justify-between items-center mt-[0px]">
-                <Link href={'/role'} className="cursor-pointer md:w-30">
+                <Link href={'/role'} className="cursor-pointer md:w-30 w-10">
                     <IoIosArrowBack size={40} className='' />
                 </Link>
                 <img src="/icons/logo22.svg" alt="a" className='max-md:w-20 w-40 mb-5' />
-                <div className='md:w-30'></div>
+                <div className='md:w-30 w-10 '></div>
             </div>
             <div className='text-center mt-[13px] flex flex-col items-center'>
                 <h2 className='text-[24px] text-white mb-4'>ПОСТАВЩИКИ</h2>
 
                 {filterConfigs.map((item) => (
-                    <div key={item.key} className='mt-3 relative w-120'>
+                    <div key={item.key} className='mt-3 relative w-full max-w-[480px]'>
                         <button
                             onClick={() => toggleDropdown(item.key)}
                             className={`
-                                w-full h-[58px] text-[17px]
-                                rounded-[25px] transition-all duration-200
-                                bg-glass2 text-white hover:bg-white/40 text-left px-5
-                                flex items-center justify-between
-                                ${selectedFilters[item.key] && (Array.isArray(selectedFilters[item.key]) ? selectedFilters[item.key].length > 0 : true) ? 'border border-yellow-400' : ''}
-                            `}
+                            w-full h-[58px] text-[17px]
+                            rounded-[25px] transition-all duration-200
+                            bg-glass2 text-white hover:bg-white/40 text-left px-5
+                            flex items-center justify-between
+                            ${selectedFilters[item.key] && (Array.isArray(selectedFilters[item.key]) ? selectedFilters[item.key].length > 0 : true) ? 'border border-yellow-400' : ''}
+                        `}
                         >
                             <span className='truncate'>{getSelectedLabel(item.key)}</span>
-                            {/* <IoIosArrowDown className={selectedFilters[item.key] && (Array.isArray(selectedFilters[item.key]) ? selectedFilters[item.key].length > 0 : true) ? 'text-yellow-400' : ''} /> */}
                         </button>
 
                         {dropdowns[item.key] && (
@@ -162,13 +161,13 @@ export default function SupplierSelect({ filterChoices, selectedFilters, onFilte
                                         key={choice.value}
                                         onClick={() => handleSelect(item.key, choice.label)}
                                         className={`
-                                            w-full text-left px-5 py-3 text-white
-                                            hover:bg-white/20 transition-all
-                                            ${isSelected(item.key, choice.label) ?
+                                        w-full text-left px-5 py-3 text-white
+                                        hover:bg-white/20 transition-all
+                                        ${isSelected(item.key, choice.label) ?
                                                 'bg-white/30 border-l-4 border-yellow-400' :
                                                 ''
                                             }
-                                        `}
+                                    `}
                                     >
                                         {choice.label}
                                     </button>
@@ -184,12 +183,12 @@ export default function SupplierSelect({ filterChoices, selectedFilters, onFilte
                     onClick={onSearch}
                     disabled={loading}
                     className={`
-                        w-[180px] h-[40px] rounded-full
-                        bg-glass2 text-white hover:bg-white/40
-                        text-sm font-medium transition-all duration-200
-                        flex items-center justify-center
-                        ${loading ? 'opacity-50 cursor-not-allowed' : ''}
-                    `}
+                    w-[180px] h-[40px] rounded-full
+                    bg-glass2 text-white hover:bg-white/40
+                    text-sm font-medium transition-all duration-200
+                    flex items-center justify-center
+                    ${loading ? 'opacity-50 cursor-not-allowed' : ''}
+                `}
                 >
                     {loading ? 'Загрузка...' : 'ИСКАТЬ'}
                 </button>

@@ -74,15 +74,18 @@ export default function MediaItem({
     };
     return (
         <div className='max-md:px-4 max-w-7xl mx-auto min-h-screen relative'>
-            <div className="text-white flex justify-between items-center mt-[0px] max-md:px-0">
+            <div className="text-white flex justify-between items-center mt-[0px] max-md:px-0 mb-5">
                 <Link href={'/role'} className="cursor-pointer max-md:w-8 max-md:h-8 md:w-30">
                     <IoIosArrowBack size={40} className='max-md:w-6 max-md:h-6' />
                 </Link>
-                <img src="/icons/logo22.svg" alt="a" className='max-md:w-20 w-40 mb-5' />
+                <div className="flex items-center justify-center">
+                    <img src="/icons/logo22.svg" alt="a" className='max-md:w-20 w-40' />
+                </div>
                 <div className='md:w-30'></div>
             </div>
+
             <div className='mt-[0] max-md:mt-2'>
-                <p className="font-normal text-white uppercase text-[24px] leading-[100%] tracking-[0%] text-center hover:cursor-pointer border-b border-[#FFFFFF91] w-max mx-auto pb-1 mb-15">
+                <p className="font-normal text-white uppercase text-[24px] leading-[100%] tracking-[0%] text-center hover:cursor-pointer border-b border-[#FFFFFF91] w-max mx-auto pb-1 mb-15 max-md:mt-20">
                     Медиапространство
                 </p>
                 <div className="max-w-xl mx-auto space-y-4 max-md:space-y-3">
@@ -95,10 +98,10 @@ export default function MediaItem({
                             {questionnaires.map((questionnaire) => (
                                 <div
                                     key={questionnaire.id}
-                                    className="flex mb-2 max-md:mb-2 cursor-pointer hover:opacity-80 transition-opacity max-md:flex-col"
+                                    className="flex mb-2 cursor-pointer hover:opacity-80 transition-opacity"
                                     onClick={() => onSelectQuestionnaire(questionnaire.id)}
                                 >
-                                    <div className='w-[120px] h-[100px] card_img flex-shrink-0 overflow-hidden max-md:w-full max-md:h-20'>
+                                    <div className='w-[120px] h-[100px] card_img flex-shrink-0 overflow-hidden max-md:w-23 max-md:h-20'>
                                         <div className="w-full h-full rounded-lg flex items-center justify-center">
                                             {questionnaire.company_logo ? (
                                                 <img
@@ -108,14 +111,14 @@ export default function MediaItem({
                                                 />
                                             ) : (
                                                 <div className="w-full h-full card_img rounded-lg flex items-center justify-center">
-                                                    <span className="text-white text-2xl max-md:text-lg uppercase">
+                                                    <span className="text-white text-2xl uppercase">
                                                         {questionnaire.brand_name ? questionnaire.brand_name.charAt(0) : '?'}
                                                     </span>
                                                 </div>
                                             )}
                                         </div>
                                     </div>
-                                    <div className="flex flex-col border-b border-b-[#FFFFFF91] pl-12 ml-[-16px] flex-grow max-md:pl-3 max-md:ml-0 max-md:border-b-0 max-md:border-t max-md:pt-3 max-md:mt-2">
+                                    <div className="flex flex-col border-b border-b-[#FFFFFF91] pl-12 ml-[-16px] flex-grow max-md:pl-8">
                                         <h2 className='mb-[-8px] text-[#FFFFFF] text-[22px] line-clamp-1'>
                                             {questionnaire.brand_name || questionnaire.full_name || 'Медиа пространство'}
                                         </h2>
@@ -126,7 +129,6 @@ export default function MediaItem({
                                         <p className='text-[#FFFFFF] text-sm mt-1 max-md:text-xs line-clamp-2 leading-[100%] uppercase'>
                                             {questionnaire.welcome_message}
                                         </p>
-
                                     </div>
                                 </div>
                             ))}
@@ -139,12 +141,12 @@ export default function MediaItem({
                                 onClick={onLoadMore}
                                 disabled={loading}
                                 className={`
-                                    w-[180px] h-[40px] max-md:w-24 max-md:h-8 rounded-full
-                                    bg-glass2 text-white hover:bg-white/40
-                                    text-sm max-md:text-xs font-medium transition-all duration-200
-                                    flex items-center justify-center
-                                    ${loading ? 'opacity-50 cursor-not-allowed' : ''}
-                                `}
+                                w-[180px] h-[40px] rounded-full
+                                bg-glass2 text-white hover:bg-white/40
+                                text-sm font-medium transition-all duration-200
+                                flex items-center justify-center
+                                ${loading ? 'opacity-50 cursor-not-allowed' : ''}
+                            `}
                             >
                                 {loading ? 'Загрузка...' : 'еще'}
                             </button>
@@ -152,6 +154,7 @@ export default function MediaItem({
                     </div>
                 </div>
             </div>
+
             <div className="absolute bottom-20 right-0">
                 <Link href={'/userinfo'}>
                     <div className="absolute right-2 sm:right-0 top-1/2 -translate-y-1/2 text-white text-3xl sm:text-[50px] hidden sm:block">

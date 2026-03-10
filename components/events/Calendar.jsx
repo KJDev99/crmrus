@@ -76,7 +76,7 @@ export default function Calendar({ setStep, selectedCity, onDateSelect }) {
   const renderDays = () => {
     const days = ["ПН", "ВТ", "СР", "ЧТ", "ПТ", "СБ", "ВС"]
     return (
-      <div className="grid grid-cols-7 text-white text-lg text-center mb-4 max-w-md mx-auto w-full">
+      <div className="grid grid-cols-7 text-white text-lg max-md:text-sm text-center mb-4 max-w-md mx-auto w-full">
         {days.map((day) => (
           <div key={day} className="py-1 flex justify-center items-center">
             {day}
@@ -167,7 +167,7 @@ export default function Calendar({ setStep, selectedCity, onDateSelect }) {
         >
           <IoIosArrowBack size={40} />
         </button>
-        <div className="flex items-center gap-2 text-white text-[24px] font-normal uppercase tracking-wider min-w-[180px] text-center">
+        <div className="flex items-center gap-2 justify-center text-white text-[24px] font-normal uppercase tracking-wider min-w-[180px] text-center">
           {/* <MdCalendarToday size={24} /> */}
           {`${monthName.toUpperCase()} ${year}`}
         </div>
@@ -182,19 +182,20 @@ export default function Calendar({ setStep, selectedCity, onDateSelect }) {
   }
 
   return (
-    <div className="max-w-7xl mx-auto relative">
-
-      <div className="min-h-screen  flex flex-col items-center">
-        <div className="text-white flex justify-between items-center mt-[0px] w-full">
-          <button onClick={() => setStep(0)} className="cursor-pointer">
-            <IoIosArrowBack size={40} />
+    <div className="max-w-7xl mx-auto relative px-4">
+      <div className="min-h-[85vh] flex flex-col items-center">
+        <div className="text-white flex justify-between items-center mt-[0px] w-full mb-5">
+          <button onClick={() => setStep(0)} className="cursor-pointer w-10 max-md:w-8 max-md:h-8">
+            <IoIosArrowBack size={40} className="max-md:w-6 max-md:h-6" />
           </button>
-          <img src="/icons/logo22.svg" alt="a" className='max-md:w-20 w-40 mb-5' />
-          <div className="text-white text-lg"></div>
+          <div className="flex items-center justify-center">
+            <img src="/icons/logo22.svg" alt="a" className='max-md:w-20 w-40' />
+          </div>
+          <div className="w-10 max-md:w-8"></div>
         </div>
 
-        <div className="w-full max-w-md px-4">
-          <p className="font-normal text-white uppercase text-[24px] leading-[100%] tracking-[0%] text-center hover:cursor-pointer border-b border-[#FFFFFF91] w-max mx-auto pb-1 mb-8">
+        <div className="w-full max-w-md">
+          <p className="font-normal max-md:mt-12 text-white uppercase text-[24px] max-md:text-[18px] leading-[100%] tracking-[0%] text-center hover:cursor-pointer border-b border-[#FFFFFF91] w-max mx-auto pb-1 mb-8">
             Ближайшие мероприятия
           </p>
           {loading ? (

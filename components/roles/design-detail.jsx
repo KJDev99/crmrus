@@ -198,7 +198,7 @@ export default function DesignDetail({ questionnaire, onBack }) {
                                         const label = socialMediaOptions.find(opt => opt.value === contact.type)?.label || contact.type;
 
                                         return (
-                                            <div key={index} className="flex gap-2 items-center">
+                                            <div key={index} className="flex md:gap-2 md:items-center max-md:flex-col max-md:mb-2">
                                                 <span className="font-bold uppercase text-xs px-px rounded">
                                                     {label}:
                                                 </span>
@@ -272,7 +272,7 @@ export default function DesignDetail({ questionnaire, onBack }) {
         <div className='max-md:px-4 relative'>
             <Toaster position="top-center" />
             <div className="text-white flex justify-between items-center mt-[0px] max-md:px-0">
-                <button onClick={onBack} className="cursor-pointer max-md:w-8 max-md:h-8 md:w-30" >
+                <button onClick={onBack} className="cursor-pointer max-md:w-8 max-md:h-8 md:w-30">
                     <IoIosArrowBack size={40} className='max-md:w-6 max-md:h-6' />
                 </button>
                 <img src="/icons/logo22.svg" alt="a" className='max-md:w-20 w-40 mb-5' />
@@ -283,6 +283,7 @@ export default function DesignDetail({ questionnaire, onBack }) {
                     <img src="/icons/share.svg" alt="share" className='max-md:w-6 max-md:h-6' />
                 </div>
             </div>
+
             <div className="max-w-xl mx-auto space-y-6">
                 <div className="">
                     <div className="flex mb-0">
@@ -301,19 +302,17 @@ export default function DesignDetail({ questionnaire, onBack }) {
                                 </div>
                             )}
                         </div>
-                        <div className="flex flex-col border-b border-b-[#FFFFFF91]  pl-12 ml-[-16px] flex-grow relative">
-                            <h2 className='mb-px text-[#FFFFFF] text-[25px]'>
+                        <div className="flex flex-col border-b border-b-[#FFFFFF91] pl-12 ml-[-16px] flex-grow relative">
+                            <h2 className='mb-px text-[#FFFFFF] text-[25px] max-md:text-[20px] max-md:line-clamp-2'>
                                 {questionnaire.full_name || 'Имя не указано'}
                             </h2>
-                            <div className='w-[calc(100% + 32px)] h-0.25 bg-[#FFFFFF4F]  ml-[-32px]'></div>
-
+                            <div className='w-[calc(100% + 32px)] h-0.25 bg-[#FFFFFF4F] ml-[-32px]'></div>
                             <p className='text-[#FFFFFF] text-sm mt-1 line-clamp-1 pr-10'>
                                 Услуги: {getServiceDisplay(questionnaire.services)}
                             </p>
                             <p className='text-[#FFFFFF] text-sm mt-1 line-clamp-1 pr-10'>
-                                Город:   {questionnaire.city}
+                                Город: {questionnaire.city}
                             </p>
-
                             <div className="absolute bottom-1 right-1 text-white">
                                 <span className='text-yellow-400'>★</span> {questionnaire?.rating_count?.total || 0}
                             </div>
@@ -325,62 +324,41 @@ export default function DesignDetail({ questionnaire, onBack }) {
                         <div className='flex border-b border-[#FFFFFF91]'>
                             <button
                                 onClick={() => setActiveTab('company')}
-                                className={`px-4 py-2 text-center text-[19px] text-[#FFFFFF] transition-all border-r ${activeTab === 'company'
-                                    ? ''
-                                    : 'opacity-60'
-                                    }`}
+                                className={`px-4 py-2 text-center text-[19px] text-[#FFFFFF] transition-all border-r ${activeTab === 'company' ? '' : 'opacity-60'}`}
                             >
                                 О дизайнере
                             </button>
                             <button
                                 onClick={() => setActiveTab('cooperation')}
-                                className={`flex-1 py-2 text-center text-[19px] text-[#FFFFFF] transition-all  ${activeTab === 'cooperation'
-                                    ? ''
-                                    : 'opacity-60'
-                                    }`}
+                                className={`flex-1 py-2 text-center text-[19px] text-[#FFFFFF] transition-all ${activeTab === 'cooperation' ? '' : 'opacity-60'}`}
                             >
                                 Условия сотрудничества
                             </button>
                         </div>
 
-                        {/* Tab Content */}
                         <div className='mt-2'>
                             {activeTab === 'company' && (
                                 <div className='space-y-2'>
                                     {questionnaire.phone && (
                                         <div className='text-[#FFFFFF] px-2 py-2 border-b border-[#FFFFFF91]'>
                                             <span className='text-[19px] uppercase'>Телефон: &nbsp;</span>
-                                            <span className='leading-[100%]'>
-                                                {questionnaire.phone}
-                                            </span>
+                                            <span className='leading-[100%]'>{questionnaire.phone}</span>
                                         </div>
                                     )}
-                                    {/* {questionnaire.city && (
-                                        <div className='text-[#FFFFFF] px-2 py-2 border-b border-[#FFFFFF91]'>
-                                            <span className='text-[19px] uppercase'>Город: &nbsp;</span>
-                                            <span className='leading-[100%]'>
-                                                {questionnaire.city}
-                                            </span>
-                                        </div>
-                                    )} */}
-
                                     {questionnaire.experience && (
                                         <div className='text-[#FFFFFF] px-2 py-2 border-b border-[#FFFFFF91]'>
                                             <span className='text-[19px] uppercase'>Опыт работы: &nbsp;</span>
-                                            <span className='leading-[100%]'>
-                                                {questionnaire.experience}
-                                            </span>
+                                            <span className='leading-[100%]'>{questionnaire.experience}</span>
                                         </div>
                                     )}
                                     {getAboutValue('welcome_message') && (
                                         <div className='text-[#FFFFFF] px-2 py-2 border-b border-[#FFFFFF91]'>
-                                            <span className='text-[19px] uppercase'>Приветственное сообщение:</span> <br />
+                                            <span className='text-[19px] uppercase'>Приветственное сообщение:</span><br />
                                             <span className='leading-[100%]'>
                                                 {renderExpandableContent(getAboutValue('welcome_message'), 'welcome_message')}
                                             </span>
                                         </div>
                                     )}
-                                    {/* Акции и УТП */}
                                     {getAboutValue('promotions_utp') && (
                                         <div className='text-[#FFFFFF] px-2 py-2 border-b border-[#FFFFFF91]'>
                                             <span className='text-[19px] uppercase'>Акции и УТП:&nbsp;</span>
@@ -391,23 +369,18 @@ export default function DesignDetail({ questionnaire, onBack }) {
                                     )}
                                     {questionnaire.additional_info && (
                                         <div className='text-[#FFFFFF] px-2 py-2 border-b border-[#FFFFFF91]'>
-                                            <span className='text-[19px] uppercase'>дополнительная информация: &nbsp;</span>
-                                            <p className='leading-[100%]'>
-                                                {questionnaire.additional_info}
-                                            </p>
+                                            <span className='text-[19px] uppercase'>Дополнительная информация: &nbsp;</span>
+                                            <p className='leading-[100%]'>{questionnaire.additional_info}</p>
                                         </div>
                                     )}
-                                    {/* Опыт и география */}
                                     {getAboutValue('experience_geography') && (
                                         <div className='text-[#FFFFFF] px-2 py-2 border-b border-[#FFFFFF91]'>
                                             <span className='text-[19px] uppercase'>Опыт и география работы: &nbsp;</span>
-                                            <span className='leading-[100%]' style={{ whiteSpace: 'pre-line' }} >
+                                            <span className='leading-[100%]' style={{ whiteSpace: 'pre-line' }}>
                                                 {getAboutValue('experience_geography')}
                                             </span>
                                         </div>
                                     )}
-
-                                    {/* Пакеты услуг и стоимость */}
                                     {getAboutValue('service_packages') && (
                                         <div className='text-[#FFFFFF] px-2 py-2 border-b border-[#FFFFFF91]'>
                                             <p className='text-[19px] uppercase'>Пакеты услуг и их стоимость:&nbsp;</p>
@@ -416,14 +389,12 @@ export default function DesignDetail({ questionnaire, onBack }) {
                                             </p>
                                         </div>
                                     )}
-
-
-                                    {/* Социальные сети */}
                                     {getAboutValue('social_networks') && (
                                         <div className='text-[#FFFFFF] px-2 py-2 border-b border-[#FFFFFF91]'>
                                             <p className='text-[19px] uppercase'>Социальные сети:</p>
-                                            {getAboutValue('social_networks')}
-
+                                            <span className='leading-[100%]'>
+                                                {getAboutValue('social_networks')}
+                                            </span>
                                         </div>
                                     )}
                                 </div>
@@ -431,15 +402,10 @@ export default function DesignDetail({ questionnaire, onBack }) {
 
                             {activeTab === 'cooperation' && (
                                 <div className='space-y-4'>
-                                    {/* Периоды выполнения проекта */}
-
-
                                     {questionnaire.work_type && (
                                         <div className='text-[#FFFFFF] px-2 py-2 border-b border-[#FFFFFF91]'>
                                             <span className='text-[19px] uppercase'>Тип работы: &nbsp;</span>
-                                            <span className='leading-[100%]'>
-                                                {questionnaire.work_type}
-                                            </span>
+                                            <span className='leading-[100%]'>{questionnaire.work_type}</span>
                                         </div>
                                     )}
                                     {questionnaire.supplier_contractor_recommendation_terms && (
@@ -450,7 +416,6 @@ export default function DesignDetail({ questionnaire, onBack }) {
                                             </span>
                                         </div>
                                     )}
-
                                     {questionnaire.purpose_of_property?.length > 0 && (
                                         <div className='text-[#FFFFFF] px-2 py-2 border-b border-[#FFFFFF91]'>
                                             <span className='text-[19px] uppercase'>Назначение объекта: &nbsp;</span>
@@ -461,7 +426,6 @@ export default function DesignDetail({ questionnaire, onBack }) {
                                             </span>
                                         </div>
                                     )}
-
                                     {questionnaire.area_of_object?.length > 0 && (
                                         <div className='text-[#FFFFFF] px-2 py-2 border-b border-[#FFFFFF91]'>
                                             <span className='text-[19px] uppercase'>Площадь объекта: &nbsp;</span>
@@ -472,8 +436,6 @@ export default function DesignDetail({ questionnaire, onBack }) {
                                             </span>
                                         </div>
                                     )}
-
-
                                     {getTermValue('project_periods') && (
                                         <div className='text-[#FFFFFF] px-2 py-2 border-b border-[#FFFFFF91]'>
                                             <span className='text-[19px] uppercase'>Услуги: &nbsp;</span>
@@ -484,19 +446,12 @@ export default function DesignDetail({ questionnaire, onBack }) {
                                             </span>
                                         </div>
                                     )}
-
-                                    {/* НДС */}
                                     {getTermValue('vat_payment') && (
                                         <div className='text-[#FFFFFF] px-2 py-2 border-b border-[#FFFFFF91]'>
-                                            <span className='text-[19px] uppercase'>НДС: &nbsp;</span> {getTermValue('vat_payment')}
-                                            <span className='leading-[100%]'>
-                                            </span>
+                                            <span className='text-[19px] uppercase'>НДС: &nbsp;</span>
+                                            <span className='leading-[100%]'>{getTermValue('vat_payment')}</span>
                                         </div>
                                     )}
-
-                                    {/* Гарантии */}
-
-                                    {/* Условия работы с другими городами */}
                                     {getTermValue('other_cities_terms') && (
                                         <div className='text-[#FFFFFF] px-2 py-2 border-b border-[#FFFFFF91]'>
                                             <span className='text-[19px] uppercase'>Условия работы с другими городами:&nbsp;</span>
@@ -509,21 +464,21 @@ export default function DesignDetail({ questionnaire, onBack }) {
                                     {/* Reviews Section */}
                                     <div className='mt-0 text-[#FFFFFF] px-2 py-4 border-b border-[#FFFFFF91]'>
                                         <div
-                                            className="flex gap-x-4 cursor-pointer hover:opacity-80"
+                                            className="flex gap-x-4 cursor-pointer hover:opacity-80 max-md:flex-col"
                                             onClick={() => setShowReviewForm(!showReviewForm)}
                                         >
                                             <h3 className='text-[19px] uppercase'>ОТЗЫВЫ:</h3>
-                                            <div className='flex items-center gap-x-5'>
-                                                <p className='lowercase'>
+                                            <div className='flex items-center gap-x-5 lowercase'>
+                                                <p className='text-nowrap'>
                                                     <span className='text-yellow-400'>★</span> Положительных: {questionnaire.rating_count?.positive || 0}
                                                 </p>
-                                                <p className='lowercase'>
+                                                <p className='text-nowrap'>
                                                     <span className='text-gray-400'>☆</span> Конструктивных: {questionnaire.rating_count?.constructive || 0}
                                                 </p>
                                             </div>
                                         </div>
 
-                                        {!showReviewForm && (
+                                        {!showReviewForm && displayedReviews.length > 0 && (
                                             <>
                                                 {displayedReviews.map((review, index) => (
                                                     <div key={index} className='mt-4 border-b border-[#FFFFFF40] pb-3'>
@@ -538,12 +493,9 @@ export default function DesignDetail({ questionnaire, onBack }) {
                                                                 ({review.status_display})
                                                             </span>
                                                         </div>
-                                                        <p className='text-[#FFFFFFCC] text-sm pl-6'>
-                                                            {review.text}
-                                                        </p>
+                                                        <p className='text-[#FFFFFFCC] text-sm pl-6'>{review.text}</p>
                                                     </div>
                                                 ))}
-
                                                 {questionnaire.reviews_list.length > 3 && (
                                                     <button
                                                         onClick={() => setShowAllReviews(!showAllReviews)}
@@ -555,50 +507,33 @@ export default function DesignDetail({ questionnaire, onBack }) {
                                             </>
                                         )}
 
-                                        {/* Review Form */}
                                         {showReviewForm && (
-                                            <div className='mt-6 space-y-4 border-t border-[#FFFFFF40] pt-4'>
-                                                <h4 className='text-md font-semibold'>Оставить отзыв:</h4>
-
-                                                {/* Review Type Selection */}
+                                            <div className='mt-6 space-y-2 border-t border-[#FFFFFF40] pt-4'>
+                                                <h4 className='text-md'>Оставить отзыв:</h4>
                                                 <div className='flex gap-x-6'>
                                                     <label className='flex items-center gap-x-2 cursor-pointer'>
-                                                        <input
-                                                            type='radio'
-                                                            name='reviewType'
-                                                            value='positive'
+                                                        <input type='radio' name='reviewType' value='positive'
                                                             checked={reviewType === 'positive'}
                                                             onChange={(e) => setReviewType(e.target.value)}
-                                                            className='w-4 h-4'
-                                                        />
+                                                            className='w-4 h-4' />
                                                         <span className='text-yellow-400'>★</span>
                                                         <span className='lowercase'>Положительный</span>
                                                     </label>
                                                     <label className='flex items-center gap-x-2 cursor-pointer'>
-                                                        <input
-                                                            type='radio'
-                                                            name='reviewType'
-                                                            value='constructive'
+                                                        <input type='radio' name='reviewType' value='constructive'
                                                             checked={reviewType === 'constructive'}
                                                             onChange={(e) => setReviewType(e.target.value)}
-                                                            className='w-4 h-4'
-                                                        />
+                                                            className='w-4 h-4' />
                                                         <span className='text-gray-400'>☆</span>
                                                         <span className='lowercase'>Конструктивный</span>
                                                     </label>
                                                 </div>
-
-
-
-                                                {/* Text Area */}
                                                 <textarea
                                                     value={reviewText}
                                                     onChange={(e) => setReviewText(e.target.value)}
                                                     placeholder='Напишите ваш отзыв...'
                                                     className='w-full h-32 px-4 py-2 bg-[#FFFFFF20] text-white rounded-lg border border-[#FFFFFF40] focus:outline-none focus:border-[#FFFFFF80] resize-none'
                                                 />
-
-                                                {/* Submit Button */}
                                                 <div className='flex gap-x-4'>
                                                     <button
                                                         onClick={handleSubmitReview}
@@ -608,21 +543,13 @@ export default function DesignDetail({ questionnaire, onBack }) {
                                                         Отправить
                                                     </button>
                                                     <button
-                                                        onClick={() => {
-                                                            setShowReviewForm(false);
-                                                            setReviewText('');
-                                                            setRating(5);
-                                                        }}
+                                                        onClick={() => { setShowReviewForm(false); setReviewText(''); setRating(5); }}
                                                         className='px-6 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-lg transition-colors'
                                                     >
                                                         Отмена
                                                     </button>
                                                 </div>
-
-                                                {/* Info Text */}
-                                                <p className='text-xs text-[#FFFFFF80] mt-4'>
-
-                                                </p>
+                                                <p className='text-xs text-[#FFFFFF80] mt-4'></p>
                                             </div>
                                         )}
                                     </div>
@@ -632,6 +559,7 @@ export default function DesignDetail({ questionnaire, onBack }) {
                     </div>
                 </div>
             </div>
+
             <div className="absolute bottom-20 right-0">
                 <Link href={'/userinfo'}>
                     <div className="absolute right-2 sm:right-0 top-1/2 -translate-y-1/2 text-white text-3xl sm:text-[50px] hidden sm:block">

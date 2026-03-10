@@ -115,7 +115,7 @@ export default function HomeRestriction() {
   if (loading) {
     return (
       <div className='max-w-7xl m-auto px-4 sm:px-6 md:px-8 max-md:w-full'>
-        <div className="text-white flex justify-between items-center mt-[0px] px-4 sm:px-0">
+        <div className="text-white grid grid-cols-3 items-center mt-[0px] px-4 sm:px-0">
           <div className="cursor-pointer">
             <IoIosArrowBack size={32} className='sm:size-[40px] opacity-0' />
           </div>
@@ -132,13 +132,15 @@ export default function HomeRestriction() {
   }
 
   return (
-    <div className='max-w-7xl m-auto px-4 sm:px-6 md:px-8 max-md:w-full'>
-      <div className="text-white flex justify-between items-center mt-[0px] px-4 sm:px-0">
+    <div className='max-w-7xl m-auto px-4 sm:px-6 md:px-8 max-md:w-full max-md:min-h-[85vh] max-md:flex max-md:flex-col max-md:justify-between'>
+      <div className="text-white grid grid-cols-3 items-center mt-[0px] px-4 sm:px-0 mb-5">
         <div className="cursor-pointer md:w-30">
           <IoIosArrowBack size={32} className='sm:w-10 sm:h-10 opacity-0' />
         </div>
-        <img src="/icons/logo22.svg" alt="a" className='max-md:w-20 w-40 mb-5' />
-        <div className="flex items-center gap-x-2 sm:gap-x-3 md:w-30">
+        <div className="flex justify-center">
+          <img src="/icons/logo22.svg" alt="a" className='max-md:w-20 w-40 ' />
+        </div>
+        <div className="flex items-center gap-x-2 sm:gap-x-3 md:w-30 justify-end">
 
           <a target='_blank' href='https://r-profi.taplink.ws'>
             <img src="/icons/support.svg" alt="support" className='w-10 h-10 sm:w-14 sm:h-14' />

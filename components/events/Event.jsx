@@ -70,16 +70,16 @@ export default function Event({ setStep, eventsData, onCitySelect }) {
 
     return (
         <div className='relative min-h-screen'>
-            <div className="text-white flex justify-between items-center mt-[0px]">
-                <Link href={'/role'} className="cursor-pointer md:w-30">
+            <div className="text-white flex justify-between items-center mt-[0px] mb-5">
+                <Link href={'/role'} className="cursor-pointer md:w-30 w-10">
                     <IoIosArrowBack size={40} />
                 </Link>
-                <img src="/icons/logo22.svg" alt="a" className='max-md:w-20 w-40 mb-5' />
-                <div className='md:w-30'></div>
+                <img src="/icons/logo22.svg" alt="a" className='max-md:w-20 w-40 ' />
+                <div className='md:w-30 w-10'></div>
             </div>
 
             <div className='text-center mt-[0]'>
-                <p className="font-normal text-white uppercase text-[24px] leading-[100%] tracking-[0%] text-center hover:cursor-pointer border-b border-[#FFFFFF91] w-max mx-auto pb-1">
+                <p className="max-md:text-[20px] max-md:mt-20 font-normal text-white uppercase text-[24px] leading-[100%] tracking-[0%] text-center hover:cursor-pointer border-b border-[#FFFFFF91] w-max mx-auto pb-1">
                     Ближайшие мероприятия
                 </p>
 

@@ -209,11 +209,11 @@ export default function SupplierDetail({ questionnaire, onBack }) {
                                 const label = socialMediaOptions.find(opt => opt.value === contact.type)?.label || contact.type;
 
                                 return (
-                                    <div key={index} className="flex gap-2 items-center">
+                                    <div key={index} className="flex gap-2 md:items-center max-md:flex-col">
                                         <span className="font-bold uppercase text-xs px-px rounded">
                                             {label}:
                                         </span>
-                                        <a className='underline' href={contact.value} target='_blank'>{contact.value}</a>
+                                        <a className='underline max-md:mt-[-10px] max-md:mb-2' href={contact.value} target='_blank'>{contact.value}</a>
                                     </div>
                                 );
                             } catch (e) {
@@ -304,7 +304,7 @@ export default function SupplierDetail({ questionnaire, onBack }) {
                             )}
                         </div>
                         <div className="flex flex-col border-b border-b-[#FFFFFF91]  pl-12 ml-[-16px] flex-grow relative">
-                            <h2 className='mb-0.5 text-[#FFFFFF] text-[25px]'>
+                            <h2 className='mb-0.5 text-[#FFFFFF] text-[25px] max-md:text-[20px]'>
                                 {questionnaire.brand_name || questionnaire.full_name || 'Название организации'}
                             </h2>
                             <div className='w-[calc(100% + 32px)] h-0.25 bg-[#FFFFFF4F]  ml-[-32px]'></div>
@@ -484,15 +484,15 @@ export default function SupplierDetail({ questionnaire, onBack }) {
                                     {/* Reviews Section */}
                                     <div className='mt-0 text-[#FFFFFF] px-2 py-4 border-b border-[#FFFFFF91]'>
                                         <div
-                                            className="flex gap-x-4 cursor-pointer hover:opacity-80"
+                                            className="flex gap-x-4 cursor-pointer hover:opacity-80 max-md:flex-col"
                                             onClick={() => setShowReviewForm(!showReviewForm)}
                                         >
                                             <h3 className='text-[19px] uppercase'>ОТЗЫВЫ:</h3>
                                             <div className='flex items-center gap-x-5 lowercase'>
-                                                <p>
+                                                <p className='text-nowrap'>
                                                     <span className='text-yellow-400'>★</span> Положительных: {questionnaire.rating_count?.positive || 0}
                                                 </p>
-                                                <p>
+                                                <p className='text-nowrap'>
                                                     <span className='text-gray-400'>☆</span> Конструктивных: {questionnaire.rating_count?.constructive || 0}
                                                 </p>
                                             </div>

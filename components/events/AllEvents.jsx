@@ -66,17 +66,19 @@ export default function AllEvents({ setStep, selectedCity, selectedDate, onEvent
     }
 
     return (
-        <div className='relative min-h-screen'>
-            <div className="text-white flex justify-between items-center mt-[0px]">
-                <button onClick={() => setStep(1)} className="cursor-pointer md:w-30">
-                    <IoIosArrowBack size={40} />
+        <div className='relative min-h-screen px-4'>
+            <div className="text-white flex justify-between items-center mt-[0px] mb-5">
+                <button onClick={() => setStep(1)} className="cursor-pointer md:w-30 w-10 max-md:w-8 max-md:h-8">
+                    <IoIosArrowBack size={40} className='max-md:w-6 max-md:h-6' />
                 </button>
-                <img src="/icons/logo22.svg" alt="a" className='max-md:w-20 w-40 mb-5' />
-                <div className='md:w-30'></div>
+                <div className="flex items-center justify-center">
+                    <img src="/icons/logo22.svg" alt="a" className='max-md:w-20 w-40' />
+                </div>
+                <div className='md:w-30 w-10 max-md:w-8'></div>
             </div>
 
             <div className='mt-[0]'>
-                <p className="font-normal text-[#B79F15] uppercase text-[24px] leading-[100%] tracking-[0%] text-center hover:cursor-pointer border-b  border-[#B79F15] w-max mx-auto pb-1 mb-8">
+                <p className="font-normal text-[#B79F15] uppercase text-[24px] max-md:text-[18px] leading-[100%] tracking-[0%] text-center hover:cursor-pointer border-b border-[#B79F15] w-max mx-auto pb-1 mb-8">
                     {formatDate(selectedDate)}
                 </p>
 
@@ -96,7 +98,7 @@ export default function AllEvents({ setStep, selectedCity, selectedDate, onEvent
                                 onClick={() => onEventSelect(event)}
                                 className="flex mb-0 cursor-pointer hover:opacity-80 transition-opacity"
                             >
-                                <div className='w-[120px] h-[100px] card_img flex-shrink-0 overflow-hidden'>
+                                <div className='w-[120px] h-[100px] card_img flex-shrink-0 overflow-hidden max-md:w-23 max-md:h-20'>
                                     {event.poster ? (
                                         <img
                                             src={event.poster}
@@ -111,17 +113,15 @@ export default function AllEvents({ setStep, selectedCity, selectedDate, onEvent
                                         </div>
                                     )}
                                 </div>
-                                <div className="flex flex-col border-b border-b-[#FFFFFF91]  pl-12 ml-[-16px]  flex-grow">
+                                <div className="flex flex-col border-b border-b-[#FFFFFF91] pl-12 ml-[-16px] flex-grow max-md:pl-8">
                                     <h2 className='mb-[-8px] text-[#FFFFFF] text-[22px] line-clamp-1'>
                                         {event.organization_name || 'Название организации'}
                                     </h2>
                                     <p className='text-[#FFFFFF] text-sm max-md:text-xs line-clamp-1 mb-2 grow'>
                                         {event.city || ''} {event.event_location ? `, ${event.event_location}` : ''}
                                     </p>
-
-
                                     {event.event_type_display && (
-                                        <p className='text-[#B79F15] text-sm leading-[100%]  mt-2 uppercase line-clamp-2'>
+                                        <p className='text-[#B79F15] text-sm leading-[100%] mt-2 uppercase line-clamp-2'>
                                             {event.event_type_display}
                                         </p>
                                     )}

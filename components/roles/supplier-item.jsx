@@ -183,11 +183,13 @@ export default function SupplierItem({
 
     return (
         <div className='max-md:px-4 relative max-w-7xl min-h-screen'>
-            <div className="text-white flex justify-between items-center mt-[0px] max-md:px-0">
+            <div className="text-white flex justify-between items-center mt-[0px] max-md:px-0 mb-5">
                 <button onClick={onResetFilter} className="cursor-pointer max-md:w-8 max-md:h-8 md:w-30">
                     <IoIosArrowBack size={40} className='max-md:w-6 max-md:h-6' />
                 </button>
-                <img src="/icons/logo22.svg" alt="a" className='max-md:w-20 w-40 mb-5' />
+                <div className="flex items-center justify-center">
+                    <img src="/icons/logo22.svg" alt="a" className='max-md:w-20 w-40' />
+                </div>
                 <div className='md:w-30 flex items-end  justify-end'>
                     <img
                         src="/icons/filter.svg"
@@ -303,7 +305,7 @@ export default function SupplierItem({
                                     className="flex mb-2 cursor-pointer hover:opacity-80 transition-opacity"
                                     onClick={() => onSelectQuestionnaire(questionnaire.id)}
                                 >
-                                    <div className='w-[120px] h-[100px] card_img flex-shrink-0 overflow-hidden'>
+                                    <div className='w-[120px] h-[100px] card_img flex-shrink-0 overflow-hidden max-md:w-23 max-md:h-20'>
                                         {questionnaire.company_logo ? (
                                             <img
                                                 src={questionnaire.company_logo}
@@ -318,7 +320,7 @@ export default function SupplierItem({
                                             </div>
                                         )}
                                     </div>
-                                    <div className="flex flex-col border-b border-b-[#FFFFFF91] pl-12 ml-[-16px] flex-grow">
+                                    <div className="flex flex-col border-b border-b-[#FFFFFF91] pl-12 ml-[-16px] flex-grow max-md:pl-8">
                                         <h2 className='mb-[-8px] text-[#FFFFFF] text-[22px] line-clamp-1'>
                                             {questionnaire.brand_name || questionnaire.full_name || 'Название организации'}
                                         </h2>
