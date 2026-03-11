@@ -294,8 +294,8 @@ export default function Users() {
                             type="text"
                             value={filters.search}
                             onChange={handleSearchChange}
-                            placeholder="Поиск пользователей..."
-                            className="bg-[#56505080] text-white pl-10 pr-4 py-2 rounded-lg w-64 focus:outline-none focus:ring-2 focus:ring-yellow-400 hover:bg-[#565050CC] transition-colors"
+                            placeholder="Поиск по имени пользователя"
+                            className="bg-[#56505080] text-white pl-10 pr-4 py-2 rounded-lg w-80 focus:outline-none focus:ring-2 focus:ring-yellow-400 hover:bg-[#565050CC] transition-colors"
                         />
                     </div>
                 </div>

@@ -173,7 +173,7 @@ export default function LoginBox() {
                 </div>
             }
 
-            <Image width={200} height={200} className='sm:w-[308px] sm:h-[308px] w-48 h-48' src="/icons/logo.svg" alt="logo" quality={100} />
+            <Image width={200} height={200} className='sm:w-[308px] sm:h-[308px] w-48 h-48 mt-16 mb-16 max-md:mt-5 max-md:mb-5' src="/icons/logo22.svg" alt="logo" quality={100} />
 
             {content}
 

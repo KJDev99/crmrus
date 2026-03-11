@@ -128,7 +128,7 @@ export default function LeftPanel({ }) {
   }
 
   return (
-    <div className="relative min-h-screen max-h-full flex flex-col justify-between w-full text-white">
+    <div className="relative min-h-screen max-h-full flex flex-col  w-full text-white">
       {/* Orqaga tugmasi */}
       <div
         className="absolute top-10 left-[30px] cursor-pointer hover:opacity-80 transition-opacity group"
@@ -160,15 +160,8 @@ export default function LeftPanel({ }) {
         </p>
       </div> */}
 
-      <div className="w-full flex justify-center mb-0">
-        <Image
-          src="/icons/logo.svg"
-          width={190}
-          height={190}
-          alt="logo"
-          priority
-          className="hover:opacity-90 transition-opacity"
-        />
+      <div className="relative w-full flex justify-center mb-0">
+        <Image width={200} height={200} className='sm:w-[308px] sm:h-[308px] w-48 h-48 mt-22 mb-16 max-md:mt-5 max-md:mb-5' src="/icons/logo22.svg" alt="logo" quality={100} />
       </div>
       {/* Menu buttonlari */}
       <div className="flex flex-col gap-[22px] mt-[0px] pl-[30px] pr-[15px]">

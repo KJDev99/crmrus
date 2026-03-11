@@ -89,7 +89,7 @@ export default function ForgotPasswordPage() {
                 <div className="relative flex flex-col items-center text-white px-4 sm:px-8">
 
                     {/* Logo */}
-                    <Image width={200} height={200} className='sm:w-[308px] sm:h-[308px] w-48 h-48' src="/icons/logo.svg" alt="logo" quality={100} />
+                    <Image width={200} height={200} className='sm:w-[308px] sm:h-[308px] w-48 h-48 mt-16 mb-16 max-md:mt-5 max-md:mb-5' src="/icons/logo22.svg" alt="logo" quality={100} />
 
                     <p className="font-[JejuMyeongjo] mb-8 sm:mb-12 md:mb-20 text-base sm:text-xl md:text-[24px] leading-snug md:leading-[24px] tracking-normal text-center">
                         Сброс пароля
