@@ -61,7 +61,7 @@ export default function Anketa() {
       // Filter parametrlarni tozalash
       const params = {};
       if (currentFilters.full_name) params.full_name = currentFilters.full_name;
-      if (currentFilters.id) params.id = currentFilters.id;
+      // if (currentFilters.id) params.id = currentFilters.id;
       // if (currentFilters.organization_name) params.organization_name = currentFilters.organization_name;
       if (currentFilters.phone) params.phone = currentFilters.phone;
       params.limit = currentFilters.limit || 10;
@@ -112,17 +112,10 @@ export default function Anketa() {
     // Avtomatik ravishda ID yoki telefon raqamni aniqlash
     if (/^\d+$/.test(value)) {
       // Faqat raqamlar bo'lsa, ID yoki telefon bo'lishi mumkin
-      if (value.length <= 6) {
-        handleFilterChange("id", value);
-        handleFilterChange("phone", "");
-        handleFilterChange("full_name", "");
-        handleFilterChange("organization_name", "");
-      } else {
-        handleFilterChange("phone", value);
-        handleFilterChange("id", "");
-        handleFilterChange("full_name", "");
-        handleFilterChange("organization_name", "");
-      }
+      handleFilterChange("phone", value);
+      handleFilterChange("id", "");
+      handleFilterChange("full_name", "");
+      handleFilterChange("organization_name", "");
     } else {
       // Matn bo'lsa, ism yoki tashkilot nomi bo'lishi mumkin
       handleFilterChange("full_name", value);
